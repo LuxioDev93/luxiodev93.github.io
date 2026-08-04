@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Música</title>
+    <style>
+    :root {
+        --naranja-medio: #ff9c3a;
+        --naranja-fuerte: #fa2527;
+        --naranja-claro: #ffac41;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0; padding: 0; 
+        min-height: 100vh;
+        font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+        background: linear-gradient(to top, var(--naranja-medio) 0%, var(--naranja-fuerte) 100%);
+        overflow-x: hidden;
+        color: white;
+    }
+
+    body::before {
+        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.1) 15px, rgba(255,255,255,0.1) 17px);
+        pointer-events: none; z-index: 1;
+    }
+
+    #main-layout {
+        position: relative; z-index: 2;
+        display: flex; 
+        width: 100%; 
+        min-height: 100vh;
+    }
+
+    /* Ocultar barra lateral en modo single song */
+    body.single-song-mode #sidebar {
+        display: none !important;
+    }
+
+    body.single-song-mode #right-panel {
+        width: 100% !important;
+    }
+
+    /* --- SIDEBAR --- */
+    #sidebar {
+        width: 40%;
+        padding: 50vh 40px; 
+        overflow-y: auto;
+        border-right: 2px solid rgba(255,255,255,0.1);
+        scroll-behavior: smooth;
+        position: relative;
+        scrollbar-width: none; 
+    }
+    #sidebar::-webkit-scrollbar { display: none; }
+
+    .playlist-item {
+        display: flex; 
+        align-items: center;
+        background: rgba(0,0,0,0.2);
+        margin-bottom: 30px; padding: 20px;
+        border-radius: 100px 30px 30px 100px;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        opacity: 0.6;
+        transform-origin: center left;
+        min-height: 140px;
+        cursor: pointer;
+    }
+
+    .vinyl-wrapper {
+        width: 140px; height: 140px; 
+        flex-shrink: 0; margin-right: 20px;
+        transition: all 0.5s ease;
+    }
+
+    .vinyl {
+        width: 100%; height: 100%; background: #000; border-radius: 50%;
+        display: flex; justify-content: center; align-items: center;
+        background-image: repeating-radial-gradient(circle, #111, #111 2px, #222 3px);
+        transition: transform 0.3s;
+    }
+
+    .vinyl-art {
+        width: 65%; height: 65%; border-radius: 50%;
+        background-size: cover; border: 3px solid #fff;
+    }
+
+    .song-info {
+        transition: all 0.4s ease;
+        text-align: left;
+    }
+
+    /* --- ESTADO ACTIVO --- */
+    .playlist-item.active {
+        background: rgba(255, 255, 255, 0.25);
+        opacity: 1;
+        transform: scale(1.05);
+        flex-direction: column;
+        border-radius: 30px;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .playlist-item.active .vinyl-wrapper {
+        width: 220px; 
+        height: 220px; 
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .playlist-item.active .song-info {
+        text-align: center;
+        font-size: 1.3em;
+    }
+
+    .vinyl-wrapper.is-gif .vinyl {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .playing .vinyl { animation: spin 10s linear infinite; }
+
+    /* --- PANEL DERECHO --- */
+    #right-panel {
+        width: 60%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    /* Recuadro negro con proporción 16:9 fija */
+    #player-container {
+        position: relative;
+        width: 100%;
+        max-width: 850px;
+        aspect-ratio: 16 / 9;
+        background: #000000;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Fondo con la imagen centrada */
+    #player-bg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        filter: blur(20px);
+        opacity: 0.35;
+        z-index: 1;
+        transition: background-image 0.5s ease;
+    }
+
+    /* Contenedor central de la letra */
+    #lyrics-display {
+        position: relative;
+        z-index: 2;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px 30px;
+        box-sizing: border-box;
+    }
+
+    #lyric-text {
+        font-size: clamp(1.4rem, 4vw, 3.2rem); 
+        line-height: 1.25;
+        text-shadow: 3px 3px 12px rgba(0,0,0,0.9);
+        transition: opacity 0.4s ease; 
+        margin: 0;
+    }
+
+    /* Controles inferiores */
+    #player-controls {
+        position: relative;
+        z-index: 2;
+        padding: 12px 20px 16px 20px;
+        background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .time-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .time-bar {
+        flex: 1;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+        transition: height 0.1s ease;
+    }
+
+    .time-bar:hover {
+        height: 8px;
+    }
+
+    .time-progress {
+        height: 100%;
+        width: 0%;
+        background: #ff0000;
+        border-radius: 3px;
+        position: relative;
+    }
+
+    .time-text {
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+        color: #ddd;
+        min-width: 80px;
+    }
+
+    .controls-bottom-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .buttons-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .btn-control {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.9;
+        transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-control:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    .btn-control svg {
+        width: 26px;
+        height: 26px;
+        fill: currentColor;
+    }
+
+    /* Tooltip simple para confirmación de copiado */
+    #share-toast {
+        position: absolute;
+        bottom: 60px;
+        right: 20px;
+        background: rgba(0,0,0,0.85);
+        color: #fff;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+
+    #share-toast.show {
+        opacity: 1;
+    }
+
+    /* --- RESPONSIVE / MOBILE STYLES --- */
+    @media (max-width: 768px) {
+        #main-layout {
+            flex-direction: column-reverse;
+        }
+
+        #right-panel {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        #sidebar {
+            width: 100%;
+            padding: 20px;
+            border-right: none;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            overflow-y: visible;
+        }
+
+        .playlist-item {
+            min-height: 90px;
+            padding: 10px 15px;
+        }
+
+        .vinyl-wrapper {
+            width: 70px;
+            height: 70px;
+        }
+
+        .playlist-item.active .vinyl-wrapper {
+            width: 130px;
+            height: 130px;
+        }
+
+        .playlist-item.active {
+            padding: 20px 10px;
+        }
+
+        #player-controls {
+            padding: 8px 12px 10px 12px;
+        }
+
+        .btn-control svg {
+            width: 22px;
+            height: 22px;
+        }
+    }
+    </style>
+</head>
+<body>
+
+    <div id="main-layout">
+        <div id="sidebar">
+            <div id="playlist"></div>
+        </div>
+
+        <div id="right-panel">
+            <div id="player-container">
+                <!-- Imagen de fondo -->
+                <div id="player-bg"></div>
+
+                <!-- Letra en el centro -->
+                <div id="lyrics-display">
+                    <p id="lyric-text">Pulsa una tecla o el disco...</p>
+                </div>
+
+                <!-- Notificación al compartir -->
+                <div id="share-toast">¡Enlace copiado al portapapeles! 📋</div>
+
+                <!-- Controles inferiores -->
+                <div id="player-controls">
+                    <div class="time-bar-container">
+                        <div class="time-bar" id="time-bar">
+                            <div class="time-progress" id="time-progress"></div>
+                        </div>
+                        <span class="time-text" id="time-text">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div class="controls-bottom-row">
+                        <div class="buttons-row">
+                            <button class="btn-control" id="btn-play-pause" title="Play/Pausa">
+                                <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                <svg id="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Botón de compartir en el margen derecho -->
+                        <button class="btn-control" id="btn-share" title="Compartir esta canción">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const nicoLyrics = `
+[00:00.00]🎵🪕🎵
+[00:05.00]Nico se mira frente al espejo 🪞
+[00:10.50]ve sus ojitos 👀 y su reflejo ✨
+[00:15.00]“Mira mi piel”, dice papá 👨🏽
+[00:17.50]“es parecida a la mía, ¿la ves igual?” 🤎
+[00:25.00]La piel de mamá es clara como el sol ☀️
+[00:28.50]la de papá es fuerte como el tambor 🥁
+[00:31.00]Y Nico mezcla todo ese amor 💞
+[00:33.50]y nace un color lleno de calor 🔥
+[00:38.00]Mi color es especial 🌈
+[00:41.50]como la tierra 🌍 y el pan 🍞
+[00:43.00]Como el chocolate al sonreír 🍫😊
+[00:46.50]como la arena al sentir 🏖️
+[00:48.00]Mi color es especial 💫
+[00:51.50]no hay otro igual ⭐
+[00:54.00]En mi familia hay mil colores 🎨
+[00:59.50]y todos son ganadores 🏆
+[01:06.00]A veces Nico duda un poco más 🤔
+[01:11.50]compara colores sin pensar 🎨
+[01:16.00]Pero papá le vuelve a decir 👨🏽‍🦱
+[01:18.50]“Tu piel cuenta una historia de ti” 📖
+[01:26.00]Viene de lejos, viene de aquí 🇪🇨🌎🇭🇳
+[01:29.50]de risas 😂, abrazos 🤗 y raíz 🌱
+[01:31.00]No hay color mejor ni peor 🚫⚖️
+[01:34.50]todos brillan con su propio sol ☀️✨
+[01:39.00]Mi color es especial 🌈
+[01:41.50]como la tierra 🌍 y el pan 🍞
+[01:44.00]Como el chocolate al sonreír 🍫😊
+[01:48.00]como la arena al sentir 🏖️
+[01:49.00]Mi color es especial 💖
+[01:52.50]no hay otro igual ⭐
+[01:54.00]En mi familia hay mil colores 🎨
+[01:59.50]y todos son ganadores 🏆
+[02:01.00]Si un día preguntas “¿por qué soy así?” ❓
+[02:07.50]la respuesta vive dentro de ti 💭❤️
+[02:12.00]Eres mezcla de amor 💞 y verdad ✨
+[02:18.50]y eso no cambia jamás 🔒
+[02:23.00]Mi color es especial, me gusta como es 🌈😊
+[02:28.50]Porque soy Nico y soy así 🙋🏽‍♂️
+[02:30.00]y me quiero tal y como soy 💕
+[02:34.00]Tu color cuenta tu historia… 📖
+[02:41.00]y tu historia es hermosa 🌟
+`;
+
+    const serpt = `
+[00:00.00] 🐍
+[00:10.73] La pantalla es un cuadrado 🖥️⬛
+[00:13.48] un píxel baila en él ✨👾
+[00:16.27] Como los puntos blancos ⬜⬜⬜
+[00:18.87] No paro de crecer 📈🐍
+[00:21.81] Crece, crece, no mires atrás 🚀💨
+[00:24.24] el borde te espera no debes chocar 🚧💥
+[00:26.61] el tiempo se acaba, la vida también ⏳💀
+[00:29.63] Serpiente Serpiente juguemos otra vez 🐍🎮
+[00:32.90] ¡Serpiente! ¡Serpiente va! 🐍💨
+[00:40.21] por la pantallita la verás 📱✨
+[00:43.52] ¡Serpiente! ¡Serpiente yeah! 🐍🔥
+[00:50.21] Me hago gigante no paro de sumar 🐍→🐍→🐍→∞
+[00:59.24] Pulsa las teclas de dirección ⌨️⬅️➡️⬆️⬇️
+[01:07.72] Alcancemos la máxima puntuación 🏆🔝
+[01:10.09] Un nuevo cuadrado apareció 🍎🟥
+[01:12.75] Hoy quiero llegar hasta 32 🎯3️⃣2️⃣
+[01:15.17] Crece, crece, no mires atrás 📈🚀
+[01:17.50] el borde te espera no debes chocar 🛑💥
+[01:19.96] el tiempo se acaba, la vida también ⏰☠️
+[01:22.62] Serpiente Serpiente juguemos otra vez 🐍🔄
+[01:25.87] ¡Serpiente! ¡Serpiente va! 🐍🏃‍♂️
+[01:33.70] por la pantallita la verás 🖥️👀
+[01:36.82] ¡Serpiente! ¡Serpiente yeah! 🐍🎉
+[01:43.34] Me hago gigante no paro de sumar 🐍🌀∞
+`;
+
+    const musicData = [
+        {
+            id: "mi-color-es-especial",
+            title: "Mi color es especial",
+            img: "https://cdn2.suno.ai/image_large_c441c1c6-b45f-404a-b7be-c2e0985fb131.jpeg",
+            audio: "https://cdn1.suno.ai/c441c1c6-b45f-404a-b7be-c2e0985fb131.mp3",
+            lyrics: nicoLyrics
+        },    
+        {
+            id: "la-serpiente",
+            title: "La Serpiente",
+            img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", 
+            audio: "https://cdn1.suno.ai/2eee68cc-f237-47f0-bd31-4331f4a653d4.mp3",
+            lyrics: serpt
+        }
+    ];
+
+    let currentAudio = new Audio();
+    let currentIndex = 0;
+    let parsedLyrics = [];
+    let isSingleSongMode = false;
+
+    currentAudio.volume = 0.75;
+
+    function parseLRC(lrcText) {
+        if(!lrcText) return [];
+        const lines = lrcText.split(/\r?\n/);
+        const lyrics = [];
+        const timeReg = /\[(\d{2}):(\d{2})[.:](\d{2,3})\]/;
+
+        lines.forEach(line => {
+            const match = timeReg.exec(line);
+            if (match) {
+                const minutes = parseInt(match[1]);
+                const seconds = parseInt(match[2]);
+                const milliseconds = parseInt(match[3]);
+                const time = minutes * 60 + seconds + (milliseconds / 100);
+                const text = line.replace(timeReg, "").trim();
+                if (text) lyrics.push({ time, text });
+            }
+        });
+        return lyrics.sort((a, b) => a.time - b.time);
+    }
+
+    function loadPlaylist() {
+        const container = document.getElementById('playlist');
+        container.innerHTML = ''; 
+        
+        musicData.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'playlist-item';
+            div.id = `item-${index}`;
+            
+            const isGif = item.img.toLowerCase().endsWith('.gif');
+            const gifClass = isGif ? 'is-gif' : '';
+
+            div.onclick = () => playTrack(index);
+            
+            div.innerHTML = `
+                <div class="vinyl-wrapper ${gifClass}"> 
+                    <div class="vinyl">
+                        <div class="vinyl-art" style="background-image: url('${item.img}');"></div>
+                    </div>
+                </div>
+                <div class="song-info">
+                    <h3>${item.title}</h3>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function playTrack(index) {
+        if (index < 0) index = 0;
+        if (index >= musicData.length) index = 0;
+
+        currentIndex = index;
+        const song = musicData[currentIndex];
+
+        // Actualizar título de la pestaña del navegador
+        document.title = `${song.title} - Reproductor`;
+
+        currentAudio.src = song.audio;
+        currentAudio.load();
+        
+        parsedLyrics = parseLRC(song.lyrics);
+        document.getElementById('lyric-text').innerText = "Cargando...";
+
+        document.getElementById('player-bg').style.backgroundImage = `url('${song.img}')`;
+
+        currentAudio.play().then(() => {
+            updatePlayPauseIcon(true);
+        }).catch(e => {
+            console.error("Esperando interacción:", e);
+            document.getElementById('lyric-text').innerText = "Pulsa para iniciar";
+            updatePlayPauseIcon(false);
+        });
+
+        if (!isSingleSongMode) {
+            updateVisualFocus();
+        }
+    }
+
+    function updateVisualFocus() {
+        document.querySelectorAll('.playlist-item').forEach((el, index) => {
+            const isActive = (index === currentIndex);
+            const vinylArt = el.querySelector('.vinyl-art');
+            const songData = musicData[index];
+            const isGif = songData.img.toLowerCase().endsWith('.gif');
+
+            if (isActive) {
+                el.classList.add('active');
+                if (!currentAudio.paused) el.classList.add('playing');
+                if (isGif) vinylArt.style.backgroundImage = `url('${songData.img}')`;
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                el.classList.remove('active', 'playing');
+                if (isGif) {
+                    vinylArt.style.backgroundImage = 'none'; 
+                    vinylArt.style.backgroundColor = '#222';
+                }
+            }
+        });
+    }
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "0:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function updatePlayPauseIcon(isPlaying) {
+        document.getElementById('icon-play').style.display = isPlaying ? 'none' : 'block';
+        document.getElementById('icon-pause').style.display = isPlaying ? 'block' : 'none';
+        
+        const activeItem = document.querySelector('.playlist-item.active');
+        if (activeItem) {
+            if (isPlaying) activeItem.classList.add('playing');
+            else activeItem.classList.remove('playing');
+        }
+    }
+
+    // Comprobar parámetros URL
+    function checkUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const songParam = urlParams.get('song');
+
+        if (songParam !== null) {
+            let foundIndex = -1;
+            
+            // Buscar por índice numérico
+            if (!isNaN(songParam)) {
+                const idx = parseInt(songParam);
+                if (idx >= 0 && idx < musicData.length) foundIndex = idx;
+            } else {
+                // Buscar por ID o título
+                foundIndex = musicData.findIndex(s => 
+                    s.id === songParam.toLowerCase() || 
+                    s.title.toLowerCase().replace(/\s+/g, '-') === songParam.toLowerCase()
+                );
+            }
+
+            if (foundIndex !== -1) {
+                isSingleSongMode = true;
+                document.body.classList.add('single-song-mode');
+                currentIndex = foundIndex;
+            }
+        }
+    }
+
+    // Copiar enlace al portapapeles
+    document.getElementById('btn-share').addEventListener('click', () => {
+        const song = musicData[currentIndex];
+        const baseUrl = window.location.origin + window.location.pathname;
+        const shareUrl = `${baseUrl}?song=${song.id}`;
+
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            const toast = document.getElementById('share-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+        });
+    });
+
+    // Eventos del Audio
+    currentAudio.addEventListener('ended', () => {
+        if (isSingleSongMode) {
+            currentAudio.currentTime = 0;
+            currentAudio.play();
+        } else {
+            let nextIndex = currentIndex + 1;
+            if (nextIndex >= musicData.length) nextIndex = 0; 
+            playTrack(nextIndex);
+        }
+    });
+
+    currentAudio.addEventListener('timeupdate', () => {
+        if (currentAudio.duration) {
+            const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+            document.getElementById('time-progress').style.width = `${pct}%`;
+            document.getElementById('time-text').innerText = 
+                `${formatTime(currentAudio.currentTime)} / ${formatTime(currentAudio.duration)}`;
+        }
+
+        if (parsedLyrics.length === 0) return;
+        const currentTime = currentAudio.currentTime;
+        const activeLyric = parsedLyrics.filter(l => l.time <= currentTime).pop();
+        
+        const display = document.getElementById('lyric-text');
+        if (activeLyric && display.innerText !== activeLyric.text) {
+            display.style.opacity = 0;
+            setTimeout(() => {
+                display.innerText = activeLyric.text;
+                display.style.opacity = 1;
+            }, 150);
+        }
+    });
+
+    // Play / Pausa
+    document.getElementById('btn-play-pause').addEventListener('click', () => {
+        if (!currentAudio.src) {
+            playTrack(currentIndex);
+            return;
+        }
+        if (currentAudio.paused) {
+            currentAudio.play();
+            updatePlayPauseIcon(true);
+        } else {
+            currentAudio.pause();
+            updatePlayPauseIcon(false);
+        }
+    });
+
+    // Barra de tiempo
+    document.getElementById('time-bar').addEventListener('click', (e) => {
+        if (!currentAudio.duration) return;
+        const bar = e.currentTarget;
+        const rect = bar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const pct = clickX / rect.width;
+        currentAudio.currentTime = pct * currentAudio.duration;
+    });
+
+    // Teclado
+    document.addEventListener('keydown', (e) => {
+        if (!isSingleSongMode) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                playTrack(currentIndex + 1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                playTrack(currentIndex - 1);
+            }
+        }
+        if (e.key === ' ') {
+            e.preventDefault();
+            document.getElementById('btn-play-pause').click();
+        }
+    });
+
+    window.onload = () => {
+        checkUrlParams();
+        if (!isSingleSongMode) {
+            loadPlaylist();
+            updateVisualFocus();
+        }
+        document.getElementById('player-bg').style.backgroundImage = `url('${musicData[currentIndex].img}')`;
+        document.title = `${musicData[currentIndex].title} - Reproductor`;
+    };
+    </script>
+</body>
+</html>
