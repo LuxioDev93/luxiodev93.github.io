@@ -17,10 +17,10 @@
 
     body {
         margin: 0; padding: 0; 
-        min-height: 100vh;
+        height: 100vh;
         font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
         background: linear-gradient(to top, var(--naranja-medio) 0%, var(--naranja-fuerte) 100%);
-        overflow-x: hidden;
+        overflow: hidden; /* Evita el scroll general de la ventana */
         color: white;
     }
 
@@ -34,7 +34,7 @@
         position: relative; z-index: 2;
         display: flex; 
         width: 100%; 
-        min-height: 100vh;
+        height: 100vh;
     }
 
     /* Ocultar barra lateral en modo single song */
@@ -46,35 +46,40 @@
         width: 100% !important;
     }
 
-    /* --- SIDEBAR --- */
+    /* --- SIDEBAR (PANEL IZQUIERDO CON SCROLL INDEPENDIENTE) --- */
     #sidebar {
         width: 40%;
-        padding: 50vh 40px; 
-        overflow-y: auto;
+        height: 100vh;
+        padding: 50px 40px; 
+        overflow-y: auto; /* Solo este lado hace scroll */
         border-right: 2px solid rgba(255,255,255,0.1);
         scroll-behavior: smooth;
-        position: relative;
-        scrollbar-width: none; 
+        scrollbar-width: thin; 
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
     }
-    #sidebar::-webkit-scrollbar { display: none; }
 
     .playlist-item {
         display: flex; 
         align-items: center;
         background: rgba(0,0,0,0.2);
-        margin-bottom: 30px; padding: 20px;
+        margin-bottom: 25px; padding: 20px;
         border-radius: 100px 30px 30px 100px;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        opacity: 0.6;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        opacity: 0.75;
         transform-origin: center left;
-        min-height: 140px;
+        min-height: 120px;
         cursor: pointer;
     }
 
+    .playlist-item:hover {
+        opacity: 0.95;
+        background: rgba(0,0,0,0.3);
+    }
+
     .vinyl-wrapper {
-        width: 140px; height: 140px; 
+        width: 110px; height: 110px; 
         flex-shrink: 0; margin-right: 20px;
-        transition: all 0.5s ease;
+        transition: all 0.4s ease;
     }
 
     .vinyl {
@@ -94,27 +99,32 @@
         text-align: left;
     }
 
+    .song-info h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
     /* --- ESTADO ACTIVO --- */
     .playlist-item.active {
         background: rgba(255, 255, 255, 0.25);
         opacity: 1;
-        transform: scale(1.05);
+        transform: scale(1.03);
         flex-direction: column;
         border-radius: 30px;
         text-align: center;
-        padding: 40px 20px;
+        padding: 30px 20px;
     }
 
     .playlist-item.active .vinyl-wrapper {
-        width: 220px; 
-        height: 220px; 
+        width: 180px; 
+        height: 180px; 
         margin-right: 0;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .playlist-item.active .song-info {
         text-align: center;
-        font-size: 1.3em;
+        font-size: 1.2em;
     }
 
     .vinyl-wrapper.is-gif .vinyl {
@@ -125,13 +135,16 @@
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .playing .vinyl { animation: spin 10s linear infinite; }
 
-    /* --- PANEL DERECHO --- */
+    /* --- PANEL DERECHO (REPRODUCTOR FIJO EN PANTALLA) --- */
     #right-panel {
         width: 60%;
+        height: 100vh;
+        position: sticky;
+        top: 0;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px;
+        padding: 30px;
         box-sizing: border-box;
     }
 
@@ -158,7 +171,7 @@
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        filter: blur(20px);
+        filter: blur(2px);
         opacity: 0.35;
         z-index: 1;
         transition: background-image 0.5s ease;
@@ -267,10 +280,10 @@
         fill: currentColor;
     }
 
-    /* Tooltip simple para confirmación de copiado */
+    /* Toast para confirmación de copiado */
     #share-toast {
         position: absolute;
-        bottom: 60px;
+        bottom: 65px;
         right: 20px;
         background: rgba(0,0,0,0.85);
         color: #fff;
@@ -288,43 +301,57 @@
         opacity: 1;
     }
 
-    /* --- RESPONSIVE / MOBILE STYLES --- */
+    /* --- RESPONSIVE / SMARTPHONES --- */
     @media (max-width: 768px) {
-        #main-layout {
-            flex-direction: column-reverse;
+        body {
+            overflow-y: auto; /* Permite scroll en móvil */
+            height: auto;
         }
 
+        #main-layout {
+            flex-direction: column; /* Reproductor arriba, lista abajo */
+            height: auto;
+        }
+
+        /* En móvil, el reproductor (panel derecho) queda fijo arriba */
         #right-panel {
             width: 100%;
+            height: auto;
+            position: sticky;
+            top: 0;
+            z-index: 10;
             padding: 10px;
-            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         #sidebar {
             width: 100%;
-            padding: 20px;
+            height: auto;
+            padding: 20px 15px;
             border-right: none;
-            border-top: 2px solid rgba(255,255,255,0.1);
-            overflow-y: visible;
+            overflow-y: visible; /* Scroll fluido con toda la página */
         }
 
         .playlist-item {
-            min-height: 90px;
+            min-height: 80px;
             padding: 10px 15px;
+            margin-bottom: 15px;
         }
 
         .vinyl-wrapper {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
         }
 
         .playlist-item.active .vinyl-wrapper {
-            width: 130px;
-            height: 130px;
+            width: 110px;
+            height: 110px;
         }
 
         .playlist-item.active {
-            padding: 20px 10px;
+            padding: 15px 10px;
         }
 
         #player-controls {
@@ -341,24 +368,22 @@
 <body>
 
     <div id="main-layout">
+        <!-- Panel Izquierdo: Lista con scroll independiente -->
         <div id="sidebar">
             <div id="playlist"></div>
         </div>
 
+        <!-- Panel Derecho: Reproductor 16:9 fijo -->
         <div id="right-panel">
             <div id="player-container">
-                <!-- Imagen de fondo -->
                 <div id="player-bg"></div>
 
-                <!-- Letra en el centro -->
                 <div id="lyrics-display">
-                    <p id="lyric-text">Pulsa una tecla o el disco...</p>
+                    <p id="lyric-text">Pulsa una canción o tecla...</p>
                 </div>
 
-                <!-- Notificación al compartir -->
                 <div id="share-toast">¡Enlace copiado al portapapeles! 📋</div>
 
-                <!-- Controles inferiores -->
                 <div id="player-controls">
                     <div class="time-bar-container">
                         <div class="time-bar" id="time-bar">
@@ -375,7 +400,6 @@
                             </button>
                         </div>
 
-                        <!-- Botón de compartir en el margen derecho -->
                         <button class="btn-control" id="btn-share" title="Compartir esta canción">
                             <svg viewBox="0 0 24 24">
                                 <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
@@ -387,8 +411,8 @@
         </div>
     </div>
 
-    <script>
-    const nicoLyrics = `
+  <script>
+  const nicoLyrics = `
 [00:00.00]🎵🪕🎵
 [00:05.00]Nico se mira frente al espejo 🪞
 [00:10.50]ve sus ojitos 👀 y su reflejo ✨
@@ -433,7 +457,7 @@
 [02:41.00]y tu historia es hermosa 🌟
 `;
 
-    const serpt = `
+const serpt = `
 [00:00.00] 🐍
 [00:10.73] La pantalla es un cuadrado 🖥️⬛
 [00:13.48] un píxel baila en él ✨👾
@@ -461,24 +485,1187 @@
 [01:43.34] Me hago gigante no paro de sumar 🐍🌀∞
 `;
 
-    const musicData = [
-        {
-            id: "mi-color-es-especial",
-            title: "Mi color es especial",
-            img: "https://cdn2.suno.ai/image_large_c441c1c6-b45f-404a-b7be-c2e0985fb131.jpeg",
-            audio: "https://cdn1.suno.ai/c441c1c6-b45f-404a-b7be-c2e0985fb131.mp3",
-            lyrics: nicoLyrics
-        },    
-        {
-            id: "la-serpiente",
-            title: "La Serpiente",
-            img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", 
-            audio: "https://cdn1.suno.ai/2eee68cc-f237-47f0-bd31-4331f4a653d4.mp3",
-            lyrics: serpt
-        }
-    ];
+const ceiga = `
+[00:00.00] 🐔🔄🌑
+[00:00.65] La pantalla enciende, vuelvo a rodar 🖥️⚪
+[00:03.31] un rompecabezas me quiere probar 🧩🔍
+[00:06.01] bloques que empujo con precisión 🟫⬅️➡️
+[00:08.43] Este nivel requiere mi concentración 🧠💡
+[00:11.84] Agua adelante, puedo flotar 🌊🛟
+[00:14.13] barriles caen al avanzar 🛢️💥
+[00:16.98] si fallo yo sigo y vuelvo al inicio 🔄😵
+[00:19.87] probar de nuevo es parte del juego ♻️🎮
+[00:22.29] Baterías zumban al pasar 🔋⚡
+[00:24.89] un toque eléctrico y quedo chamuscado ya ⚡️💀
+[00:27.69] paro, miro, vuelvo a pensar ⏸️👀🤔
+[00:30.21] la solución no tarda en llegar 💡✨
+[00:34.31] Gallinita ciega, rueda sin ver 🐔🙈🔄
+[00:37.39] pienso el camino antes de caer 🧠🛤️
+[00:39.87] nivel tras nivel voy a intentar 📈🔁
+[00:42.57] hasta encontrar la forma ideal 🏆🧩
+[00:45.27] Gallinita ciega, rueda sin ver 🐔🔄🌑
+[00:48.21] pienso el camino a través del nivel 🧭🛤️
+[00:50.68] Enciendo la luz, quiebro el cascarón 💡🥚💥
+[00:53.28] El diablo se escapa atrapémoslo 😈🏃‍
+[00:56.13] Gallinita ciega, vamos otra vez 🐔🔄
+[00:58.83] No te electrocutes ni hundas porque ⚡️🚫🌊
+[01:01.53] debemos llegar al final del portal 🌀🚪🏁
+[01:04.47] Todas las ⭕ debemos recolectar 👀✨
+[01:17.82] El diablo se escapa delante de mí 😈💨
+[01:20.90] Y casi lo atrapo, debo seguir 🏃‍♂️🔥
+[01:23.56] Con la gallinita o con chupetín 🐔🍭
+[01:26.26] Rodamos por todo de principio a fin 🔄🔚
+[01:28.92] Acordeones cambian el lugar 🎶🪗✨
+[01:31.76] suben y bajan al empujar ⬆️⬇️🟫
+[01:34.28] entro en portales, salgo después 🌀🚪
+[01:37.03] en otro punto de este nivel 🔄🗺️
+[01:39.83] Nada se mueve sin razón ⚙️🧠
+[01:42.58] cada objeto tiene función 🛠️🎯
+[01:45.43] si cambio el orden puedo ver 🔄👀
+[01:48.14] cómo el camino empieza a ceder 🛤️💫
+[01:51.63] Gallinita ciega, rueda sin ver 🐔🙈🔄
+[01:54.70] pienso el camino a través del nivel 🧭🛤️
+[01:57.22] Enciendo la luz, quiebro el cascarón 💡🥚💥
+[01:59.84] El diablo se escapa atrapémoslo 😈🪤
+[02:02.72] Gallinita ciega, vamos otra vez 🐔🔄
+[02:05.33] No te electrocutes ni hundas porque ⚡️🚫🌊
+[02:07.99] debemos llegar al final del portal 🌀🏁
+[02:10.79] Todas las ⭕ debemos recolectar 👀✨
+[02:17.12] la gallinita ciega mi juego favorito 🐔❤️🎮
+[02:22.54] Papá tráeme la tablet 📱🙏
+`;
 
-    let currentAudio = new Audio();
+const espagal = `
+[00:02.26]Intro 🚀✨
+[00:03.36]La nave despega, listo a rodar, 🚀
+[00:05.96]nuevos planetas por explorar, 🪐🌌
+[00:08.65]bloques dispersos por todo el lugar, 🧱✨
+[00:11.09]cada movimiento lo debo calcular. 🧠🎯
+[00:13.79]Burbujas suben, me llevan sin peso, 🫧⬆️
+[00:16.31]gravedad cero, pierdo el suelo, 🌌🛰️
+[00:19.16]si fallo vuelvo a intentar, 💪🔄
+[00:21.57]probar mil veces me hará ganar. 🏆✨
+[00:23.96]Portales brillan al cruzar, 🌀✨
+[00:26.69]entro en uno y salgo en otro lugar, 🚪➡️
+[00:29.10]paro, miro, vuelvo a pensar, 🤔⏸️
+[00:31.41]la solución empieza a encajar. 🧩💡
+[00:34.40]Gallinita espacial, vuela esta vez, 🐔🚀
+[00:37.25]nuevo planeta, un nuevo nivel, 🪐🎮
+[00:39.81]entro en la burbuja, floto sin control, 🫧🌠
+[00:42.45]entre las estrellas cumplo mi rol. ⭐🌌
+[00:44.93]Gallinita espacial, abre el portal, 🐔🌀
+[00:47.53]piensa el camino para poder pasar, 🧠➡️
+[00:50.45]llaves, estrellas, corazones tomar, 🗝️⭐❤️
+[00:52.69]y nuevos amigos poder desbloquear. 🤝📦
+[01:06.51]El comedor de queso está por ahí, 🧀🍽️
+[01:09.32]cada pieza cuenta, no puedo fallar, sí, 🧩✔️
+[01:12.13]la llama con cuernos se estira al pasar, 🦙👿
+[01:14.84]abre caminos que debo cruzar. 🛤️✨
+[01:17.41]Bloques robot vuelvo a empujar, 🤖🧱
+[01:20.26]todo encaja si logro pensar, 🧠💡
+[01:22.78]entro en portales, salgo después, 🌀🚪
+[01:25.55]en otro rincón de este nivel. 🪐📍
+[01:27.87]Nada está puesto al azar, 🎲❌
+[01:30.50]cada elemento me quiere guiar, 🧩➡️
+[01:33.06]si cambio el orden puedo ver, 🔄👀
+[01:35.21]cómo el camino empieza a ceder. 🛤️✨
+[01:37.97]Gallinita espacial, vuela esta vez, 🐔🚀
+[01:40.95]nuevo planeta, un nuevo nivel, 🪐🎮
+[01:43.50]entro en la burbuja, floto sin control, 🫧🌠
+[01:46.14]entre las estrellas cumplo mi rol. ⭐🌌
+[01:48.65]Gallinita espacial, abre el portal, 🐔🌀
+[01:51.32]piensa el camino para poder pasar, 🧠➡️
+[01:54.13]llaves, estrellas, corazones tomar, 🗝️⭐❤️
+[01:56.69]y nuevos amigos poder desbloquear. 🤝📦
+[02:19.58]Gallinita espacial quiere volar, 🐔🚀
+[02:22.88]mamá, la tablet, ¡vamos a jugar! 👩❤️📱🎮
+`;
+
+const haychamba = `
+[00:00.00] 🎵✨
+[00:00.90]Suena el despertador, qué bendición sentir ⏰🙏
+[00:04.24]Otro lunes más pa' poder producir 💼💪
+[00:07.67]Con el cafecito ya me empiezo a activar ☕⚡
+[00:11.12]Gracias a Dios hay chamba, no me puedo quejar 🙌💼
+[00:16.98]Quiero madrugar 🌅⏰
+[00:19.30]Que salga el sol y me encuentre ya de pie ☀️🧍
+[00:22.13]Con la mochila llena de ganas otra vez 🎒🔥
+[00:25.52]Porque hay oportunidad 🚪✨
+[00:27.60]Y cada esfuerzo siempre deja algo al final 💪🏆
+[00:31.06]Quiero trabajar 🛠️😊
+[00:32.76]Que pase el tiempo sin dejar de construir 🏗️⏳
+[00:36.30]Que cada meta me recuerde por qué estoy aquí 🎯❤️
+[00:39.69]Si hay que volver a empezar 🔄💪
+[00:41.56]Mientras haya chamba todo puede mejorar 💼📈
+[00:45.13]Y algunos sueñan con playas 🏖️🌴
+[00:48.18]Con Venecia, Miami y Dubái 🌍✈️
+[00:51.51]Yo prefiero una llamada 📞😊
+[00:54.89]Que me diga "empiezas hoy, ¿qué tal?" 🎉💼
+[00:59.15]Que no falte la jornada 📅💪
+[01:01.51]Ni el uniforme que volver a usar 👕🛠️
+[01:05.17]Ser más chambiador cada mañana 🌅💼
+[01:08.18]Ese es el lujo de verdad 👑❤️
+[01:10.95]¡Gracias a Dios hay chamba! 🙏💼
+[01:13.06]Que no falte nunca el pan 🍞❤️
+[01:16.38]Más chambiador cada día 💪📈
+[01:19.71]Con orgullo de avanzar 🚶🏆
+[01:23.41]Si toca darle con ganas 🔥💪
+[01:26.68]No me pienso rajar 🚫🙅
+[01:30.53]Que el esfuerzo siempre paga 💪💰
+[01:33.54]Y mañana hay que chambear 🌅🛠️
+[01:38.20]Quiero amanecer 🌄😊
+[01:40.49]Con mil pendientes esperando por hacer 📝⚡
+[01:43.86]Que cada logro cueste un poco más también 🏆💪
+[01:46.71]Porque la satisfacción 😊✨
+[01:49.24]Nunca llegó por quedarse en el sillón 🛋️❌
+[01:52.21]Quiero sonreír 😄🌟
+[01:54.16]Cuando el cansancio me quiera convencer 😴💪
+[01:57.29]Que todo aquello que soñaba empieza a florecer 🌱🌸
+[02:00.90]No fue cuestión de suerte 🍀❌
+[02:02.97]Fue levantarse una y otra y otra vez 🔄💪
+[02:06.58]Y algunos buscan atajos 🛣️⚠️
+[02:09.43]Y hacerse ricos sin sudar 💰❌
+[02:12.43]Yo prefiero el calendario 📅✅
+[02:15.96]Lleno de cosas por sacar 📝🚀
+[02:20.14]Que no falte la confianza 🤝❤️
+[02:22.49]Ni las ganas de intentar 💪✨
+[02:26.65]Si preguntan quién soy digo: 🙋🎤
+[02:28.88]"Más chambiador, ¿qué más?" 💼😎
+[02:32.29]¡Gracias a Dios hay chamba! 🙏💼
+[02:34.40]Que no falte nunca el pan 🍞❤️
+[02:37.78]Más chambiador cada día 💪📈
+[02:40.87]Con orgullo de avanzar 🏆🚶
+[02:44.92]Si toca darle con ganas 🔥💪
+[02:47.81]No me pienso rajar 🚫🙅
+[02:51.14]Que el esfuerzo siempre paga 💰💪
+[02:54.68]Y mañana hay que chambear 🌅🛠️
+[03:00.73]Habrá días complicados 🌧️😓
+[03:03.82]Y otros para celebrar 🎉🥳
+[03:07.18]Pero mientras siga habiendo ❤️✨
+[03:09.99]Una razón para luchar 🥊🎯
+[03:14.59]No le temo al sacrificio 💪🔥
+[03:17.31]Ni al cansancio al terminar 😓🏁
+[03:21.13]Porque el sueño se construye 🏗️🌟
+[03:23.45]Con las manos al trabajar ✋🛠️
+[03:26.41]¡Gracias a Dios hay chamba! 🙏💼
+[03:28.52]Que se escuche una vez más 📣🎶
+[03:32.67]Más chambiador que ayer 💪📈
+[03:35.15]Y con hambre de ganar 🏆🔥
+[03:39.42]Que la suerte me acompañe 🍀🤝
+[03:41.74]Pero primero voluntad ❤️💪
+[03:45.77]Porque el futuro se conquista 🚀🌅
+[03:48.78]Con trabajo y dignidad 🛠️🤝
+[03:53.33]Suena el despertador... ⏰🎵
+[03:56.49]Y vuelvo a sonreír. 😊✨
+[03:59.78]Gracias a Dios... 🙏❤️
+[04:03.68]Hay chamba. 💼🙌
+`;
+
+const amaama = `
+[00:00.00]🎹🎹🎹🔊🔊
+[00:02.69]Hola Nicolás, 👋
+[00:03.96]ey ey ey 🎵
+[00:05.50]No te metas las manos en la boca, 🙅‍♂️
+[00:07.52]no no 🚫
+[00:08.79]Si te las metes te va a doler la tripa, 🤢
+[00:11.15]oh no 😱
+[00:12.46]Lávate las manos, 🧼
+[00:14.20]siempre al llegar 🏠
+[00:15.51]Con jabón y agua, 🚿
+[00:17.43]¡así es mejor! ✨
+[00:18.80]Ama ama ama, ama ama 
+[00:22.10]ama ama ama, AMA AMA 
+[00:25.26]¡AMA AAAAAAAMAAAAA! 🎶
+[00:31.55]Ama ama ama, ama ama amita 🥰
+[00:34.97]ama ama ama, 💞
+[00:37.38]AMA AMA 💓
+[00:38.36]¡AMA AAAAAAAMAAAAA! 🎤
+[00:44.33]Nicolás, recuerda, 🧠
+[00:46.22]no te metas más ❌
+[00:47.81]Las manos en la boca, 👄
+[00:49.32]eso no está bien ⚠️
+[00:50.97]Lávate bien las manos, 🫧
+[00:52.66]que te cuidas tú 💪
+[00:54.25]¡Y la tripa feliz, sin dolor, yeah! 😄
+[00:57.49]Ama ama ama, ama ama amita 💕
+[01:00.56]Amita ama ama ama, AMA AMA 🎵
+[01:03.92]¡AMA AAAAAAAMAAAAA! 🎶
+[01:10.31]Ama ama ama, ama ama amita 
+[01:13.46]Amita ama ama ama, AMA AMA 🎼
+[01:16.97]¡AMA AAAAAAAMAAAAA! 🎙️
+[01:20.04]Lávate las manos, 🧼
+[01:26.34]Nicolás, 😊
+[01:28.08]yeah 😎
+[01:29.68]No te metas más, 🙅
+[01:33.07]¡y ama ama ama! 
+[01:36.19]AMA AAAAAAAMAAAAA! 🎉
+`;
+
+const upup = `
+[00:00.00]🇬🇧 🎸 🇬🇧
+[00:01.96]Hey! 👋
+[00:02.89]Let’s sing together. 🎶
+[00:04.63]Where is it? Let’s see. 👀
+[00:09.51]My teddy is in the box, 🧸
+[00:11.98]Dentro, dentro, knock knock knock. 🚪
+[00:14.31]My book is on the table, 📘
+[00:16.73]Encima, look, it’s stable. 📍
+[00:19.20]In, in, in — dentro está 📦
+[00:21.62]On, on, on — encima va ⬆️
+[00:24.10]Under, under — down below ⬇️
+[00:26.53]Next to, next to — side to go ➡️
+[00:28.94]Clap clap, sing with me, 👏
+[00:31.42]English words are fun to see. 🇬🇧
+[00:38.66]The kitty is under the chair, 🐱
+[00:41.34]Debajo, debajo, hiding there. 🙈
+[00:43.45]The apple is next to juice, 🍎
+[00:45.95]Al ladito, friends so close. 🧃
+[00:48.63]In, in, in — dentro está 📦
+[00:50.83]On, on, on — encima va ⬆️
+[00:53.36]Under, under — down below ⬇️
+[00:55.62]Next to, next to — side to go ➡️
+[00:58.20]Clap clap, move around, 💃
+[01:00.67]Point and look, what have you found? 👉
+[01:03.83]Where is it? Look and see, 👀
+[01:04.72]Think a little, count with me. 🔢
+[01:08.35]Inside, on top, down, side, 🧭
+[01:10.59]You can do it, big kid pride. ⭐
+[01:13.37]In the box — dentro está 📦
+[01:15.34]On the table — encima va ⬆️
+[01:17.65]Under the chair — down below ⬇️
+[01:20.10]Next to a friend — side to go 🧑‍🤝‍🧑
+[01:22.76]Sing it loud, sing it slow, 🎤
+[01:25.16]Learning English, watch us grow. 🌱
+[01:28.78]Great job. 🏆
+[01:30.66]You’re amazing. ✨
+[01:32.38]Bye-bye. 👋
+
+`;
+
+const gallinadrift = `
+[00:00.00]Uno, dos, tres... 🔢✨
+[00:02.06]vamos a sumar... ➕🎶
+[00:09.48]Gallinas sueltas, 🐔🐔
+[00:10.94]beat que retumba... 🔊🥁
+[00:25.39]Las gallinas vienen a la casa, 🏠🐔
+[00:27.26]patio lleno de sombras 🌑🌳
+[00:28.91]En el cole se congelaron, 🏫❄️
+[00:30.27]estaban muy frías, muy frías 🥶🥶
+[00:31.88]Pásame la gallina, 👉🐔
+[00:33.47]pásame la gallina 👉🐔
+[00:34.93]El tío hamster se comió un gusano, 🐹🪱
+[00:36.52]la gallina se lo comió a él 🐔😲
+[00:38.35]Ratón uno, dos, tres, 🐭🔢
+[00:40.73]vamos a sumar ➕🎵
+[00:42.09]Árbol caído, cucaracha muerta, 🌳⬇️🪳
+[00:43.45]todo se lo come la gallina 🐔😋
+[00:45.09]Gallina sucia, saltó el charco, 🐔💦
+[00:46.76]el abuelo la lavó 👴🫧
+[00:48.40]Uno, dos, tres... 🔢🎶
+[00:50.32]vamos a sumar... ➕✨
+[00:51.74]Mariposa voló a seis por hora, 🦋💨
+[00:54.09]la gallina a siete, 🐔⚡
+[00:55.64]más rápida, más rápida 🏎️🔥
+[00:57.60]Pásame la gallina, 👉🐔
+[00:59.34]pásame la gallina 👉🐔
+[01:01.18]Uno dos tres , 🔢🎧
+[01:03.20]vamos a sumar ➕🎶
+[01:04.42]Pásame la gallina, 👉🐔
+[01:05.82]pásame la gallina 👉🐔
+[01:07.08]Six seven, six seven, six seven... 🔢🇬🇧
+[01:15.77]Drift, drift, 🏎️💨
+[01:16.90]gallina drift 🐔🏎️
+[01:18.06]Mariquita en la boca, 🐞😮
+[01:19.38]uno dos tres 🔢✨
+[01:20.17]Cucaracha bajo las ruedas, 🪳🛞
+[01:21.53]el abuelo grita "¡frena!" 👴📢
+[01:23.41]Pero la gallina acelera, 🐔⚡
+[01:25.16]bass que retumba 🔊🎵
+[01:27.04]Patio oscuro, 🌑🏠
+[01:28.26]neumáticos chirrían 🛞😬
+[01:29.95]Pásame la gallina, 👉🐔
+[01:31.63]pásame la gallina 👉🐔
+[01:35.49]Six seven... six seven... 🔢🎶
+[01:36.66]Gallina a siete, nadie la para 🐔🚀
+[01:40.04]Drift phonk, 🎧🔥
+[01:41.78]gallinas sueltas 🐔🐔
+[01:43.05]Uno, dos, tres... 🔢✨
+[01:45.35]vamos a sumar... ➕🎶
+`;
+
+const niconico = `
+[00:00.00] 🪕🎶👦
+[00:02.13]🌞 Nico se levanta con ganas de sol,
+[00:04.81]💡❤️ tiene mil ideas dentro del corazón.
+[00:07.38]📚✨ Le gusta leer, imaginar sin parar,
+[00:09.87]🏃‍♂️💨 y cuando corre, parece que va a volar.
+[00:12.69]⚡ A veces su cuerpo quiere ir más deprisa,
+[00:15.66]👣🎤 sus pies no esperan, su voz se desliza.
+[00:18.19]🧠⏸️ Pero Nico aprende a parar un poquito,
+[00:23.35]🌬️😌 respira hondo, despacio, tranquilito.
+[00:26.41]💪 Nico, Nico, tú puedes hacerlo,
+[00:29.05]🛑🤔 parar, pensar y volverlo a intentar.
+[00:31.64]🤝 Nico, Nico, sabes compartir,
+[00:34.36]🗣️😊 hablar con amigos y volver a sonreír.
+[00:39.38]🎵 Oh oh oh,
+[00:42.61]🦁 Nico es valiente de verdad.
+[00:45.54]🎵 Oh oh oh,
+[00:47.77]🌱 Nico aprende cada día más.
+[00:53.20]🌳🧒 En el parque pregunta: “¿Cómo te llamas tú?”
+[00:56.20]🎲🤗 y empieza un juego que crece en común.
+[00:58.73]🤍⏳ Abraza suave, aprende a esperar,
+[01:01.54]🔁💪 y si algo no sale lo vuelve a intentar.
+[01:04.12]😠📢 Cuando se enfada y quiere gritar,
+[01:06.98]🧠💭 recuerda algo que sabe muy bien ya:
+[01:09.43]✋🤫 manos tranquilas, voz bajita,
+[01:12.05]🧘‍♂️💙 mi cuerpo se calma poquito a poquito.
+[01:17.62]💪 Nico, Nico, tú puedes hacerlo,
+[01:20.23]🛑🤔 parar, pensar y volverlo a intentar.
+[01:23.04]🤝 Nico, Nico, sabes compartir,
+[01:25.58]🗣️😊 hablar con amigos y volver a sonreír.
+[01:33.60]🌧️➡️🌈 Y si algún día algo sale mal,
+[01:39.05]👨‍👩‍👦❤️ papá y mamá están para abrazar.
+[01:44.03]⭐ Porque ser bueno no es ser perfecto,
+[01:47.22]📘😊 es aprender y seguir contento.
+[01:52.70]🚀 Nico, Nico, mira hasta dónde vas,
+[01:55.23]❤️🧠 con tu gran corazón y tu mente genial.
+[01:57.90]🌟 Nico, Nico, eres especial,
+[02:00.34]🌍✨ y el mundo contigo va a brillar.
+[02:05.40]🎶💫 Esta es la canción de Nico…
+[02:07.47]💪🌈 y Nico puede con todo.
+`;
+
+const cucaracha = `
+[00:00.00]En la cocina oscura brilla el miedo 🌌👀
+[00:05.52]La cucaracha corre sin control 🪳💨
+[00:10.80]Dados giran, trampas caen al suelo 🎲⚡
+[00:16.16]¡Intenta atraparla, es tu misión! 🪳✋
+[00:21.39]Se mete por los pasillos, rápido va 🏃‍♂️🪳
+[00:27.05]Huele las chuches, no parará 🍬👃
+[00:30.79]La cucaracha ¡HEY! La cucaracha ¡HEY! 🪳🗣️
+[00:34.38]Se come la comida y las chuches ¡HEY! 🍕🍬🪳
+[00:36.92]Tiene hambre ¡HEY! Tiene hambre ¡HEY! 🪳🍽️
+[00:39.78]Se escapa en nuestra cocina 🏃‍♂️🏠🪳
+[00:48.78]Lanza los dados, mueve el tenedor 🎲🍴
+[00:53.92]La muy ladina cambia de dirección 🪳🔄
+[00:58.97]Brilla en la oscuridad, no hay perdón 🌌⚡
+[01:04.45]¡Todos gritando es pura emoción! 😱🎉
+[01:10.07]Se desliza por el tablero, no se puede detener 🪳🎲
+[01:15.66]¡Pero esta vez la vamos a coger! ✋🪳
+[01:19.36]La cucaracha ¡HEY! La cucaracha ¡HEY! 🪳🗣️
+[01:23.09]Se come la comida y las chuches ¡HEY! 🍕🍬🪳
+[01:25.58]Tiene hambre ¡HEY!Tiene hambre ¡HEY! 🪳🍽️
+[01:28.41]Se escapa en nuestra cocina ¡HEY! 🏃‍♂️🏠🪳
+[01:33.08]¡Corre, corre, cucaracha veloz! 🏃‍♂️💨🪳
+[01:35.70]¡No te comas mi cena, no, no, no! 🚫🍽️🪳
+[01:42.18]¡HEY! ¡HEY! ¡HEY! ¡HEY! 🗣️🗣️🗣️🗣️
+[01:51.96]¡La cucaracha HEY! ¡La cucaracha HEY! 🪳🗣️
+[01:55.27]Se come la comida y las chuches ¡HEY! 🍕🍬🪳
+[01:57.95]Tiene hambre ¡HEY! Tiene hambre ¡HEY! 🪳🍽️
+[02:00.81]Se escapa en nuestra cocina ¡HEY! 🏃‍♂️🏠🪳
+[02:08.23]¡La cucaracha... HEY! 🪳🗣️
+[02:13.41]¡La cucaracha... HEY! 🪳🗣️
+[02:18.86]¡Se ha metido en el hueco... ¡HEY HEY HEY! 🪳😱
+`;
+
+const hermanito = `
+[00:00.00]🎸👶💙
+[00:04.72]Ya casi tengo seis años 🎂
+[00:06.74]y el mundo se pone loco 🌍🤯
+[00:10.10]Pero yo solo pienso en ti, 💭❤️
+[00:12.83]en tu llegada, en tu voz 👶🎶
+[00:15.70]Mamá está emocionada, 🤰✨
+[00:17.73]papá no para de reír 😂👨
+[00:21.07]Y yo aquí contando los días 📆
+[00:23.43]para poderte ver por fin 👀💖
+[00:26.81]¡No te preocupes 😊
+[00:29.26]si el mundo es un desastre! 🌍🌪️
+[00:32.09]Yo te voy a cuidar 🤗🛡️
+[00:34.80]no te voy a dejar caer 💪
+[00:37.73]¡Hey, hermanito! 👶💙
+[00:39.19]¡Te estoy esperando! ⏳❤️
+[00:40.56]Vas a nacer pronto 👣
+[00:41.83]y te quiero un montón 💞
+[00:43.14]Si eres niña, Micaela, 👧🌸
+[00:44.47]qué nombre más genial ✨
+[00:45.87]Si eres niño, 👦
+[00:46.71]igual te quiero, ❤️
+[00:47.84]¡da igual! 😄
+[00:48.93]¡Hey, hermanito! 👶🎵
+[00:49.59]¡Vamos a cantar juntos! 🎤🎶
+[00:51.57]Con gallinas, fútbol y puzzles en el piso 🐔⚽🧩
+[00:54.45]¡Te quiero tanto que no cabe en mi pecho! 💖💥
+[00:57.09]¡Sal ya, pequeño wirro, que el mundo es nuestro! 🌍🙌
+[01:04.85]Te voy a enseñar el juego 🎮
+[01:07.02]de la salchicha y el tenedor 🌭🍴
+[01:09.67]Y a las gallinas del abuelo 🐔👴
+[01:12.84]hay tres que son las mejores 🐔🐔🐔
+[01:16.10]Les damos comida juntos 🌽🤝
+[01:18.69]les tiramos el maíz 🌽
+[01:21.18]Y corremos por el patio 🏃‍♂️💨
+[01:23.73]¡qué risas vamos a tener! 😂🎉
+[01:26.99]¡No te pongas malito 🤒
+[01:29.67]ven con buena salud! 💪✨
+[01:32.45]Que la luz te pegue fuerte ☀️
+[01:35.01]¡que sea pura juventud! 🌱😄
+[01:38.26]¡Hey, hermanito! 👶💙
+[01:39.68]¡Te estoy esperando! ⏳❤️
+[01:40.95]Vas a nacer pronto 👣
+[01:42.18]y te quiero un montón 💞
+[01:43.45]Si eres niña, Micaela, 👧🌸
+[01:44.77]qué nombre más genial ✨
+[01:46.18]Si eres niño, igual te quiero ❤️
+[01:48.20]¡da igual! 😄
+[01:49.23]¡Hey, hermanito! ¡Vamos a cantar juntos! 🎶👶
+[01:51.78]Con gallinas, fútbol y puzzles en el piso 🐔⚽🧩
+[01:54.79]¡Te quiero tanto que no cabe en mi pecho! 💖💥
+[01:57.28]¡Sal ya, pequeño wirro 👶
+[01:58.87]que el mundo es nuestro! 🌍🙌
+[02:00.48]Mamá es la más cariñosa 🤱❤️
+[02:03.12]papá nos va a proteger 🛡️👨
+[02:05.90]Y yo soy el hermano mayor 🧒⭐
+[02:08.30]¡te voy a defender! 🥊💪
+[02:11.25]Cuando nazcas 👣
+[02:13.22]seremos un equipo imparable 🤝🔥
+[02:16.38]¡Contra el mundo entero, hermanito, invencible! 🌍💥
+[02:19.49]¡Hey, hermanito! 👶💙
+[02:21.06]¡Te estoy esperando! ⏳❤️
+[02:24.16]¡Te quiero un montón, 💞
+[02:25.94]un montón, 💞
+[02:27.30]un montón! 💞
+[02:30.27]Micaela o como sea, 🌸
+[02:32.47]¡vas a ser mi campeón! 🏆💛
+[02:35.43]¡Sal ya, 👶
+[02:36.93]sal ya, 👶
+[02:38.38]sal yaaaaaa! 🎉👣
+[02:41.54]¡Hey, hermanito! 👶💙
+[02:45.46]¡Te estoy esperando! ⏳❤️
+
+
+`;
+
+const Slitherbrk = `
+[00:00.00] 🎮✨
+[00:01.04]I logged in every night... 🌙💻
+[00:03.25]Solo una partida más... 🎮⏳
+[00:05.62]Pero ya estaban cenando... 🍽️👨‍👩‍👧
+[00:08.26]Y ni me di cuenta. 😶⏰
+[00:13.99]Veía bolitas de colores sin parar, 🔴🟡🟢🔵
+[00:16.99]quería ser la serpiente más larga del lugar. 🐍🏆
+[00:19.92]Papá decía: "¡vamos al parque a correr!" 👨🌳🏃
+[00:22.28]Mamá gritaba: "¡ven, la cena ya va a estar!" 👩🍽️❤️
+[00:25.05]Yo decía: "espera... solo crecer un poquito más" 🐍📈
+[00:29.76]Y la tarde se escapó... 🌇💨
+[00:32.82]como un boost que nunca vuelve. ⚡⌛
+[00:35.71]Growing bigger, getting faster 📈⚡
+[00:38.39]Eating every glowing light ✨🟢
+[00:40.86]Number one upon the leaderboard 🥇🏆
+[00:44.19]But everybody said goodnight. 🌙😴
+[00:46.83]Level 99 Slitherbreak! 🎮🔥
+[00:49.88]¡Llegaste hasta la serpiente gigante! 🐍👑
+[00:52.85]Level 99 Slitherbreak! 🎮⭐
+[00:55.61]Big snake, little memories 🐍💭
+[00:58.29]Todas las bolitas del mapa 🌍🔴🟡🟢
+[01:00.29]no compran otra tarde feliz. ❤️🌇
+[01:02.94]You got the crown... 👑✨
+[01:04.25]But missed the fun. 😔🎈
+[01:06.00]Porque nadie gana jugando solo. 🤝❤️
+[01:19.43]Mis amigos fueron a jugar al balón, ⚽👫
+[01:22.44]yo seguía dando vueltas por el montón. 🐍🔄
+[01:25.12]Encerré una serpiente, 🐍🎯
+[01:26.62]¡qué buena jugada! 🎉👏
+[01:28.01]Pero afuera había risas 😂🌳
+[01:29.44]que ya no escuchaba. 😔👂
+[01:31.11]Cada turbo era una emoción, ⚡💨
+[01:33.55]pero el mejor premio 🎁❤️
+[01:35.62]era jugar con los dos. 👨👩🤗
+[01:40.63]No checkpoints for playtime 🚫💾
+[01:43.68]No respawns for today ⏳❌
+[01:46.20]You can always start another match 🎮🔄
+[01:49.58]But this afternoon fades away. 🌇💨
+[01:52.81]Level 99 Slitherbreak! 🎮🔥
+[01:55.34]¡Llegaste hasta la serpiente gigante! 🐍👑
+[01:58.07]Level 99 Slitherbreak! 🎮⭐
+[02:00.63]Boost too much, slow real life ⚡🐢
+[02:03.36]Todo el mapa era mío... 🗺️👑
+[02:05.64]pero el sofá quedó vacío. 🛋️😔
+[02:08.24]You got first place... 🥇
+[02:09.91]But lost today. 💔📅
+[02:11.17]Papá y mamá ya apagaron la tablet. 👨👩📱🔒
+[02:14.84]¿Valió la pena? 🤔
+[02:16.62]Ser el más largo del servidor... 🐍🌐
+[02:19.19]¿Valió la pena? 💭
+[02:20.70]Por una corona que dura un segundo... 👑⏱️
+[02:24.45]Ahora miro la pantalla... 📺👀
+[02:27.58]Y escucho las bicis pasar. 🚲🍃
+[02:32.01]No more "one more game" 🚫🎮
+[02:34.37]No more missing out ❤️✨
+[02:39.65]La mejor partida... 🏆😊
+[02:41.97]siempre estaba afuera. 🌳☀️
+[02:44.65]Level 99 Slitherbreak! 🎮🔥
+[02:47.05]¡La serpiente más grande del mapa! 🐍🌍
+[02:50.03]Pero te perdiste abrazos, 🤗💔
+[02:52.79]risas y aventuras. 😂🗺️✨
+[02:55.47]Level 99 Slitherbreak! 🎮⭐
+[02:58.07]No hay skin secreta, 🎨❌
+[03:00.80]no hay récord mundial 🌍🏆
+[03:03.36]que gane una tarde con mamá. 👩❤️🌇
+[03:06.78]You got the crown... 👑
+[03:09.52]Come back around! 🔄❤️
+[03:11.96]Level 99 Slitherbreak! 🎮✨
+[03:14.41]¡Las mejores bolitas... 🔴🟡🟢
+[03:16.68]son los momentos de verdad! ❤️✨
+[03:24.94]Game over... 🎮💤
+[03:27.58]See you outside. 🌳☀️
+[03:32.52]One more hug... 🤗❤️
+[03:33.65]Before one more game. 🎮⏳
+`;
+
+const sosa = `
+[00:00.00]Pa-Pa-Pa-Pa- 🥁
+[00:00.80]Pi-Pi-Pi-Pi- 🎶
+[00:01.51]PASAME LA SOSA 🦦
+[00:03.30]-MELA SOSA 🦦
+[00:04.50]PASAME LA SOSA 🦦✨
+[00:06.20]PASAME LA 👉
+[00:06.86]PASAME LA 👉
+[00:07.75]LA SOSA 🦦💨
+[00:09.05](Sonidos insanos) 🤪🔊
+[00:15.05]Me llamo Nicolás soy un crack en el balón ⚽😎
+[00:18.24]Pateo el fútbol todo el día en la cancha 🏃‍♂️⚽
+[00:20.97]Con mis Numberblocks armo torres altas 🔢🏗️
+[00:23.64]Uno dos tres ¡vamos a sumar! ➕🎉
+[00:27.04]Juego el juego de la salchicha en el teléfono 📱🌭
+[00:29.96]Pincho la salchicha con el tenedor 🍴🌭
+[00:32.50]¡No se escape! ¡Puntaje máximo! 🏆😆
+[00:35.49]Mi abuelo tiene tres gallinas en su terreno 👴🐔🐔🐔
+[00:37.96]¡Cocorocó! 🐔🔊
+[00:40.75]Les doy de comer 🌽
+[00:42.21]En la playa corro con mi Pikachero 🏖️🏃‍♂️⚡
+[00:44.94]Salto olas veo medusas brillar 🌊✨🪼
+[00:47.83]Flamencos rosados bailan por ahí 🦩💃
+[00:51.00]Y los Awawas gritan 🗣️
+[00:52.47]¡awawaawawaawa! 😝🎶
+[00:54.08]Pásame la sosa, pásame la sosa 🦦👉
+[00:57.06]Pásame la sosa, pásame la sosa(x5) 🦦🔁
+[01:20.97]Con Pikachero juego todas las tardes ⚡🧸
+[01:23.60]Mi peluche amarillo el mejor amigo 💛🤗
+[01:26.71]Aventuras locas él lanza rayos ⚡💥
+[01:30.02]¡Pika pika! ⚡🐭
+[01:31.39]Somos invencibles 💪✨
+[01:32.99]Las gallinas del abuelo ponen huevos fresquitos 🥚🐔
+[01:35.91]Tres gallinitas las quiero un montón ❤️🐔🐔🐔
+[01:39.35]En la arena veo flamencos volar 🦩🏖️
+[01:42.23]Medusas flotan como globos del mar 🪼🎈
+[01:45.14]Awawas saltando qué lindos son 🐶💫
+[01:47.93]¡Awawaawawa! 😆
+[01:49.44]Todo es diversión 🎉😄
+[01:50.99]Pásame la sosa, pásame la sosa 🦦👉
+[01:54.47]Pásame la sosa, pásame la sosa(x5) 🦦🔁
+[02:06.27]Aaaaaaah!!! 😱
+[02:07.73]¡Nicolás en la cancha! ⚽🔥
+[02:10.80]¡Gol gol gol! 🥅🎉
+[02:12.79]Juego de la salchicha 🌭🎮
+[02:14.44]Pikachero gallinas ⚡🐔
+[02:16.32]¡vamos todos! 🙌😄
+[02:28.68]Pásame la sosita 🦦💖
+[02:30.05]¡yeah! 🤘😎
+`;
+
+const velocidad = `
+[00:00.00]🎸🏃🎸
+[00:07.95]Desde la primera vez que te tuve en mis brazos, 🤱💞
+[00:14.83]supe que el mundo podía parar. 🌍⏸️
+[00:21.55]Cada momento contigo es especial, ✨👶
+[00:28.36]como un secreto que no quiero contar. 🤫❤️
+[00:34.75]Tu primera palabra fue “ama”, 🗣️💖
+[00:37.96]y desde entonces lo entendí, 💡
+[00:41.16]se convirtió en mi palabra favorita, ⭐
+[00:43.99]porque ahí empezó todo para mí. 🌱
+[00:49.88]Dicen cosas sin saber, 🗯️🙄
+[00:53.97]pero escúchame bien: 👂
+[00:57.60]Eres un niño bueno, 😊🧒
+[00:59.44]no hagas caso a quien diga lo contrario. 🚫👂
+[01:05.25]Si te equivocas o te portas mal, 🤷‍♂️
+[01:08.12]juntos lo arreglamos, paso a paso. 🤝👣
+[01:12.75]Corramos juntos a máxima velocidad, 🏃‍♂️💨
+[01:16.34]sé que un día no te podré alcanzar. ⏳
+[01:19.83]Pero mientras pueda voy a estar, ❤️
+[01:23.05]siempre detrás, siempre cerca, siempre igual. 👣💞
+[01:28.71]Juguemos al fútbol hasta que anochezca, ⚽🌙
+[01:35.37]quiero verte reír sin pensar. 😂💫
+[01:41.84]Que seas campeón si eso te hace feliz, 🏆😊
+[01:48.07]o que pierdas y vuelvas a intentar. 💪🔁
+[01:55.09]Disfruta la vida con tus amigos, 👫🎉
+[01:58.46]que el tiempo no vuelve atrás. ⏰➡️❌
+[02:01.66]Y si alguna vez te sientes perdido, 🌫️
+[02:04.96]recuerda quién eres y dónde estás. 🧭
+[02:09.72]Eres más fuerte de lo que crees, 💪✨
+[02:13.30]y mucho más de lo que ves. 👀
+[02:17.73]Eres un niño bueno, 😊🧒
+[02:19.61]no hagas caso a quien diga lo contrario. 🚫👂
+[02:25.40]Si te equivocas o te portas mal, 🤷‍♂️
+[02:28.19]juntos lo arreglamos, no hay escenario. 🤝
+[02:32.96]Corramos juntos a máxima velocidad, 🏃‍♂️💨
+[02:36.64]sé que un día no te podré alcanzar. ⏳
+[02:40.03]Pero mientras pueda voy a estar, ❤️
+[02:43.20]siempre detrás, siempre cerca, siempre igual. 👣💞
+[02:46.82]Eres muy inteligente, como papá, 🧠👨
+[02:50.06]y eso no es lo más importante. ⭐
+[02:53.34]Lo mejor es tu forma de mirar, 👀💖
+[02:56.73]y cómo haces grande cada instante. ✨⏳
+[03:03.67]Corramos juntos a máxima velocidad, 🏃‍♂️💨
+[03:07.34]aunque el tiempo nos quiera cambiar. ⏳🔄
+[03:10.84]Yo te voy a querer igual, ❤️
+[03:13.48]aunque crezcas, aunque vueles, aunque te vayas. 🕊️🌱
+[03:19.33]Eres lo mejor que he hecho en mi vida, 🌟❤️
+[03:24.52]te quiero, Nicolás 💙
+`;
+const gallina= `
+[00:00.00]🎵🎸🎵
+[00:14.36]En el corral de mi abuelo 🐓👴
+[00:18.42]había una gallina marrón 🟤🐔
+[00:21.54]me picoteaba los dedos 👆🐔
+[00:25.17]cuando le echaba el arroz 🍚
+[00:28.61]corríamos por el terreno 🌾🏃‍♂️
+[00:32.20]Y yo la perseguía 😄
+[00:35.78]Se sentaba en mis piernas 🦵
+[00:37.91]Posando pa fotografías 📸
+[00:42.61]Pero hoy tengo hambre 😋
+[00:45.49]y el domingo ya llegó 📅
+[00:49.06]la sartén está caliente 🍳🔥
+[00:52.41]y el aceite ya humeó 💨
+[00:56.79]Voy a cocinar una gallina 🍗
+[01:00.61](a cocinar una gallina ) 🍗
+[01:04.21]pero que no la conozca 🙈
+[01:06.41]que no haya visto sus ojos de pájaro 👀🐦
+[01:10.85]que no haya jugado con ella 🎲
+[01:14.93]por el campo en verano ☀️🌾
+[01:18.23]voy a cocinar una gallina 🍗
+[01:22.15]¡Pero que no la conozca! 😬
+[01:25.64]Que venga del supermercado 🛒
+[01:29.03]en bandejita bien fría 🧊
+[01:32.41]sin nombre ni historia 📦
+[01:33.88]sin plumas 🪶❌
+[01:35.81]Sin días ⏳
+[01:36.65]Pasados conmigooo 🎶
+[01:39.62]así no me da pena 😌
+[01:43.47]cuando le echo limón 🍋
+[01:47.00]y la meto en el horno 🔥
+[01:49.69]con patatas alrededor 🥔
+[01:53.64]Porque si la conozco 🤍
+[01:56.42]me acuerdo de sus cacareos 🐔🎵
+[02:00.42]y me entra remordimiento 😔
+[02:03.84]mientras corto los ajos enteros 🧄🔪
+[02:08.01]Voy a cocinar una gallina 🍗
+[02:11.78]a cocinar una gallina 🍗
+[02:15.40]pero que no la conozca 🙈
+[02:17.43]que no haya visto sus ojos de pájaro 👀🐦
+[02:22.13]que no haya jugado con ella 🎲
+[02:26.04]por el campo en verano ☀️🌾
+[02:29.19]voy a cocinar una gallina 🍗
+[02:33.00]¡Pero que no la conozca! 😖
+[02:37.10]¡Ay, culpa carnívora! 😅🥩
+[02:40.25]¡Ay, dilema del domingo! 🤯📅
+[02:43.82]Quiero mi pollo asado 🍗🔥
+[02:46.17]pero sin cargo de conciencia 😇
+[02:50.74]Voy a cocinar una gallina 🍗
+[02:54.41]a cocinar una gallina 🍗
+[02:58.00]pero que no la conozca 🙈
+[03:00.16]que no haya visto sus ojos de pájaro 👀🐦
+[03:04.76]que no me haya mirado 😳
+[03:08.00]como diciendo "no, hermano" 🙅‍♂️
+[03:11.95]voy a cocinar una gallina 🍗
+[03:15.77]¡Pero que no la conozca! 😭
+[03:22.57]Que no la conozca porfavooooor 🙏
+[03:32.29]¡Ole ese pollo asado! 🎉🍗
+[03:33.75]¡Que aproveche! 😄🍽️
+`;
+
+const countries = `
+[00:00.00]Estados Unidos 🇺🇸, Canadá 🇨🇦, México 🇲🇽, Panamá 🇵🇦, Haití 🇭🇹,
+[00:02.67]Jamaica 🇯🇲, Perú 🇵🇪;
+[00:05.11]República Dominicana 🇩🇴, Cuba 🇨🇺, Caribe 🏝️️, Groenlandia 🇬🇱,
+[00:07.23]El Salvador 🇸🇻,
+[00:08.69]¡yo!
+[00:09.86]Puerto Rico 🇵🇷, Colombia 🇨🇴, Venezuela 🇻🇪, Honduras 🇭🇳,
+[00:12.20]Guyana 🇬🇾, oh sí;
+[00:14.40]Guatemala 🇬🇹, Bolivia 🇧🇴, luego Argentina 🇦🇷,
+[00:16.83]y Ecuador 🇪🇨, Chile 🇨🇱, Brasil 🇧🇷.
+[00:19.08]Costa Rica 🇨🇷, Belice 🇧🇿, Nicaragua 🇳🇮,
+[00:21.14]Bermudas 🇧🇲, Bahamas 🇧🇸, Tobago 🇹🇹, San Juan 🏝️;
+[00:23.19]Paraguay 🇵🇾, Uruguay 🇺🇾, Surinam 🇸🇷
+[00:25.02]y Guayana Francesa 🇬🇫, Barbados 🇧🇧 y Guam 🇬🇺
+[00:28.50]Noruega 🇳🇴 y Suecia 🇸🇪 e Islandia 🇮🇸 y Finlandia 🇫🇮
+[00:30.51]Y Alemania 🇩🇪 está lista;
+[00:32.76]Suiza 🇨🇭, Austria 🇦🇹, Checoslovaquia 🇨🇿🇸🇰,
+[00:34.59]Italia 🇮🇹, Turquía 🇹🇷 y Grecia 🇬🇷
+[00:38.01]Polonia 🇵🇱, Rumanía 🇷🇴, Escocia 🏴󠁧󠁢󠁳󠁣󠁴󠁿, Albania 🇦🇱,
+[00:39.55]Irlanda 🇮🇪, Rusia 🇷🇺, Omán 🇴🇲;
+[00:42.92]Bulgaria 🇧🇬, Arabia Saudí 🇸🇦, Hungría 🇭🇺,
+[00:45.28]Chipre 🇨🇾, Irak 🇮🇶 e Irán 🇮🇷
+[00:47.48]Siria 🇸🇾, Líbano 🇱🇧, Israel 🇮🇱, Jordania 🇯🇴,
+[00:49.54]ambos Yemén 🇾🇪, Kuwait 🇰🇼 y Baréin 🇧🇭;
+[00:52.25]Países Bajos 🇳🇱, Luxemburgo 🇱🇺,
+[00:53.51]Bélgica 🇧🇪 y Portugal 🇵🇹,
+[00:54.50]Francia 🇫🇷, Inglaterra 🇬🇧󠁧󠁢󠁥󠁮󠁧󠁿, Dinamarca 🇩🇰
+[00:55.82]y España 🇪🇸
+[00:57.22]India 🇮🇳, Pakistán 🇵🇰, Birmania 🇲🇲, Afganistán 🇦🇫,
+[00:59.32]Tailandia 🇹🇭, Nepal 🇳🇵 y Bután 🇧🇹;
+[01:01.66]Kampuchea 🇰🇭, Malasia 🇲🇾, Bangladesh 🇧🇩,
+[01:03.63]Asia 🌏, China 🇨🇳, Corea 🇰🇵🇰🇷, Japón 🇯🇵
+[01:06.40]Mongolia 🇲🇳, Laos 🇱🇦 y Tíbet 🏳️, Indonesia 🇮🇩,
+[01:09.08]las islas Filipinas 🇵🇭, Taiwán 🇹🇼;
+[01:11.13]Sri Lanka 🇱🇰, Nueva Guinea 🇬🇳️, Sumatra 🏳️,
+[01:13.61]Nueva Zelanda 🇳🇿, luego Borneo 🏳️ y Vietnam 🇻🇳
+[01:16.06]Túnez 🇹🇳, Marruecos 🇲🇦, Uganda 🇺🇬, Angola 🇦🇴,
+[01:18.36]Zimbabue 🇿🇼, Yibuti 🇩🇯, Botsuana 🇧🇼;
+[01:20.61]Mozambique 🇲🇿, Zambia 🇿🇲, Suazilandia 🇸🇿, Gambia 🇬🇲,
+[01:22.95]Guinea 🇬🇳, Argelia 🇩🇿, Ghana 🇬🇭
+[01:25.62]Burundi 🇧🇮, Lesoto 🇱🇸 y Malaui 🇲🇼, Togo 🇹🇬,
+[01:27.83]el Sáhara Español 🏳️ no, ha terminado;
+[01:30.26]Níger 🇳🇪, Nigeria 🇳🇬,
+[01:31.53]Chad 🇹🇩 y Liberia 🇱🇷,
+[01:32.60]Egipto 🇪🇬, Benín 🇧🇯 y Gabón 🇬🇦
+[01:34.80]Tanzania 🇹🇿, Somalia 🇸🇴, Kenia 🇰🇪 y Malí 🇲🇱,
+[01:37.10]Sierra Leona 🇸🇱 y Argel 🏳️;
+[01:39.39]Dahomey 🐘, Namibia 🇳🇦, Senegal 🇸🇳, Libia 🇱🇾,
+[01:41.88]Camerún 🇨🇲, Congo 🇨🇬, Zaire 🏳️
+[01:44.23]Etiopía 🇪🇹, Guinea-Bissau 🇬🇼,
+[01:46.15]Madagascar 🇲🇬, Ruanda 🇷🇼, Maore 🇾🇹 y Caimán 🇰🇾;
+[01:48.92]Hong Kong 🇭🇰, Abu Dabi 🇦🇪, Catar 🇶🇦,
+[01:51.16]Yugoslavia 🧩...
+[01:53.88]Creta 🇬🇷️, Mauritania 🇲🇷,
+[01:58.62]luego Transilvania 🦇️...
+[02:03.04]Mónaco 🇲🇨,
+[02:04.21]Liechtenstein 🇱🇮,
+[02:05.52]Malta 🇲🇹 y Palestina 🇵🇸,
+[02:07.40]Fiyi 🇫🇯,
+[02:08.24]Australia 🇦🇺,
+[02:09.93]Sudán 🇸🇩
+`;
+
+const iguanacaos = `
+[00:00.00] 🦎🔥
+[00:06.74]Nada tiene sentido… 🌌❓
+[00:12.60]uh ohhh... 🎤🌑
+[00:17.12]y aun así seguimos bailando sobre el fuego. 💃🔥
+[00:23.22]El ruido me nombra, me llama por dentro, 🔊🫀
+[00:26.08]ciudades en ruinas rezando al cemento. 🏚️🪨
+[00:28.64]La fe se oxida, los dioses se fueron, ⚙️⛪
+[00:31.29]quedó la pregunta flotando en el pecho. ❓❤️
+[00:33.86]Relojes rotos marcando el ahora, 🕰️💥
+[00:36.51]promesas vacías vendidas por horas. 📜⏳
+[00:39.16]Si todo se cae, si nada perdura, 🌪️🧱
+[00:41.72]¿por qué esta rabia se siente tan pura? 😡✨
+[00:44.48]Lengua de hierro, saliva de alquitrán, ⚙️🖤
+[00:46.85]escupo verdades que nadie quiere escuchar. 🗣️⚡
+[00:49.81]No hay plan maestro, no hay final feliz, 🚫📖
+[00:52.66]solo el pulso del caos diciendo “seguí”. 🌪️❤️‍🔥
+[00:57.22]Miro al abismo, me guiña un ojo, 🌌👁️
+[01:00.23]dice “todo arde, pero arde hermoso”. 🔥🌹
+[01:02.59]Si no hay sentido, no hay nada que perder, 🎭🚫
+[01:05.64]solo este grito que quiere nacer. 📣🔥
+[01:09.22]Iguana del caos, trepando el dolor 🦎⛰️
+[01:11.87]Se ríe del orden, se come el control 😂⛓️
+[01:14.27]Iguana del caos, rey del desliz 👑🦎
+[01:16.96]Si nada tiene sentido… somos libres aquí 🕊️🌪️
+[01:19.76]Iguana del caos, fuego y metal 🔥⚙️
+[01:22.57]Baila en las ruinas del bien y del mal 💃🏚️
+[01:24.98]Iguana del caos, mírame bien 👁️🦎
+[01:27.74]Del fin de todo… nace el porqué 🌑✨
+[01:33.76]Crecí entre discursos que suenan a eco, 🗣️🔁
+[01:36.28]“todo va a ir bien” escrito en hueco. 📝🕳️
+[01:38.81]Pantallas brillando, mentes en pausa, 📱⏸️
+[01:41.50]opiniones prestadas, rabia enjaulada. 🧠🔒
+[01:44.14]Me dijeron “cree”, me dijeron “calla”, 🤫📢
+[01:46.51]pero el caos susurra cuando todo falla. 🌪️🖤
+[01:49.07]No hay blanco y negro, solo interferencia. ⚫📡
+[01:51.96]la duda afilada es mi resistencia. ❓🗡️
+[01:54.65]Si el mundo es un chiste sin remate final, 🌍🎭
+[01:56.93]me río con dientes, lo vuelvo brutal. 😁⚡
+[01:59.53]No busco respuestas, busco verdad: 🔍✨
+[02:02.22]que el caos no miente, solo es real. 🌪️
+[02:05.88]Caer… ⬇️
+[02:08.28]para sentir el suelo. 🌍👣
+[02:13.67]Arder… 🔥
+[02:18.89]para saber que estoy vivo. ❤️‍🔥🫀
+[02:24.05]Iguana del caos, rompe el cristal 🦎💥
+[02:27.93]No hay mandamientos, no hay señal 🚫📜
+[02:30.58]Iguana del caos, veneno y luz ☠️✨
+[02:32.99]Beso del abismo, impulso brutal 🌌💋
+[02:35.68]Iguana del caos, piel de razón 🦎🧠
+[02:38.30]Muerde el sentido, escupe ilusión 🦷💭
+[02:41.06]Iguana del caos, suéltate ya 🔓🦎
+[02:43.51]Si nada importa… todo es real 🌌
+[02:50.64]todo es real ✨
+[03:03.50]No es el fin del mundo… 🌍❌
+[03:06.40]es el fin de las mentiras. 🎭💥
+[03:10.37]En el caos no hay respuestas, 🌪️❓
+[03:12.00]pero al menos… no hay jaulas. 🕊️🔓
+[03:14.00] ⠀⠀
+[03:14.80]🥁 
+[03:15.80]Iguana del caos 🦎🔥
+[03:20.00] ⠀⠀
+[03:26.00]Iguana del caos 🦎🔥
+[03:32 .00]⠀⠀⠀⠀
+`;
+
+const amjirf = `
+[00:00.00] 🦒✨
+[00:03.17]Mi amiga jirafa vive en Ecuador, 🦒🇪🇨
+[00:06.67]saluda a las nubes cuando sale el sol. ☁️☀️👋
+[00:09.89]Tiene cien gallinas en un gran corral, 🐔🏡
+[00:13.35]y todas la siguen cuando va a pasear. 🚶🦒🐔
+[00:17.77]Una gallinita puso un huevo ayer, 🐔🥚
+[00:21.18]dentro había un pollito que quería correr. 🐥🏃
+[00:24.26]Caminó y caminó sin mirar atrás, 🚶➡️
+[00:27.36]¡a cien kilómetros por hora nada más! 💨⚡
+[00:31.43]Mi amiga jirafa, qué genial que está, 🦒😄
+[00:34.60]con su pelo azul no la puedes olvidar. 💙✨
+[00:37.89]Dice: "¡Wey, qué bueno!", con felicidad, 😄🎉
+[00:40.90]y si empieza a andar, nadie la alcanzará. 💨🏃
+[00:45.17]Tiene una casita junto a un girasol, 🏡🌻
+[00:51.87]y un cabello largo de extraño color. 💙🌈
+[00:54.97]Cuando está contenta se pone a cantar, 🎤🎶
+[00:58.31]y las cien gallinas la vienen a escuchar. 🐔🎵
+[01:01.51]De repente un día se puso a acelerar, 🚀💨
+[01:04.26]cien mil kilómetros por hora al caminar. ⚡👣
+[01:08.12]Las nubes se reían al verla pasar, ☁️😂
+[01:11.62]y hasta las estrellas la fueron a saludar. ⭐👋
+[01:18.21]Mi amiga jirafa, qué genial que está, 🦒❤️
+[01:21.09]con su pelo azul no la puedes olvidar. 💙✨
+[01:24.46]Dice: "¡Wey, qué bueno!", con felicidad, 😄🎉
+[01:27.59]y si empieza a andar, nadie la alcanzará. 💨🏃
+[01:33.53]Mi amiga jirafa, mi amiga de verdad, 🦒🤝
+[01:37.16]aunque sea imaginaria la quiero igual. 💖✨
+[01:40.69]Desde Ecuador viene para jugar, 🇪🇨🎈
+[01:43.45]¡y con sus cien gallinas nos vamos a bailar! 🐔💃🎉
+[01:49.30]Mi amiga jirafa... 🦒💕
+[01:52.19]mi amiga jirafa... 🦒✨
+[01:55.36]¡qué divertida es! 😄🎊
+`;
+
+const mamacuento = `
+[00:00.00]📖✨
+[00:02.89]Mamá, cuéntame un cuento una vez más, 👩❤️📚
+[00:07.48]de esos que me hacen soñar. 🌙💭
+[00:10.12]Cuando la luna empieza a brillar, 🌙✨
+[00:13.18]quiero escuchar y viajar. 👂🧳
+[00:15.78]Cuéntame de Pigy otra vez, 🐷📖
+[00:17.74]dime qué le pasó después. 🤔➡️
+[00:22.50]Y de la pata Paca al saltar, 🦆💦
+[00:25.02]que en un charco de barro fue a parar. 🟤😂
+[00:27.43]Y aunque los conozca de memoria, 🧠📚
+[00:32.24]siempre quiero oír la historia. 👂✨
+[00:35.00]Porque cuando tú la cuentas, 🥰📖
+[00:38.50]todo tiene magia nueva. ✨🪄
+[00:42.25]Mamá, cuéntame un cuento, 👩❤️📚
+[00:45.84]llévame con el viento. 🌬️🍃
+[00:48.97]A lugares de imaginación, 🌈🏰
+[00:52.24]donde vive la ilusión. ✨💖
+[00:55.41]Mamá, cuéntame un cuento, 👩📖
+[00:58.39]guárdame este momento. 🤗❤️
+[01:01.69]Que tu voz es mi canción, 🎶💕
+[01:05.20]y mi mejor diversión. 😄🎉
+[01:19.59]Cuéntame del huevo que se rompió, 🥚💥
+[01:22.92]y del primero que salió. 🐣🌟
+[01:25.53]De las chumbalas bailando al sol, 💃☀️
+[01:28.45]cantando juntas una canción. 🎵🎤
+[01:32.15]Y del jefe que al mirar, 👀👑
+[01:35.21]su ojo amarillo vio brillar. 🟡✨
+[01:38.22]Como una estrella en la oscuridad, ⭐🌌
+[01:41.44]llenando todo de curiosidad. 🤩💫
+[01:45.02]Y aunque los conozca de memoria, 🧠📚
+[01:47.00]uhohoho
+[01:47.42]siempre quiero oír la historia. 👂❤️
+[01:51.46]Porque cuando tú la cuentas, 📖🥰
+[01:54.83]todo tiene magia nueva. 🪄✨
+[01:59.03]Mamá, cuéntame un cuento, 👩📚
+[02:02.03]llévame con el viento. 🌬️🍃
+[02:05.13]A lugares de imaginación, 🌈🏰
+[02:08.35]donde vive la ilusión. ✨💖
+[02:11.53]Mamá, cuéntame un cuento, 👩❤️📖
+[02:14.78]guardá este momento. 🤗💞
+[02:18.00]Que tu voz es mi canción, 🎶❤️
+[02:21.41]y mi mejor diversión. 😄🎈
+[02:26.41]Cuéntame del mono Mugan, 🐵📖
+[02:28.94]que a la piscina no quiere saltar. 🏊🙈
+[02:31.96]Y de Moris diciendo sin parar: 🗣️😄
+[02:34.89]"¡Es mío, mío, mío y nada más!" 🙋💎
+[02:38.56]Del ratoncito buscando un tesoro, 🐭🪙
+[02:41.66]de un calcetín colgado de oro. 🧦✨
+[02:44.96]Y de Aisha cuando al despertar, 😴🌅
+[02:48.14]su peluche no pudo encontrar. 🧸😢
+[02:52.57]Ohohoh... 🎶💫
+[02:55.22]Sigue contando una más. 📖➕
+[02:58.23]Ohohoh... 🎵✨
+[03:00.97]No quiero que termine jamás. 🥹❤️
+[03:05.70]Mamá, cuéntame un cuento, 👩📚
+[03:09.61]llévame con el viento. 🌬️🍃
+[03:12.86]A lugares de imaginación, 🌈🏰
+[03:16.08]donde vive la ilusión. ✨💖
+[03:19.00]Mamá, cuéntame un cuento, 👩❤️📖
+[03:22.43]Vuelvé este momento. 🤗💞
+[03:25.52]Que tu voz es mi canción, 🎶💕
+[03:29.11]y mi mejor diversión. 😄🎠
+[03:32.44]Mamá, cuéntame un cuento más... 📚💖
+[03:38.58]solo uno más... ☝️🥹
+[03:41.79]antes de soñar. 🌙😴✨
+`;
+
+const drkld = `
+[00:00.00]Luces rotas en Nólun, caos total 💥🏙️
+[00:05.22]Nos atacan desde el cielo, todo va a estallar ☄️⚔️
+[00:10.47]No pude salvarlos, todo desapareció 😔💨
+[00:15.58]El genio oscuro ríe… but I’m ready to go 😈🔥
+[00:24.87]Mazmorras cambian cada vez 🏰🔄
+[00:27.78]Nada es fijo bajo mis pies 🌀👣
+[00:30.76]Agua escasa, error mortal 💧⚠️
+[00:32.88]Si no piensas rápido, te va a castigar 🧠⏳
+[00:35.99]Cofres cerrados, ¿qué habrá hoy? 📦❓
+[00:37.75]¿Una gema o provisión? 💎🎒
+[00:39.02]Cada arma quiere crecer ⚔️📈
+[00:41.60]Si se rompe… I start again 💔🔄
+[00:44.14]No rules, no map, no safety net 🚫🗺️
+[00:47.08]Every floor is a fucking bet 🎲⚠️
+[00:49.94]I build my strength with what I find 💪🔍
+[00:52.59]No second chances, cross the line 🚷🔥
+[00:55.10]Dark Cloud! Go! Go! Go! ⚔️☁️
+[00:57.88]Bajo al dungeon, let it blow 🏰💥
+[01:00.30]Dark Cloud! No fear, no doubt 😤🛡️
+[01:03.16]If I fall today — I’m back around 🔄🔥
+[01:06.02]Dark Cloud! Hey! Hey! Hey! ⚔️🎮
+[01:08.92]Cada piso wants me dead ☠️⬇️
+[01:11.50]Swing my blade, stand my ground ⚔️🛡️
+[01:14.20]This is real — this is DARK CLOUD! 🌩️👑
+[01:22.63]Espadas chocan, no hay paz ⚔️💥
+[01:25.41]Bestias esperan, las debes tumbar 👹⚔️
+[01:28.19]Dicen que hay tesoros al final 💰✨
+[01:30.81]Un paso en falso y no lo contarás ⚠️☠️
+[01:33.59]Ruby, Osmond, Xiao cubren atrás 🧙🏹🤖
+[01:36.32]Goro y Ungaga abren el path 🪓🦁
+[01:39.06]Poción directa, veins on fire 🧪🔥
+[01:41.65]Buff de daño — boss annihilated 💥👹
+[01:44.68]No mercy coded in this game 🚫❤️
+[01:47.50]Every mistake becomes your name ⚠️🪦
+[01:50.40]Adapt, evolve or fade away 🧬⬆️
+[01:53.06]Survive the night, descend again 🌙⬇️
+[01:55.75]Dark Cloud! Go! Go! Go! ⚔️☁️
+[01:58.13]Bajo al dungeon, let it blow 🏰💥
+[02:00.66]Dark Cloud! No fear, no doubt 😤🛡️
+[02:03.53]If I fall today — I’m back around 🔄🔥
+[02:06.68]Dark Cloud! Hey! Hey! Hey! ⚔️🎮
+[02:09.18]Cada piso wants me dead ☠️⬇️
+[02:11.88]Swing my blade, stand my ground ⚔️🛡️
+[02:14.46]This is real — this is DARK CLOUD! 🌩️👑
+[02:17.82]Armas vivas, ready to mutate ⚔️🧬
+[02:20.51]Elegir mal can seal your fate ❌☠️
+[02:23.17]Cristales brillan, decisión brutal 💎✨
+[02:25.95]More attack… or survive one more level down? ⚔️❓
+[02:28.70]No hay piedad, no forgiveness 🚫💀
+[02:31.25]Este juego smells weakness 👃⚠️
+[02:34.24]No gods, no save, no reset 🚫💾
+[02:36.57]Just your build — and what’s left ⚒️🧩
+[02:44.60]One more floor ⬇️🏰
+[02:48.60]Just one more floor ⬇️🔥
+[02:50.97]Weapon shaking, heartbeat loud ⚔️❤️
+[02:53.64]If I stop now — the dungeon wins 😤🏰
+[02:57.36]Dark Cloud! Go! Go! Go! ⚔️☁️
+[03:01.71]Cien plantas, here I go 💯⬇️
+[03:04.13]Dark Cloud! No bend, no break 💪⚔️
+[03:06.79]Demon Shaft — feel the quake 😈🌋
+[03:09.73]Dark Cloud! I’m the threat 😎🔥
+[03:12.35]Cada paso fue my bet 👣🎲
+[03:15.21]No fue suerte, fue evolución 🧬🏆
+[03:17.78]Every scar = domination 🩸👑
+[03:28.50]Rompe Estrellas maxeado, shining bright ⭐⚔️
+[03:31.36]No one can face me in this fight 💪👹
+[03:33.86]Cien plantas del Demon Shaft 💯🏰
+[03:36.80]The chaos fell — I’m still alive at last 🎉🔥
+`;
+
+const b93 = `
+[00:00.00]🎸🤘🎸
+[00:10.11]Born in '93, Madrid summer heat ☀️🔥
+[00:12.66]Running wild in the barrio, no shoes on my feet 🏃‍♂️👣
+[00:15.72]Plaza de España lights, kicking cans with the crew 💡🥫👯‍♂️
+[00:18.27]Dragon Ball on TV, Goku screaming "Kamehameha!" too 🐉📺💥
+[00:21.28]Tamagotchi beeping in my pocket all day 📟🔔
+[00:23.73]Pokémon cards trading, Pikachu's the way ⚡🃏
+[00:25.94]After school at the parque, churros from the churrería 🌳🍩
+[00:28.86]Life was simple, man, no drama, no fear, yeah 😌✨
+[00:31.82]Dial-up tone at night, waiting for the screen to load 💻📞
+[00:36.81]MSN messenger, "wanna play?" on the old code 💬🖱️
+[00:42.29]Mamá yelling "¡A cenar!" while I hide under the sheets 🍽️🛏️
+[00:47.61]Dreaming of the future, but it's all just beats 🎶💭
+[00:52.90]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
+[00:58.46]From Sailor Moon to La Oreja de Van Gogh on repeat 🌙🎧
+[01:03.70]We had it all, the good times, the dumb fights 😂🤜🤛
+[01:06.59]Now we're grown, but damn, we miss those nights 😢🌙
+[01:09.46]The kids aren't alright? Nah, we were alright back then 😎⏳
+[01:14.24]'93 kid, Madrid heart, let's do it again! 💃🕺
+[01:22.32]Gran Vía posters, Hombres G on the radio blast 🎶📻
+[01:24.88]Friends with the Nokia 3310, Snake game master class 📱🐍
+[01:27.84]Saturday mornings, "Los Simpsons" dubbed in Spanish 📺😂
+[01:30.23]Bart skating the streets like us, no cash, no plan-ish 🛹😜
+[01:33.20]Fútbol in the calle, Real Madrid scarves in the air ⚽🧣
+[01:35.55]But we sang "Macarena" louder, didn't care 💃🎵
+[01:38.50]First crush at the instituto, notes passed in class 💌📄
+[01:40.82]Breaking up via SMS, that was our trash 📩💔
+[01:43.70]Internet café at 200 pesetas an hour 🌐💰
+[01:49.16]Downloading Limewire, waiting for the power ⏳💾
+[01:54.71]Mamá's paella on Sundays, family loud and wild 🥘👨‍👩‍👧‍👦
+[01:59.77]We were kings of the barrio, innocent child 👑🧒
+[02:04.94]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
+[02:10.55]From Dragon Ball Z to "7 Vidas" on repeat 🐉📺
+[02:15.77]We had it all, the good times, the dumb fights 😂🤜🤛
+[02:18.65]Now we're grown, but damn, we miss those nights 😔🌙
+[02:21.32]The kids aren't alright? Nah, we were alright back then 😎⏳
+[02:26.31]'93 kid, Madrid heart, let's do it again! 🔁❤️
+[02:29.46]Now the world's gone crazy, bills and rent and stress 🤯💸
+[02:34.47]But I close my eyes and I'm back in the barrio mess 😌🏘️
+[02:39.33]Skateboarding down Cuatro Caminos, no helmet, no fear 🛹💨
+[02:44.89]Friends forever, even if we're not near 🤝🌍
+[02:50.41]We survived the crisis, the EGB days 💪📚
+[02:55.74]Still got that fire from those endless plays 🔥🎮
+[03:00.90]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
+[03:06.48]From Al salir de clase to TikTok, what a leap! 📺➡️📱
+[03:11.56]We had it all, the good times, the dumb fights 😂🤜🤛
+[03:14.30]Still singing along to those old nights 🎤🌙
+[03:17.31]The kids aren't alright? Screw that, we're alright right now 😎🔥
+
+
+`;
+const musicData = [
+    {
+        title: "Mi color es especial",
+        img: "https://cdn2.suno.ai/image_large_c441c1c6-b45f-404a-b7be-c2e0985fb131.jpeg",
+        audio: "https://cdn1.suno.ai/c441c1c6-b45f-404a-b7be-c2e0985fb131.mp3",
+        lyrics: nicoLyrics // Letra cargada directamente
+    },
+    {
+        title: "Voy a cocinar una gallina",
+        img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
+        audio: "https://cdn1.suno.ai/5f72bda9-657f-46b9-be46-a55f2c26dac3.mp3",
+        lyrics: gallina // Letra cargada directamente
+    },
+    {
+        title: "The 93 Kid",
+        img: "image/93kisd.jpg", 
+        audio: "https://cdn1.suno.ai/9fdc4425-0553-43e7-9481-e8189e4746d3.mp3",
+        lyrics: b93 // Aquí vinculas la variable que creaste arriba
+    },
+	    {
+        title: "Dark Cloud",
+        img: "https://i.ibb.co/fVzcM6CC/one-more-floor3-bajo-30mb.gif", 
+        audio: "https://cdn1.suno.ai/156e1ddc-0ec3-43fd-8267-020296c85263.mp3",
+        lyrics: drkld // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "A máxima velocidad",
+        img: "image/corre.jpg", 
+        audio: "https://cdn1.suno.ai/bba037d6-eed4-4d84-ac8b-74028fb49288.mp3",
+        lyrics: velocidad // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Pásame la sosa",
+        img: "https://i.ibb.co/BMmLRXJ/minipika1f7-b691-643680fea33a.gif", 
+        audio: "https://cdn1.suno.ai/7458d278-705c-4afb-956e-709aa6574692.mp3",
+        lyrics: sosa // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Hey hermanito!",
+        img: "https://cdn2.suno.ai/image_large_cd7f792d-8b1e-4cab-86aa-bc3e4bb50f33.jpeg", 
+        audio: "https://cdn1.suno.ai/cd7f792d-8b1e-4cab-86aa-bc3e4bb50f33.mp3",
+        lyrics: hermanito // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "La cucaracha",
+        img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
+        audio: "https://cdn1.suno.ai/a022300b-70c2-40d0-a9fa-66f50ede1b3c.mp3",
+        lyrics: cucaracha // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Los países",
+        img: "https://cdn.forum.snap.berkeley.edu/original/3X/9/f/9fae0a709a729e6e7c6b655e80f305cdc3e7f471.gif", 
+        audio: "https://cdn1.suno.ai/2c202c8e-ec01-4a00-899c-9438454e4733.mp3",
+        lyrics: countries // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "La canción de Nico",
+        img: "image/nico.jpg", 
+        audio: "https://cdn1.suno.ai/beacd720-0582-499b-a8ae-4c2670fec401.mp3",
+        lyrics: niconico // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Pásame la gallina",
+        img: "https://cdn2.suno.ai/image_large_6ecfaf1f-d7a2-4e47-b473-e0884791717e.jpeg", 
+        audio: "https://cdn1.suno.ai/6ecfaf1f-d7a2-4e47-b473-e0884791717e.mp3",
+        lyrics: gallinadrift // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Garacias a Dios hay Chamba",
+        img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg", 
+        audio: "https://cdn1.suno.ai/799c6554-7dcc-4377-b571-e360c40f8f2f.mp3",
+        lyrics: haychamba // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Prepositions",
+        img: "https://cdn2.suno.ai/image_large_5f291070-1aa3-4a39-a0fe-4b1d8ff72e05.jpeg", 
+        audio: "https://cdn1.suno.ai/5f291070-1aa3-4a39-a0fe-4b1d8ff72e05.mp3",
+        lyrics: upup // Aquí vinculas la variable que creaste arriba
+    },
+	    {
+        title: "Mi amiga jirafa ",
+        img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
+        audio: "https://cdn1.suno.ai/4c9defc7-f171-48f2-8089-76bd2f0afeb1.mp3",
+        lyrics: amjirf // Aquí vinculas la variable que creaste arriba
+    },
+		    {
+        title: "Mamá cuéntame un cuento",
+        img: "https://i.ibb.co/PvWpJYxZ/Gemini-Generated-Image-be2jvube2jvube2j.png", 
+        audio: "https://cdn1.suno.ai/f87d2a39-36dd-4d40-bca1-554202c7f73e.mp3",
+        lyrics: mamacuento // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "Lávate las manos",
+        img: "https://i.ibb.co/jPD2yypm/elmogrok-video-0ea73052-54a9-4344-84e6-67a8bf89a2cd.gif", 
+        audio: "https://cdn1.suno.ai/aa681b35-a8d6-48b2-b2a8-4bad6cc129cc.mp3",
+        lyrics: amaama // Aquí vinculas la variable que creaste arriba
+    },    
+	{
+        title: "La Serpiente",
+        img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", 
+        audio: "https://cdn1.suno.ai/2eee68cc-f237-47f0-bd31-4331f4a653d4.mp3",
+        lyrics: serpt // Aquí vinculas la variable que creaste arriba
+    },	{
+        title: "Level 99 Slitherbreak",
+        img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg", 
+        audio: "https://cdn1.suno.ai/f6b44f12-411e-4982-81c1-0e4b961661f4.mp3",
+        lyrics: Slitherbrk // Aquí vinculas la variable que creaste arriba
+    },
+    {
+        title: "La gallinita Ciega",
+        img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg", 
+        audio: "https://cdn1.suno.ai/dc74d8d6-a6a4-4546-aeb6-f580e6ceab18.mp3",
+        lyrics: ceiga // Aquí vinculas la variable que creaste arriba
+    },
+	    {
+        title: "Gallinita Espacial",
+        img: "https://i.ibb.co/XfV791Sp/video6023775384502286725-bajo-30mb.gif", 
+        audio: "https://cdn1.suno.ai/457158d0-0434-41ee-96a3-2cb51d893577.mp3",
+        lyrics: espagal // Aquí vinculas la variable que creaste arriba
+    },
+	{
+        title: "Iguana del Caos",
+        img: "https://i.ibb.co/DD39wfc9/video6023775384502286742-bajo-30mb.gif", 
+        audio: "https://cdn1.suno.ai/7c37e025-dc89-4c6a-bb71-3ce7a30c60bf.mp3",
+        lyrics: iguanacaos // Aquí vinculas la variable que creaste arriba
+    }
+
+];
+let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
@@ -540,7 +1727,6 @@
         currentIndex = index;
         const song = musicData[currentIndex];
 
-        // Actualizar título de la pestaña del navegador
         document.title = `${song.title} - Reproductor`;
 
         currentAudio.src = song.audio;
@@ -575,7 +1761,7 @@
                 el.classList.add('active');
                 if (!currentAudio.paused) el.classList.add('playing');
                 if (isGif) vinylArt.style.backgroundImage = `url('${songData.img}')`;
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
                 el.classList.remove('active', 'playing');
                 if (isGif) {
@@ -604,7 +1790,6 @@
         }
     }
 
-    // Comprobar parámetros URL
     function checkUrlParams() {
         const urlParams = new URLSearchParams(window.location.search);
         const songParam = urlParams.get('song');
@@ -612,12 +1797,10 @@
         if (songParam !== null) {
             let foundIndex = -1;
             
-            // Buscar por índice numérico
             if (!isNaN(songParam)) {
                 const idx = parseInt(songParam);
                 if (idx >= 0 && idx < musicData.length) foundIndex = idx;
             } else {
-                // Buscar por ID o título
                 foundIndex = musicData.findIndex(s => 
                     s.id === songParam.toLowerCase() || 
                     s.title.toLowerCase().replace(/\s+/g, '-') === songParam.toLowerCase()
@@ -632,7 +1815,6 @@
         }
     }
 
-    // Copiar enlace al portapapeles
     document.getElementById('btn-share').addEventListener('click', () => {
         const song = musicData[currentIndex];
         const baseUrl = window.location.origin + window.location.pathname;
@@ -647,7 +1829,6 @@
         });
     });
 
-    // Eventos del Audio
     currentAudio.addEventListener('ended', () => {
         if (isSingleSongMode) {
             currentAudio.currentTime = 0;
@@ -681,7 +1862,6 @@
         }
     });
 
-    // Play / Pausa
     document.getElementById('btn-play-pause').addEventListener('click', () => {
         if (!currentAudio.src) {
             playTrack(currentIndex);
@@ -696,7 +1876,6 @@
         }
     });
 
-    // Barra de tiempo
     document.getElementById('time-bar').addEventListener('click', (e) => {
         if (!currentAudio.duration) return;
         const bar = e.currentTarget;
@@ -706,7 +1885,6 @@
         currentAudio.currentTime = pct * currentAudio.duration;
     });
 
-    // Teclado
     document.addEventListener('keydown', (e) => {
         if (!isSingleSongMode) {
             if (e.key === 'ArrowDown') {
