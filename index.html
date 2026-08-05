@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor de Música</title>
+    <title>Lux.io Music</title>
     <style>
     :root {
         --naranja-medio: #ff9c3a;
         --naranja-fuerte: #fa2527;
-        --naranja-claro: #ffac41;
+        --bg-card: rgba(0, 0, 0, 0.35);
+        --bg-card-hover: rgba(0, 0, 0, 0.5);
+        --bg-card-active: rgba(255, 255, 255, 0.2);
     }
 
     * {
@@ -16,168 +18,83 @@
     }
 
     body {
-        margin: 0; padding: 0; 
-        height: 100vh;
-        font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+        margin: 0; 
+        padding: 0; 
+        min-height: 100vh;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         background: linear-gradient(to top, var(--naranja-medio) 0%, var(--naranja-fuerte) 100%);
-        overflow: hidden; /* Evita el scroll general de la ventana */
         color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     body::before {
-        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.1) 15px, rgba(255,255,255,0.1) 17px);
-        pointer-events: none; z-index: 1;
+        content: ""; 
+        position: fixed; 
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.08) 15px, rgba(255,255,255,0.08) 17px);
+        pointer-events: none; 
+        z-index: 1;
     }
 
+    /* CONTENEDOR PRINCIPAL VERTICAL */
     #main-layout {
-        position: relative; z-index: 2;
+        position: relative; 
+        z-index: 2;
         display: flex; 
+        flex-direction: column;
         width: 100%; 
-        height: 100vh;
+        max-width: 800px; /* Ancho máximo para mantener buena legibilidad */
+        min-height: 100vh;
+        margin: 0 auto;
     }
 
-    /* Ocultar barra lateral en modo single song */
-    body.single-song-mode #sidebar {
+    /* MODO SINGLE SONG: oculta la lista */
+    body.single-song-mode #playlist-container {
         display: none !important;
     }
 
-    body.single-song-mode #right-panel {
-        width: 100% !important;
-    }
-
-    /* --- SIDEBAR (PANEL IZQUIERDO CON SCROLL INDEPENDIENTE) --- */
-    #sidebar {
-        width: 40%;
-        height: 100vh;
-        padding: 50px 40px; 
-        overflow-y: auto; /* Solo este lado hace scroll */
-        border-right: 2px solid rgba(255,255,255,0.1);
-        scroll-behavior: smooth;
-        scrollbar-width: thin; 
-        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-    }
-
-    .playlist-item {
-        display: flex; 
-        align-items: center;
-        background: rgba(0,0,0,0.2);
-        margin-bottom: 25px; padding: 20px;
-        border-radius: 100px 30px 30px 100px;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        opacity: 0.75;
-        transform-origin: center left;
-        min-height: 120px;
-        cursor: pointer;
-    }
-
-    .playlist-item:hover {
-        opacity: 0.95;
-        background: rgba(0,0,0,0.3);
-    }
-
-    .vinyl-wrapper {
-        width: 110px; height: 110px; 
-        flex-shrink: 0; margin-right: 20px;
-        transition: all 0.4s ease;
-    }
-
-    .vinyl {
-        width: 100%; height: 100%; background: #000; border-radius: 50%;
-        display: flex; justify-content: center; align-items: center;
-        background-image: repeating-radial-gradient(circle, #111, #111 2px, #222 3px);
-        transition: transform 0.3s;
-    }
-
-    .vinyl-art {
-        width: 65%; height: 65%; border-radius: 50%;
-        background-size: cover; border: 3px solid #fff;
-    }
-
-    .song-info {
-        transition: all 0.4s ease;
-        text-align: left;
-    }
-
-    .song-info h3 {
-        margin: 0;
-        font-size: 1.2rem;
-    }
-
-    /* --- ESTADO ACTIVO --- */
-    .playlist-item.active {
-        background: rgba(255, 255, 255, 0.25);
-        opacity: 1;
-        transform: scale(1.03);
-        flex-direction: column;
-        border-radius: 30px;
-        text-align: center;
-        padding: 30px 20px;
-    }
-
-    .playlist-item.active .vinyl-wrapper {
-        width: 180px; 
-        height: 180px; 
-        margin-right: 0;
-        margin-bottom: 15px;
-    }
-
-    .playlist-item.active .song-info {
-        text-align: center;
-        font-size: 1.2em;
-    }
-
-    .vinyl-wrapper.is-gif .vinyl {
-        animation: none !important;
-        transform: none !important;
-    }
-
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .playing .vinyl { animation: spin 10s linear infinite; }
-
-    /* --- PANEL DERECHO (REPRODUCTOR FIJO EN PANTALLA) --- */
-    #right-panel {
-        width: 60%;
-        height: 100vh;
+    /* --- PARTE SUPERIOR: REPRODUCTOR FIJO --- */
+    #top-player-panel {
         position: sticky;
         top: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px;
-        box-sizing: border-box;
+        z-index: 100;
+        width: 100%;
+        padding: 15px;
+        background: rgba(250, 37, 39, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
 
-    /* Recuadro negro con proporción 16:9 fija */
     #player-container {
         position: relative;
         width: 100%;
-        max-width: 850px;
         aspect-ratio: 16 / 9;
         background: #000000;
-        border-radius: 20px;
+        border-radius: 16px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.15);
     }
 
-    /* Fondo con la imagen centrada */
     #player-bg {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        filter: blur(2px);
+        filter: blur(20px);
         opacity: 0.35;
         z-index: 1;
         transition: background-image 0.5s ease;
     }
 
-    /* Contenedor central de la letra */
     #lyrics-display {
         position: relative;
         z-index: 2;
@@ -186,23 +103,22 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        padding: 20px 30px;
-        box-sizing: border-box;
+        padding: 20px;
     }
 
     #lyric-text {
-        font-size: clamp(1.4rem, 4vw, 3.2rem); 
-        line-height: 1.25;
-        text-shadow: 3px 3px 12px rgba(0,0,0,0.9);
-        transition: opacity 0.4s ease; 
+        font-size: clamp(1.2rem, 3.5vw, 2.5rem); 
+        line-height: 1.3;
+        font-weight: 700;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+        transition: opacity 0.3s ease; 
         margin: 0;
     }
 
-    /* Controles inferiores */
     #player-controls {
         position: relative;
         z-index: 2;
-        padding: 12px 20px 16px 20px;
+        padding: 10px 16px 12px 16px;
         background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
         display: flex;
         flex-direction: column;
@@ -212,7 +128,7 @@
     .time-bar-container {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
 
     .time-bar {
@@ -222,38 +138,26 @@
         border-radius: 3px;
         position: relative;
         cursor: pointer;
-        transition: height 0.1s ease;
-    }
-
-    .time-bar:hover {
-        height: 8px;
     }
 
     .time-progress {
         height: 100%;
         width: 0%;
-        background: #ff0000;
+        background: #ff2a2a;
         border-radius: 3px;
-        position: relative;
     }
 
     .time-text {
         font-size: 12px;
-        font-family: Arial, sans-serif;
         color: #ddd;
-        min-width: 80px;
+        min-width: 75px;
+        text-align: right;
     }
 
     .controls-bottom-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-    }
-
-    .buttons-row {
-        display: flex;
-        align-items: center;
-        gap: 15px;
     }
 
     .btn-control {
@@ -266,7 +170,7 @@
         align-items: center;
         justify-content: center;
         opacity: 0.9;
-        transition: opacity 0.2s, transform 0.1s;
+        transition: transform 0.1s, opacity 0.2s;
     }
 
     .btn-control:hover {
@@ -280,15 +184,14 @@
         fill: currentColor;
     }
 
-    /* Toast para confirmación de copiado */
     #share-toast {
         position: absolute;
-        bottom: 65px;
-        right: 20px;
+        bottom: 60px;
+        right: 15px;
         background: rgba(0,0,0,0.85);
         color: #fff;
-        padding: 8px 14px;
-        border-radius: 8px;
+        padding: 6px 12px;
+        border-radius: 6px;
         font-size: 12px;
         border: 1px solid rgba(255,255,255,0.2);
         opacity: 0;
@@ -301,66 +204,125 @@
         opacity: 1;
     }
 
-    /* --- RESPONSIVE / SMARTPHONES --- */
-    @media (max-width: 768px) {
-        body {
-            overflow-y: auto; /* Permite scroll en móvil */
-            height: auto;
-        }
+    /* --- PARTE INFERIOR: LISTA TIPO YOUTUBE --- */
+    #playlist-container {
+        flex: 1;
+        padding: 20px 15px 40px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
 
-        #main-layout {
-            flex-direction: column; /* Reproductor arriba, lista abajo */
-            height: auto;
-        }
+    .playlist-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: rgba(255, 255, 255, 0.9);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
-        /* En móvil, el reproductor (panel derecho) queda fijo arriba */
-        #right-panel {
-            width: 100%;
-            height: auto;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+    /* TARJETA ESTILO YOUTUBE */
+    .yt-card {
+        display: flex;
+        align-items: center;
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        gap: 15px;
+    }
+
+    .yt-card:hover {
+        background: var(--bg-card-hover);
+        transform: translateY(-2px);
+    }
+
+    .yt-card.active {
+        background: var(--bg-card-active);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Miniatura 16:9 */
+    .yt-thumb-container {
+        position: relative;
+        width: 130px;
+        aspect-ratio: 16 / 9;
+        flex-shrink: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #000;
+    }
+
+    .yt-thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Badge de "Reproduciendo" en la miniatura */
+    .playing-badge {
+        display: none;
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        background: rgba(250, 37, 39, 0.9);
+        color: #fff;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .yt-card.active .playing-badge {
+        display: block;
+    }
+
+    /* Información de la canción */
+    .yt-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .yt-title {
+        margin: 0 0 4px 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .yt-author {
+        margin: 0;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 400;
+    }
+
+    /* Ajustes para pantallas muy pequeñas */
+    @media (max-width: 480px) {
+        #top-player-panel {
             padding: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        #sidebar {
-            width: 100%;
-            height: auto;
-            padding: 20px 15px;
-            border-right: none;
-            overflow-y: visible; /* Scroll fluido con toda la página */
+        .yt-thumb-container {
+            width: 100px;
         }
 
-        .playlist-item {
-            min-height: 80px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
+        .yt-title {
+            font-size: 0.9rem;
         }
 
-        .vinyl-wrapper {
-            width: 60px;
-            height: 60px;
-        }
-
-        .playlist-item.active .vinyl-wrapper {
-            width: 110px;
-            height: 110px;
-        }
-
-        .playlist-item.active {
-            padding: 15px 10px;
-        }
-
-        #player-controls {
-            padding: 8px 12px 10px 12px;
-        }
-
-        .btn-control svg {
-            width: 22px;
-            height: 22px;
+        .yt-author {
+            font-size: 0.78rem;
         }
     }
     </style>
@@ -368,18 +330,13 @@
 <body>
 
     <div id="main-layout">
-        <!-- Panel Izquierdo: Lista con scroll independiente -->
-        <div id="sidebar">
-            <div id="playlist"></div>
-        </div>
-
-        <!-- Panel Derecho: Reproductor 16:9 fijo -->
-        <div id="right-panel">
+        <!-- Panel Superior: Reproductor Fijo -->
+        <div id="top-player-panel">
             <div id="player-container">
                 <div id="player-bg"></div>
 
                 <div id="lyrics-display">
-                    <p id="lyric-text">Pulsa una canción o tecla...</p>
+                    <p id="lyric-text">Selecciona una canción...</p>
                 </div>
 
                 <div id="share-toast">¡Enlace copiado al portapapeles! 📋</div>
@@ -393,14 +350,12 @@
                     </div>
                     
                     <div class="controls-bottom-row">
-                        <div class="buttons-row">
-                            <button class="btn-control" id="btn-play-pause" title="Play/Pausa">
-                                <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                <svg id="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                            </button>
-                        </div>
+                        <button class="btn-control" id="btn-play-pause" title="Play/Pausa">
+                            <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <svg id="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        </button>
 
-                        <button class="btn-control" id="btn-share" title="Compartir esta canción">
+                        <button class="btn-control" id="btn-share" title="Compartir canción">
                             <svg viewBox="0 0 24 24">
                                 <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
                             </svg>
@@ -408,6 +363,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Panel Inferior: Lista de Reproducción Estilo YouTube -->
+        <div id="playlist-container">
+            <div class="playlist-title">Lista de reproducción</div>
+            <div id="playlist"></div>
         </div>
     </div>
 
@@ -1666,12 +1627,27 @@ const musicData = [
     }
 
 ];
-let currentAudio = new Audio();
+const AUTHOR_NAME = "Lux.io Music";
+
+    let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
 
     currentAudio.volume = 0.75;
+
+    // Normalizador de texto para URLs limpias
+    function slugify(text) {
+        if (!text) return '';
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-');
+    }
 
     function parseLRC(lrcText) {
         if(!lrcText) return [];
@@ -1699,22 +1675,18 @@ let currentAudio = new Audio();
         
         musicData.forEach((item, index) => {
             const div = document.createElement('div');
-            div.className = 'playlist-item';
+            div.className = 'yt-card';
             div.id = `item-${index}`;
-            
-            const isGif = item.img.toLowerCase().endsWith('.gif');
-            const gifClass = isGif ? 'is-gif' : '';
-
             div.onclick = () => playTrack(index);
             
             div.innerHTML = `
-                <div class="vinyl-wrapper ${gifClass}"> 
-                    <div class="vinyl">
-                        <div class="vinyl-art" style="background-image: url('${item.img}');"></div>
-                    </div>
+                <div class="yt-thumb-container">
+                    <img class="yt-thumb" src="${item.img}" alt="${item.title}" loading="lazy">
+                    <span class="playing-badge">Sonando</span>
                 </div>
-                <div class="song-info">
-                    <h3>${item.title}</h3>
+                <div class="yt-info">
+                    <h3 class="yt-title">${item.title}</h3>
+                    <p class="yt-author">${AUTHOR_NAME}</p>
                 </div>
             `;
             container.appendChild(div);
@@ -1728,21 +1700,20 @@ let currentAudio = new Audio();
         currentIndex = index;
         const song = musicData[currentIndex];
 
-        document.title = `${song.title} - Reproductor`;
+        document.title = `${song.title} - ${AUTHOR_NAME}`;
 
         currentAudio.src = song.audio;
         currentAudio.load();
         
         parsedLyrics = parseLRC(song.lyrics);
         document.getElementById('lyric-text').innerText = "Cargando...";
-
         document.getElementById('player-bg').style.backgroundImage = `url('${song.img}')`;
 
         currentAudio.play().then(() => {
             updatePlayPauseIcon(true);
         }).catch(e => {
             console.error("Esperando interacción:", e);
-            document.getElementById('lyric-text').innerText = "Pulsa para iniciar";
+            document.getElementById('lyric-text').innerText = "Pulsa Play para iniciar";
             updatePlayPauseIcon(false);
         });
 
@@ -1752,23 +1723,12 @@ let currentAudio = new Audio();
     }
 
     function updateVisualFocus() {
-        document.querySelectorAll('.playlist-item').forEach((el, index) => {
-            const isActive = (index === currentIndex);
-            const vinylArt = el.querySelector('.vinyl-art');
-            const songData = musicData[index];
-            const isGif = songData.img.toLowerCase().endsWith('.gif');
-
-            if (isActive) {
+        document.querySelectorAll('.yt-card').forEach((el, index) => {
+            if (index === currentIndex) {
                 el.classList.add('active');
-                if (!currentAudio.paused) el.classList.add('playing');
-                if (isGif) vinylArt.style.backgroundImage = `url('${songData.img}')`;
                 el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
-                el.classList.remove('active', 'playing');
-                if (isGif) {
-                    vinylArt.style.backgroundImage = 'none'; 
-                    vinylArt.style.backgroundColor = '#222';
-                }
+                el.classList.remove('active');
             }
         });
     }
@@ -1783,12 +1743,6 @@ let currentAudio = new Audio();
     function updatePlayPauseIcon(isPlaying) {
         document.getElementById('icon-play').style.display = isPlaying ? 'none' : 'block';
         document.getElementById('icon-pause').style.display = isPlaying ? 'block' : 'none';
-        
-        const activeItem = document.querySelector('.playlist-item.active');
-        if (activeItem) {
-            if (isPlaying) activeItem.classList.add('playing');
-            else activeItem.classList.remove('playing');
-        }
     }
 
     function checkUrlParams() {
@@ -1797,15 +1751,19 @@ let currentAudio = new Audio();
 
         if (songParam !== null) {
             let foundIndex = -1;
+            const targetSlug = slugify(songParam);
             
-            if (!isNaN(songParam)) {
-                const idx = parseInt(songParam);
+            if (!isNaN(songParam) && songParam.trim() !== '') {
+                const idx = parseInt(songParam, 10);
                 if (idx >= 0 && idx < musicData.length) foundIndex = idx;
-            } else {
-                foundIndex = musicData.findIndex(s => 
-                    s.id === songParam.toLowerCase() || 
-                    s.title.toLowerCase().replace(/\s+/g, '-') === songParam.toLowerCase()
-                );
+            } 
+            
+            if (foundIndex === -1) {
+                foundIndex = musicData.findIndex(s => {
+                    const idSlug = slugify(s.id);
+                    const titleSlug = slugify(s.title);
+                    return targetSlug === idSlug || targetSlug === titleSlug;
+                });
             }
 
             if (foundIndex !== -1) {
@@ -1819,7 +1777,7 @@ let currentAudio = new Audio();
     document.getElementById('btn-share').addEventListener('click', () => {
         const song = musicData[currentIndex];
         const baseUrl = window.location.origin + window.location.pathname;
-        const shareUrl = `${baseUrl}?song=${song.id}`;
+        const shareUrl = `${baseUrl}?song=${slugify(song.id || song.title)}`;
 
         navigator.clipboard.writeText(shareUrl).then(() => {
             const toast = document.getElementById('share-toast');
@@ -1859,7 +1817,7 @@ let currentAudio = new Audio();
             setTimeout(() => {
                 display.innerText = activeLyric.text;
                 display.style.opacity = 1;
-            }, 150);
+            }, 120);
         }
     });
 
@@ -1909,7 +1867,7 @@ let currentAudio = new Audio();
             updateVisualFocus();
         }
         document.getElementById('player-bg').style.backgroundImage = `url('${musicData[currentIndex].img}')`;
-        document.title = `${musicData[currentIndex].title} - Reproductor`;
+        document.title = `${musicData[currentIndex].title} - ${AUTHOR_NAME}`;
     };
     </script>
 </body>
