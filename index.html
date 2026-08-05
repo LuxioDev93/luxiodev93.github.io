@@ -1,5 +1,3 @@
-HTML
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -45,11 +43,6 @@ HTML
         margin: 0 auto;
     }
 
-    /* MODO SINGLE SONG */
-    body.single-song-mode #playlist-container {
-        display: none !important;
-    }
-
     /* --- PARTE SUPERIOR: REPRODUCTOR FIJO --- */
     #top-player-panel {
         position: sticky;
@@ -81,7 +74,7 @@ HTML
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        filter: blur(2px);
+        filter: blur(20px);
         opacity: 0.35;
         z-index: 1;
         transition: background-image 0.5s ease;
@@ -201,7 +194,7 @@ HTML
         opacity: 1;
     }
 
-    /* --- PARTE INFERIOR: LISTA DE REPRODUCCIÓN (ESTILO YOUTUBE CLARO) --- */
+    /* --- PARTE INFERIOR: LISTA / DETALLE (ESTILO YOUTUBE CLARO) --- */
     #playlist-container {
         flex: 1;
         padding: 16px;
@@ -217,7 +210,6 @@ HTML
         color: var(--yt-text-primary);
     }
 
-    /* TARJETA YOUTUBE EN FONDO BLANCO */
     .yt-card {
         display: flex;
         align-items: center;
@@ -237,7 +229,6 @@ HTML
         background: var(--yt-active-bg);
     }
 
-    /* Miniatura 16:9 con bordes redondeados */
     .yt-thumb-container {
         position: relative;
         width: 140px;
@@ -289,10 +280,33 @@ HTML
     }
 
     .yt-author {
-        margin: 0;
+        margin: 0 0 2px 0;
         font-size: 0.825rem;
         color: var(--yt-text-secondary);
         font-weight: 400;
+    }
+
+    .yt-meta {
+        margin: 0;
+        font-size: 0.775rem;
+        color: var(--yt-text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .yt-meta-play-icon {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-left: 6px solid var(--yt-text-secondary);
+        margin-right: 2px;
+    }
+
+    .yt-dot-separator {
+        margin: 0 2px;
     }
 
     @media (max-width: 480px) {
@@ -348,9 +362,9 @@ HTML
             </div>
         </div>
 
-        <!-- Lista Inferior Estilo YouTube -->
+        <!-- Lista Inferior o Detalle Estilo YouTube -->
         <div id="playlist-container">
-            <div class="playlist-title">A continuación</div>
+            <div class="playlist-title" id="playlist-header"></div>
             <div id="playlist"></div>
         </div>
     </div>
@@ -1610,14 +1624,53 @@ const musicData = [
     }
 
 ];
-const AUTHOR_NAME = "Lux.io Music";
-
-    let currentAudio = new Audio();
+let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
 
     currentAudio.volume = 0.75;
+
+    // --- FUNCIONES DE GENERACIÓN ALEATORIA (VISTAS Y FECHAS) ---
+    function getRandomViews() {
+        const rangeChoice = Math.floor(Math.random() * 3);
+        let num;
+        if (rangeChoice === 0) {
+            // Unidades (1 - 99)
+            num = Math.floor(Math.random() * 99) + 1;
+            return num.toString();
+        } else if (rangeChoice === 1) {
+            // Miles (1k - 999k) -> desprecia decenas, centenas y unidades
+            num = Math.floor(Math.random() * 999) + 1;
+            return `${num}K`;
+        } else {
+            // Millones (1M - 10M) -> redondeo a 1 decimal despreciando centenas de mil hacia atrás
+            num = (Math.random() * 9 + 1).toFixed(1);
+            if (num.endsWith('.0')) num = Math.floor(num);
+            return `${num}M`;
+        }
+    }
+
+    function getRandomTimeAgo() {
+        const type = Math.floor(Math.random() * 3);
+        if (type === 0) {
+            const days = Math.floor(Math.random() * 11) + 20; // 20 - 30 días
+            return `hace ${days} d`;
+        } else if (type === 1) {
+            const months = Math.floor(Math.random() * 11) + 1; // 1 - 11 meses
+            return `hace ${months} m`;
+        } else {
+            const years = Math.floor(Math.random() * 2) + 1; // 1 - 2 años
+            return `hace ${years} a`;
+        }
+    }
+
+    // Inicializar propiedades aleatorias estáticas en la lista
+    musicData.forEach(item => {
+        item.author = (item.author && item.author.trim() !== "") ? item.author : DEFAULT_AUTHOR;
+        item.views = getRandomViews();
+        item.timeAgo = getRandomTimeAgo();
+    });
 
     function slugify(text) {
         if (!text) return '';
@@ -1651,28 +1704,39 @@ const AUTHOR_NAME = "Lux.io Music";
         return lyrics.sort((a, b) => a.time - b.time);
     }
 
-    function loadPlaylist() {
-        const container = document.getElementById('playlist');
-        container.innerHTML = ''; 
-        
-        musicData.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.className = 'yt-card';
-            div.id = `item-${index}`;
-            div.onclick = () => playTrack(index);
-            
-            div.innerHTML = `
+    function renderCardHTML(item, index, isActive = false) {
+        return `
+            <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" onclick="playTrack(${index})">
                 <div class="yt-thumb-container">
                     <img class="yt-thumb" src="${item.img}" alt="${item.title}" loading="lazy">
                     <span class="playing-badge">Sonando</span>
                 </div>
                 <div class="yt-info">
                     <h3 class="yt-title">${item.title}</h3>
-                    <p class="yt-author">${AUTHOR_NAME}</p>
+                    <p class="yt-author">${item.author}</p>
+                    <p class="yt-meta">
+                        <span class="yt-meta-play-icon"></span>${item.views}
+                        <span class="yt-dot-separator">•</span>
+                        <span>${item.timeAgo}</span>
+                    </p>
                 </div>
-            `;
-            container.appendChild(div);
-        });
+            </div>
+        `;
+    }
+
+    function loadPlaylist() {
+        const container = document.getElementById('playlist');
+        const header = document.getElementById('playlist-header');
+        
+        if (isSingleSongMode) {
+            const song = musicData[currentIndex];
+            header.innerHTML = `<strong>${song.title} - ${song.author}</strong>`;
+            container.innerHTML = renderCardHTML(song, currentIndex, true);
+        } else {
+            const currentSong = musicData[currentIndex];
+            header.innerHTML = `<strong>${currentSong.title} - ${currentSong.author}</strong>`;
+            container.innerHTML = musicData.map((item, index) => renderCardHTML(item, index, index === currentIndex)).join('');
+        }
     }
 
     function playTrack(index) {
@@ -1682,7 +1746,8 @@ const AUTHOR_NAME = "Lux.io Music";
         currentIndex = index;
         const song = musicData[currentIndex];
 
-        document.title = `${song.title} - ${AUTHOR_NAME}`;
+        document.title = `${song.title} - ${song.author}`;
+        document.getElementById('playlist-header').innerHTML = `<strong>${song.title} - ${song.author}</strong>`;
 
         currentAudio.src = song.audio;
         currentAudio.load();
@@ -1750,21 +1815,16 @@ const AUTHOR_NAME = "Lux.io Music";
 
             if (foundIndex !== -1) {
                 isSingleSongMode = true;
-                document.body.classList.add('single-song-mode');
                 currentIndex = foundIndex;
             }
         }
     }
 
-    // --- FUNCIÓN DE COPIAR SEGURA CON FALLBACK ---
+    // --- COPIADO SEGURO DE ENLACE ---
     function copyToClipboard(text) {
-        // Intento 1: API Moderna navigator.clipboard
         if (navigator.clipboard && window.isSecureContext) {
-            return navigator.clipboard.writeText(text).catch(() => {
-                return fallbackCopyTextToClipboard(text);
-            });
+            return navigator.clipboard.writeText(text).catch(() => fallbackCopyTextToClipboard(text));
         } else {
-            // Intento 2: Fallback con elemento temporal (evita bloqueos de permisos)
             return fallbackCopyTextToClipboard(text);
         }
     }
@@ -1882,12 +1942,12 @@ const AUTHOR_NAME = "Lux.io Music";
 
     window.onload = () => {
         checkUrlParams();
+        loadPlaylist();
         if (!isSingleSongMode) {
-            loadPlaylist();
             updateVisualFocus();
         }
         document.getElementById('player-bg').style.backgroundImage = `url('${musicData[currentIndex].img}')`;
-        document.title = `${musicData[currentIndex].title} - ${AUTHOR_NAME}`;
+        document.title = `${musicData[currentIndex].title} - ${musicData[currentIndex].author}`;
     };
     </script>
 </body>
