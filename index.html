@@ -31,7 +31,6 @@
         align-items: center;
     }
 
-    /* CONTENEDOR PRINCIPAL VERTICAL */
     #main-layout {
         position: relative; 
         z-index: 2;
@@ -370,6 +369,8 @@
     </div>
 
   <script>
+	  // 1. Constantes globales declaradas en la parte superior del script
+    const DEFAULT_AUTHOR = "Lux.io Music";
   const nicoLyrics = `
 [00:00.00]🎵🪕🎵
 [00:05.00]Nico se mira frente al espejo 🪞
@@ -1619,32 +1620,30 @@ const musicData = [
 	{
         title: "Iguana del Caos",
         img: "https://i.ibb.co/DD39wfc9/video6023775384502286742-bajo-30mb.gif", 
+		author: "Metal Insano",
         audio: "https://cdn1.suno.ai/7c37e025-dc89-4c6a-bb71-3ce7a30c60bf.mp3",
         lyrics: iguanacaos // Aquí vinculas la variable que creaste arriba
     }
 
 ];
-let currentAudio = new Audio();
+	  let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
 
     currentAudio.volume = 0.75;
 
-    // --- FUNCIONES DE GENERACIÓN ALEATORIA (VISTAS Y FECHAS) ---
+    // --- FUNCIONES ALEATORIAS ---
     function getRandomViews() {
         const rangeChoice = Math.floor(Math.random() * 3);
         let num;
         if (rangeChoice === 0) {
-            // Unidades (1 - 99)
             num = Math.floor(Math.random() * 99) + 1;
             return num.toString();
         } else if (rangeChoice === 1) {
-            // Miles (1k - 999k) -> desprecia decenas, centenas y unidades
             num = Math.floor(Math.random() * 999) + 1;
             return `${num}K`;
         } else {
-            // Millones (1M - 10M) -> redondeo a 1 decimal despreciando centenas de mil hacia atrás
             num = (Math.random() * 9 + 1).toFixed(1);
             if (num.endsWith('.0')) num = Math.floor(num);
             return `${num}M`;
@@ -1654,18 +1653,18 @@ let currentAudio = new Audio();
     function getRandomTimeAgo() {
         const type = Math.floor(Math.random() * 3);
         if (type === 0) {
-            const days = Math.floor(Math.random() * 11) + 20; // 20 - 30 días
+            const days = Math.floor(Math.random() * 11) + 20;
             return `hace ${days} d`;
         } else if (type === 1) {
-            const months = Math.floor(Math.random() * 11) + 1; // 1 - 11 meses
+            const months = Math.floor(Math.random() * 11) + 1;
             return `hace ${months} m`;
         } else {
-            const years = Math.floor(Math.random() * 2) + 1; // 1 - 2 años
+            const years = Math.floor(Math.random() * 2) + 1;
             return `hace ${years} a`;
         }
     }
 
-    // Inicializar propiedades aleatorias estáticas en la lista
+    // Aplicar los campos iniciales de forma segura
     musicData.forEach(item => {
         item.author = (item.author && item.author.trim() !== "") ? item.author : DEFAULT_AUTHOR;
         item.views = getRandomViews();
@@ -1820,7 +1819,6 @@ let currentAudio = new Audio();
         }
     }
 
-    // --- COPIADO SEGURO DE ENLACE ---
     function copyToClipboard(text) {
         if (navigator.clipboard && window.isSecureContext) {
             return navigator.clipboard.writeText(text).catch(() => fallbackCopyTextToClipboard(text));
