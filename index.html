@@ -48,7 +48,7 @@
         top: 0;
         z-index: 100;
         width: 100%;
-        padding: 12px 16px;
+        padding: 12px 16px 8px 16px;
         background: #ffffff;
         border-bottom: 1px solid var(--yt-border);
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -150,6 +150,12 @@
         justify-content: space-between;
     }
 
+    .controls-right-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     .btn-control {
         background: none;
         border: none;
@@ -172,6 +178,29 @@
         width: 24px;
         height: 24px;
         fill: currentColor;
+    }
+
+    /* --- INFO DE LA CANCIÓN EN LA PARTE SUPERIOR --- */
+    #current-track-info {
+        margin-top: 10px;
+        padding: 0 4px;
+    }
+
+    #current-track-title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--yt-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #current-track-author {
+        margin: 2px 0 0 0;
+        font-size: 0.9rem;
+        color: var(--yt-text-secondary);
+        font-weight: 500;
     }
 
     #share-toast {
@@ -203,10 +232,12 @@
     }
 
     .playlist-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-        color: var(--yt-text-primary);
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--yt-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .yt-card {
@@ -351,23 +382,35 @@
                             <svg id="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                         </button>
 
-                        <button class="btn-control" id="btn-share" title="Compartir canción">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
-                            </svg>
-                        </button>
+                        <div class="controls-right-group">
+                            <button class="btn-control" id="btn-share" title="Compartir canción">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                                </svg>
+                            </button>
+
+                            <button class="btn-control" id="btn-fullscreen" title="Pantalla completa">
+                                <svg id="icon-fullscreen-enter" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                                <svg id="icon-fullscreen-exit" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Título y autor ubicados justo debajo del reproductor -->
+            <div id="current-track-info">
+                <h2 id="current-track-title">Cargando...</h2>
+                <p id="current-track-author">Lux.io Music</p>
             </div>
         </div>
 
         <!-- Lista Inferior o Detalle Estilo YouTube -->
         <div id="playlist-container">
-            <div class="playlist-title" id="playlist-header"></div>
+            <div class="playlist-title" id="playlist-header">A continuación</div>
             <div id="playlist"></div>
         </div>
     </div>
-
   <script>
 	  // 1. Constantes globales declaradas en la parte superior del script
     const DEFAULT_AUTHOR = "Lux.io Music";
@@ -1443,8 +1486,59 @@ const drkld = `
 [03:33.86]Cien plantas del Demon Shaft 💯🏰
 [03:36.80]The chaos fell — I’m still alive at last 🎉🔥
 `;
-
-	  const machlow = `
+	  
+const b93 = `
+[00:00.00]🎸🤘🎸
+[00:10.11]Born in '93, Madrid summer heat ☀️🔥
+[00:12.66]Running wild in the barrio, no shoes on my feet 🏃‍♂️👣
+[00:15.72]Plaza de España lights, kicking cans with the crew 💡🥫👯‍♂️
+[00:18.27]Dragon Ball on TV, Goku screaming "Kamehameha!" too 🐉📺💥
+[00:21.28]Tamagotchi beeping in my pocket all day 📟🔔
+[00:23.73]Pokémon cards trading, Pikachu's the way ⚡🃏
+[00:25.94]After school at the parque, churros from the churrería 🌳🍩
+[00:28.86]Life was simple, man, no drama, no fear, yeah 😌✨
+[00:31.82]Dial-up tone at night, waiting for the screen to load 💻📞
+[00:36.81]MSN messenger, "wanna play?" on the old code 💬🖱️
+[00:42.29]Mamá yelling "¡A cenar!" while I hide under the sheets 🍽️🛏️
+[00:47.61]Dreaming of the future, but it's all just beats 🎶💭
+[00:52.90]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
+[00:58.46]From Sailor Moon to La Oreja de Van Gogh on repeat 🌙🎧
+[01:03.70]We had it all, the good times, the dumb fights 😂🤜🤛
+[01:06.59]Now we're grown, but damn, we miss those nights 😢🌙
+[01:09.46]The kids aren't alright? Nah, we were alright back then 😎⏳
+[01:14.24]'93 kid, Madrid heart, let's do it again! 💃🕺
+[01:22.32]Gran Vía posters, Hombres G on the radio blast 🎶📻
+[01:24.88]Friends with the Nokia 3310, Snake game master class 📱🐍
+[01:27.84]Saturday mornings, "Los Simpsons" dubbed in Spanish 📺😂
+[01:30.23]Bart skating the streets like us, no cash, no plan-ish 🛹😜
+[01:33.20]Fútbol in the calle, Real Madrid scarves in the air ⚽🧣
+[01:35.55]But we sang "Macarena" louder, didn't care 💃🎵
+[01:38.50]First crush at the instituto, notes passed in class 💌📄
+[01:40.82]Breaking up via SMS, that was our trash 📩💔
+[01:43.70]Internet café at 200 pesetas an hour 🌐💰
+[01:49.16]Downloading Limewire, waiting for the power ⏳💾
+[01:54.71]Mamá's paella on Sundays, family loud and wild 🥘👨‍👩‍👧‍👦
+[01:59.77]We were kings of the barrio, innocent child 👑🧒
+[02:04.94]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
+[02:10.55]From Dragon Ball Z to "7 Vidas" on repeat 🐉📺
+[02:15.77]We had it all, the good times, the dumb fights 😂🤜🤛
+[02:18.65]Now we're grown, but damn, we miss those nights 😔🌙
+[02:21.32]The kids aren't alright? Nah, we were alright back then 😎⏳
+[02:26.31]'93 kid, Madrid heart, let's do it again! 🔁❤️
+[02:29.46]Now the world's gone crazy, bills and rent and stress 🤯💸
+[02:34.47]But I close my eyes and I'm back in the barrio mess 😌🏘️
+[02:39.33]Skateboarding down Cuatro Caminos, no helmet, no fear 🛹💨
+[02:44.89]Friends forever, even if we're not near 🤝🌍
+[02:50.41]We survived the crisis, the EGB days 💪📚
+[02:55.74]Still got that fire from those endless plays 🔥🎮
+[03:00.90]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
+[03:06.48]From Al salir de clase to TikTok, what a leap! 📺➡️📱
+[03:11.56]We had it all, the good times, the dumb fights 😂🤜🤛
+[03:14.30]Still singing along to those old nights 🎤🌙
+[03:17.31]The kids aren't alright? Screw that, we're alright right now 😎🔥
+`;
+	  
+const machlow = `
 [00:00.00](RISAS)
 [00:03.88]Yeah… MachaK, máquina… desde la banana capital, chucha
 [00:10.10]Donde el calor que pela te derrite y te bautiza en la mala vida
@@ -1500,59 +1594,6 @@ const drkld = `
 [03:41.14]Machala no pide permiso, Machala cobra respeto, chucha
 [03:49.63]Low life… máquina… low life…
 [03:53.90]MACHALA LOW LIFE, VERGA…
-`;
-	  
-const b93 = `
-[00:00.00]🎸🤘🎸
-[00:10.11]Born in '93, Madrid summer heat ☀️🔥
-[00:12.66]Running wild in the barrio, no shoes on my feet 🏃‍♂️👣
-[00:15.72]Plaza de España lights, kicking cans with the crew 💡🥫👯‍♂️
-[00:18.27]Dragon Ball on TV, Goku screaming "Kamehameha!" too 🐉📺💥
-[00:21.28]Tamagotchi beeping in my pocket all day 📟🔔
-[00:23.73]Pokémon cards trading, Pikachu's the way ⚡🃏
-[00:25.94]After school at the parque, churros from the churrería 🌳🍩
-[00:28.86]Life was simple, man, no drama, no fear, yeah 😌✨
-[00:31.82]Dial-up tone at night, waiting for the screen to load 💻📞
-[00:36.81]MSN messenger, "wanna play?" on the old code 💬🖱️
-[00:42.29]Mamá yelling "¡A cenar!" while I hide under the sheets 🍽️🛏️
-[00:47.61]Dreaming of the future, but it's all just beats 🎶💭
-[00:52.90]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
-[00:58.46]From Sailor Moon to La Oreja de Van Gogh on repeat 🌙🎧
-[01:03.70]We had it all, the good times, the dumb fights 😂🤜🤛
-[01:06.59]Now we're grown, but damn, we miss those nights 😢🌙
-[01:09.46]The kids aren't alright? Nah, we were alright back then 😎⏳
-[01:14.24]'93 kid, Madrid heart, let's do it again! 💃🕺
-[01:22.32]Gran Vía posters, Hombres G on the radio blast 🎶📻
-[01:24.88]Friends with the Nokia 3310, Snake game master class 📱🐍
-[01:27.84]Saturday mornings, "Los Simpsons" dubbed in Spanish 📺😂
-[01:30.23]Bart skating the streets like us, no cash, no plan-ish 🛹😜
-[01:33.20]Fútbol in the calle, Real Madrid scarves in the air ⚽🧣
-[01:35.55]But we sang "Macarena" louder, didn't care 💃🎵
-[01:38.50]First crush at the instituto, notes passed in class 💌📄
-[01:40.82]Breaking up via SMS, that was our trash 📩💔
-[01:43.70]Internet café at 200 pesetas an hour 🌐💰
-[01:49.16]Downloading Limewire, waiting for the power ⏳💾
-[01:54.71]Mamá's paella on Sundays, family loud and wild 🥘👨‍👩‍👧‍👦
-[01:59.77]We were kings of the barrio, innocent child 👑🧒
-[02:04.94]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
-[02:10.55]From Dragon Ball Z to "7 Vidas" on repeat 🐉📺
-[02:15.77]We had it all, the good times, the dumb fights 😂🤜🤛
-[02:18.65]Now we're grown, but damn, we miss those nights 😔🌙
-[02:21.32]The kids aren't alright? Nah, we were alright back then 😎⏳
-[02:26.31]'93 kid, Madrid heart, let's do it again! 🔁❤️
-[02:29.46]Now the world's gone crazy, bills and rent and stress 🤯💸
-[02:34.47]But I close my eyes and I'm back in the barrio mess 😌🏘️
-[02:39.33]Skateboarding down Cuatro Caminos, no helmet, no fear 🛹💨
-[02:44.89]Friends forever, even if we're not near 🤝🌍
-[02:50.41]We survived the crisis, the EGB days 💪📚
-[02:55.74]Still got that fire from those endless plays 🔥🎮
-[03:00.90]Hey! Born in '93, raised on these Madrid streets 🏙️❤️
-[03:06.48]From Al salir de clase to TikTok, what a leap! 📺➡️📱
-[03:11.56]We had it all, the good times, the dumb fights 😂🤜🤛
-[03:14.30]Still singing along to those old nights 🎤🌙
-[03:17.31]The kids aren't alright? Screw that, we're alright right now 😎🔥
-
-
 `;
 const musicData = [
     {
@@ -1690,10 +1731,8 @@ const musicData = [
         audio: "https://cdn1.suno.ai/fa738177-848f-4a5a-bae6-022feb63f6ac.mp3",
         lyrics: machlow // Aquí vinculas la variable que creaste arriba
     }
-	
-
-];
-	  let currentAudio = new Audio();
+	];
+      let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
@@ -1790,17 +1829,19 @@ const musicData = [
         `;
     }
 
+    function updateTrackUI(song) {
+        document.title = `${song.title} - ${song.author}`;
+        document.getElementById('current-track-title').innerText = song.title;
+        document.getElementById('current-track-author').innerText = song.author;
+    }
+
     function loadPlaylist() {
         const container = document.getElementById('playlist');
-        const header = document.getElementById('playlist-header');
         
         if (isSingleSongMode) {
             const song = musicData[currentIndex];
-            header.innerHTML = `<strong>${song.title} - ${song.author}</strong>`;
             container.innerHTML = renderCardHTML(song, currentIndex, true);
         } else {
-            const currentSong = musicData[currentIndex];
-            header.innerHTML = `<strong>${currentSong.title} - ${currentSong.author}</strong>`;
             container.innerHTML = musicData.map((item, index) => renderCardHTML(item, index, index === currentIndex)).join('');
         }
     }
@@ -1812,8 +1853,7 @@ const musicData = [
         currentIndex = index;
         const song = musicData[currentIndex];
 
-        document.title = `${song.title} - ${song.author}`;
-        document.getElementById('playlist-header').innerHTML = `<strong>${song.title} - ${song.author}</strong>`;
+        updateTrackUI(song);
 
         currentAudio.src = song.audio;
         currentAudio.load();
@@ -1919,6 +1959,39 @@ const musicData = [
         });
     }
 
+    /* --- GESTIÓN DE PANTALLA COMPLETA --- */
+    function toggleFullscreen() {
+        const player = document.getElementById('player-container');
+        if (!document.fullscreenElement) {
+            if (player.requestFullscreen) {
+                player.requestFullscreen();
+            } else if (player.webkitRequestFullscreen) { /* Safari */
+                player.webkitRequestFullscreen();
+            } else if (player.msRequestFullscreen) { /* IE11 */
+                player.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenIcons);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcons);
+
+    function updateFullscreenIcons() {
+        const isFS = !!document.fullscreenElement;
+        document.getElementById('icon-fullscreen-enter').style.display = isFS ? 'none' : 'block';
+        document.getElementById('icon-fullscreen-exit').style.display = isFS ? 'block' : 'none';
+    }
+
+    document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+
     document.getElementById('btn-share').addEventListener('click', () => {
         const song = musicData[currentIndex];
         const baseUrl = window.location.origin + window.location.pathname;
@@ -2003,6 +2076,9 @@ const musicData = [
             e.preventDefault();
             document.getElementById('btn-play-pause').click();
         }
+        if (e.key === 'f' || e.key === 'F') {
+            toggleFullscreen();
+        }
     });
 
     window.onload = () => {
@@ -2011,9 +2087,12 @@ const musicData = [
         if (!isSingleSongMode) {
             updateVisualFocus();
         }
-        document.getElementById('player-bg').style.backgroundImage = `url('${musicData[currentIndex].img}')`;
-        document.title = `${musicData[currentIndex].title} - ${musicData[currentIndex].author}`;
+        const initialSong = musicData[currentIndex];
+        updateTrackUI(initialSong);
+        document.getElementById('player-bg').style.backgroundImage = `url('${initialSong.img}')`;
     };
     </script>
 </body>
 </html>
+	
+
