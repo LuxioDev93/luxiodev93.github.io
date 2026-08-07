@@ -258,19 +258,35 @@
         margin: 0;
     }
 
-    .btn-reset-filter {
-        background: none;
-        border: none;
-        color: var(--yt-red);
+    .playlist-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-author-action {
+        background: var(--yt-hover-bg);
+        border: 1px solid var(--yt-border);
+        color: var(--yt-text-primary);
         font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 4px;
+        padding: 5px 10px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: background 0.2s ease;
     }
 
-    .btn-reset-filter:hover {
-        background: var(--yt-hover-bg);
+    .btn-author-action:hover {
+        background: var(--yt-active-bg);
+    }
+
+    .btn-author-action.btn-reset {
+        padding: 5px 8px;
+        border-radius: 50%;
+        color: var(--yt-text-secondary);
     }
 
     .yt-card {
@@ -431,6 +447,29 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Título y autor ubicados justo debajo del reproductor -->
+            <div id="current-track-info">
+                <h2 id="current-track-title">Cargando...</h2>
+                <p id="current-track-author">Lux.io Music</p>
+            </div>
+        </div>
+
+        <!-- Lista Inferior o Detalle Estilo YouTube -->
+        <div id="playlist-container">
+            <div class="playlist-header-container">
+                <h3 class="playlist-title" id="playlist-header">A continuación</h3>
+                <div class="playlist-header-actions" id="author-actions" style="display: none;">
+                    <button id="btn-share-author" class="btn-author-action" onclick="shareAuthorList()">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                        Compartir lista
+                    </button>
+                    <button id="btn-reset-filter" class="btn-author-action btn-reset" onclick="clearAuthorFilter()" title="Ver todas las canciones">✕</button>
+                </div>
+            </div>
+            <div id="playlist"></div>
+        </div>
+    </div>
 
             <!-- Título y autor ubicados justo debajo del reproductor -->
             <div id="current-track-info">
@@ -2222,7 +2261,7 @@ const musicData = [
     }
 	];
       
-    let currentAudio = new Audio();
+   let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
@@ -2298,6 +2337,14 @@ const musicData = [
         return lyrics.sort((a, b) => a.time - b.time);
     }
 
+    function getActivePlaylist() {
+        if (isSingleSongMode) return [musicData[currentIndex]];
+        if (activeAuthorFilter) {
+            return musicData.filter(item => item.author === activeAuthorFilter);
+        }
+        return musicData;
+    }
+
     function renderCardHTML(item, index, isActive = false) {
         const authorClickAttr = (!isSingleSongMode) ? `onclick="event.stopPropagation(); filterByAuthor('${item.author}')"` : '';
         const authorClass = (!isSingleSongMode) ? 'clickable-author' : '';
@@ -2340,23 +2387,20 @@ const musicData = [
     function loadPlaylist() {
         const container = document.getElementById('playlist');
         const header = document.getElementById('playlist-header');
-        const resetBtn = document.getElementById('btn-reset-filter');
+        const authorActions = document.getElementById('author-actions');
         
         if (isSingleSongMode) {
             const song = musicData[currentIndex];
             header.innerText = "Canción compartida";
-            resetBtn.style.display = 'none';
+            authorActions.style.display = 'none';
             container.innerHTML = renderCardHTML(song, currentIndex, true);
         } else {
-            let filteredList = musicData;
-            
             if (activeAuthorFilter) {
                 header.innerText = `Canciones de: ${activeAuthorFilter}`;
-                resetBtn.style.display = 'inline-block';
-                filteredList = musicData.filter(item => item.author === activeAuthorFilter);
+                authorActions.style.display = 'flex';
             } else {
                 header.innerText = "A continuación";
-                resetBtn.style.display = 'none';
+                authorActions.style.display = 'none';
             }
 
             container.innerHTML = musicData.map((item, index) => {
@@ -2372,11 +2416,32 @@ const musicData = [
         if (isSingleSongMode) return;
         activeAuthorFilter = authorName;
         loadPlaylist();
+
+        // Si la canción actual no pertenece al autor filtrado, reproducir la primera de ese autor
+        const currentSong = musicData[currentIndex];
+        if (currentSong.author !== activeAuthorFilter) {
+            const firstAuthorSongIndex = musicData.findIndex(s => s.author === activeAuthorFilter);
+            if (firstAuthorSongIndex !== -1) {
+                playTrack(firstAuthorSongIndex);
+            }
+        }
     }
 
     function clearAuthorFilter() {
         activeAuthorFilter = null;
         loadPlaylist();
+    }
+
+    function shareAuthorList() {
+        if (!activeAuthorFilter) return;
+        const baseUrl = window.location.origin + window.location.pathname;
+        const shareUrl = `${baseUrl}?author=${slugify(activeAuthorFilter)}`;
+
+        copyToClipboard(shareUrl).then(() => {
+            showToast('¡Enlace de la lista copiado! 📋');
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+        });
     }
 
     function playTrack(index) {
@@ -2408,6 +2473,48 @@ const musicData = [
         }
     }
 
+    function playNextTrack() {
+        if (isSingleSongMode) {
+            currentAudio.currentTime = 0;
+            currentAudio.play();
+            return;
+        }
+
+        const activeList = getActivePlaylist();
+        if (activeList.length === 0) return;
+
+        const currentSong = musicData[currentIndex];
+        let currentFilteredIndex = activeList.findIndex(s => s === currentSong);
+
+        let nextFilteredIndex = currentFilteredIndex + 1;
+        if (nextFilteredIndex >= activeList.length) nextFilteredIndex = 0;
+
+        const nextSong = activeList[nextFilteredIndex];
+        const realIndex = musicData.indexOf(nextSong);
+        playTrack(realIndex);
+    }
+
+    function playPrevTrack() {
+        if (isSingleSongMode) {
+            currentAudio.currentTime = 0;
+            currentAudio.play();
+            return;
+        }
+
+        const activeList = getActivePlaylist();
+        if (activeList.length === 0) return;
+
+        const currentSong = musicData[currentIndex];
+        let currentFilteredIndex = activeList.findIndex(s => s === currentSong);
+
+        let prevFilteredIndex = currentFilteredIndex - 1;
+        if (prevFilteredIndex < 0) prevFilteredIndex = activeList.length - 1;
+
+        const prevSong = activeList[prevFilteredIndex];
+        const realIndex = musicData.indexOf(prevSong);
+        playTrack(realIndex);
+    }
+
     function updateVisualFocus() {
         document.querySelectorAll('.yt-card').forEach((el) => {
             const itemIndex = parseInt(el.id.replace('item-', ''), 10);
@@ -2435,6 +2542,7 @@ const musicData = [
     function checkUrlParams() {
         const urlParams = new URLSearchParams(window.location.search);
         const songParam = urlParams.get('song');
+        const authorParam = urlParams.get('author');
 
         if (songParam !== null) {
             let foundIndex = -1;
@@ -2456,6 +2564,14 @@ const musicData = [
             if (foundIndex !== -1) {
                 isSingleSongMode = true;
                 currentIndex = foundIndex;
+            }
+        } else if (authorParam !== null) {
+            const targetSlug = slugify(authorParam);
+            const matchedSong = musicData.find(s => slugify(s.author) === targetSlug || s.author.toLowerCase() === authorParam.toLowerCase());
+            if (matchedSong) {
+                activeAuthorFilter = matchedSong.author;
+                const firstIdx = musicData.findIndex(s => s.author === activeAuthorFilter);
+                if (firstIdx !== -1) currentIndex = firstIdx;
             }
         }
     }
@@ -2491,6 +2607,13 @@ const musicData = [
                 reject(err);
             }
         });
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('share-toast');
+        toast.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
     function toggleFullscreen() {
@@ -2531,23 +2654,14 @@ const musicData = [
         const shareUrl = `${baseUrl}?song=${slugify(song.id || song.title)}`;
 
         copyToClipboard(shareUrl).then(() => {
-            const toast = document.getElementById('share-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
+            showToast('¡Enlace de canción copiado! 📋');
         }).catch(err => {
             console.error('Error al copiar:', err);
         });
     });
 
     currentAudio.addEventListener('ended', () => {
-        if (isSingleSongMode) {
-            currentAudio.currentTime = 0;
-            currentAudio.play();
-        } else {
-            let nextIndex = currentIndex + 1;
-            if (nextIndex >= musicData.length) nextIndex = 0; 
-            playTrack(nextIndex);
-        }
+        playNextTrack();
     });
 
     currentAudio.addEventListener('timeupdate', () => {
@@ -2599,10 +2713,10 @@ const musicData = [
         if (!isSingleSongMode) {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                playTrack(currentIndex + 1);
+                playNextTrack();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                playTrack(currentIndex - 1);
+                playPrevTrack();
             }
         }
         if (e.key === ' ') {
@@ -2627,7 +2741,3 @@ const musicData = [
     </script>
 </body>
 </html>
-
-
-	
-
