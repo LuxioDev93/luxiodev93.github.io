@@ -201,6 +201,17 @@
         font-size: 0.9rem;
         color: var(--yt-text-secondary);
         font-weight: 500;
+        display: inline-block;
+    }
+
+    .clickable-author {
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .clickable-author:hover {
+        color: var(--yt-text-primary);
+        text-decoration: underline;
     }
 
     #share-toast {
@@ -231,13 +242,35 @@
         gap: 8px;
     }
 
+    .playlist-header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
     .playlist-title {
         font-size: 0.95rem;
         font-weight: 600;
-        margin-bottom: 4px;
         color: var(--yt-text-secondary);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        margin: 0;
+    }
+
+    .btn-reset-filter {
+        background: none;
+        border: none;
+        color: var(--yt-red);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .btn-reset-filter:hover {
+        background: var(--yt-hover-bg);
     }
 
     .yt-card {
@@ -314,6 +347,7 @@
         font-size: 0.825rem;
         color: var(--yt-text-secondary);
         font-weight: 400;
+        display: inline-block;
     }
 
     .yt-meta {
@@ -407,7 +441,10 @@
 
         <!-- Lista Inferior o Detalle Estilo YouTube -->
         <div id="playlist-container">
-            <div class="playlist-title" id="playlist-header">A continuación</div>
+            <div class="playlist-header-container">
+                <h3 class="playlist-title" id="playlist-header">A continuación</h3>
+                <button id="btn-reset-filter" class="btn-reset-filter" style="display: none;" onclick="clearAuthorFilter()">Ver todas</button>
+            </div>
             <div id="playlist"></div>
         </div>
     </div>
@@ -1247,6 +1284,84 @@ const countries = `
 [02:09.93]Sudán 🇸🇩
 `;
 
+const espcieg = `
+[00:00.00]🪞🌑✨
+[00:04.26]Me miré… 🪞
+[00:08.25]y no supe quién estaba ahí.
+[00:14.67]Cara conocida, pero extraña también, 🪞
+[00:17.22]lleva mi nombre, pero no sé quién es.
+[00:19.91]Imita mis gestos, repite mi voz.
+[00:22.67]pero no recuerda lo que dolió.
+[00:25.16]Capas encima de lo que fui.
+[00:27.80]máscaras hechas para sobrevivir. 🎭
+[00:30.32]Aplausos vacíos, identidad prestada. 👏
+[00:32.92]mi reflejo vive… pero no siente nada.
+[00:36.41]Fragmentos rotos sobre el lavamanos. 🪞
+[00:39.01]versiones muertas cayendo en mis manos.
+[00:41.81]Me convertí en lo que querían ver.
+[00:44.00]y olvidé por dentro quién quise ser.
+[00:46.71]Y el cristal no responde…
+[00:50.73]solo copia mi error.
+[00:53.08]Si no queda nadie adentro…
+[00:55.56]¿quién sostiene el control?
+[00:57.72]Dime quién soy cuando todo se va.
+[01:00.40]Cuando la máscara empieza a sangrar. 🎭
+[01:02.80]Rompe la cara que aprendí a usar.
+[01:05.40]Devuélveme el alma aunque duela mirar.
+[01:08.24]Quiero sentir aunque pueda caer.
+[01:10.56]Quiero existir y no solo parecer.
+[01:13.29]Si este reflejo se atreve a morir…
+[01:16.33]QUE MUERA HOY… ESPEJO CIEGO 💥🪞
+[01:28.31]Aprendí temprano a reemplazarme.
+[01:30.74]a convertirme en alguien que pudiera agradarte.
+[01:33.31]Un gesto correcto, emoción ensayada.
+[01:36.03]vida perfecta… mente apagada.
+[01:38.59]Mentí tanto que me convencí.
+[01:41.12]que ese personaje también era mí.
+[01:43.88]Pero en silencio, lejos de todos…
+[01:46.20]se cae el teatro… y enfrento el fondo. 🎭
+[01:48.96]Mis ojos repiten una expresión.
+[01:51.40]pero no traducen el corazón.
+[01:54.00]Si borro todo lo que fingí…
+[01:56.40]tal vez descubra qué queda de mí.
+[02:00.59]Se rompe la superficie…
+[02:03.47]no lo puedo evitar.
+[02:05.38]Si la mentira muere…
+[02:08.05]tal vez pueda respirar.
+[02:10.29]Dime quién soy cuando todo se va.
+[02:12.93]Cuando la máscara empieza a sangrar. 🎭
+[02:15.49]Rompe la cara que aprendí a usar.
+[02:17.81]Devuélveme el alma aunque duela mirar.
+[02:20.77]Quiero sentir aunque pueda caer.
+[02:23.10]Quiero existir y no solo parecer.
+[02:25.98]Si este reflejo se atreve a morir…
+[02:28.75]QUE MUERA HOY… ESPEJO CIEGO 💥🪞
+[02:36.22]Caen…
+[02:38.09]las versiones que inventé…
+[02:41.21]Mueren…
+[02:43.64]las que nunca abracé…
+[02:48.72]Y detrás del miedo…
+[02:53.02]empiezo a verme…
+[02:59.07]Rómpete. 💥
+[03:04.35]Rómpete. 💥
+[03:09.02]Rómpete. 💥
+[03:09.79]Que caiga la ilusión.
+[03:12.31]Que sangre la ficción.
+[03:14.87]Prefiero el vacío…
+[03:18.57]a vivir sin ser yo.
+[03:29.58]Hoy renazco aunque tenga que perder. 🌅
+[03:33.11]Aunque no quede nada en pie.
+[03:35.58]Prefiero el dolor a no existir.
+[03:38.18]Prefiero el abismo a seguir así.
+[03:40.70]Que caiga el reflejo, que caiga el papel. 🪞
+[03:43.56]Que muera el personaje de una vez. 🎭
+[03:48.96]SI ESTE NO SOY YO… SI NUNCA LO FUI…
+[03:54.69]¡ROMPETE AHORA… ESPEJO CIEGO! 💥🪞
+[04:07.22]Ahora…
+[04:09.05]ya no hay copia.
+[04:14.09]Solo… yo. ✨
+`;
+
 const iguanacaos = `
 [00:00.00] 🦎🔥
 [00:06.74]Nada tiene sentido… 🌌❓
@@ -1312,6 +1427,77 @@ const iguanacaos = `
 [03:26.00]Iguana del caos 🦎🔥
 [03:32 .00]⠀⠀⠀⠀
 `;
+
+const fenixx = `
+[00:00.00] 🔥🪽
+[00:04.87]Yeah… 🔥
+[00:07.19]De lo que fui… 🌑
+[00:09.71]solo queda… yo. ✨
+[00:22.74]Cenizas frías donde ardía mi voz, 🔥🌫️
+[00:24.93]ecos rotos de un grito que se apagó. 🖤
+[00:27.41]Máscaras caídas, vidrio en la piel, 🎭🪞
+[00:29.94]ya no sé quién fui… pero sigo en pie. 💪
+[00:32.68]Tornillos sueltos, piezas sin razón, ⚙️
+[00:35.08]todo lo que era se volvió carbón. 🪵🔥
+[00:37.89]Todo ardí, todo se apagó… 🔥
+[00:40.28]y en el humo denso… quedo solo yo. 🌫️
+[00:44.43]Pero algo late todavía, ❤️
+[00:47.04]entre ruinas y heridas. 🪨🩹
+[00:49.64]Una chispa escondida, ✨🔥
+[00:51.83]que se niega a morir. 🕊️
+[00:54.60]Fénix… ardo de nuevo, 🔥🪽
+[00:57.41]de las cenizas vuelo. 🌋🪽
+[00:59.72]Fénix… rompo el cielo, ☄️
+[01:02.41]ya no hay jaula, solo yo. 🕊️
+[01:05.05]Fénix… quemo lo falso, 🔥🎭
+[01:07.86]ahora ardo real. ❤️‍🔥
+[01:10.22]Fénix… no me apago, 🔥
+[01:13.16]voy a renacer. 🌅🪽
+[01:15.48]Recojo fragmentos, los fundo en mi ser, 🧩
+[01:18.12]alas nuevas hechas de lo que quebré. 🪽✨
+[01:20.53]No vuelvo al engranaje que me quiso apagar, ⚙️❌
+[01:23.17]ni al espejo ciego que no supe mirar. 🪞
+[01:25.78]Rabia en las venas, pero va hacia el sol, ☀️🔥
+[01:28.18]ya no soy cadena, ahora soy motor. ⛓️➡️⚙️
+[01:30.86]De lo roto hice mi revolución, ✊
+[01:33.42]cada cicatriz… es mi combustión. ❤️‍🔥
+[01:36.06]Siento el pulso encendido, ❤️
+[01:38.50]lo que creí perdido. ✨
+[01:40.78]El fuego ha decidido… 🔥
+[01:43.09]volver a crecer. 🌱
+[01:45.93]Fénix… ardo de nuevo, 🔥🪽
+[01:48.71]de las cenizas vuelo. 🌋🪽
+[01:50.98]Fénix… rompo el cielo, ☄️
+[01:53.63]ya no hay jaula, solo yo. 🕊️
+[01:56.11]Fénix… quemo lo falso, 🔥🎭
+[01:59.08]ahora ardo real. ❤️‍🔥
+[02:01.40]Fénix… no me apago, 🔥
+[02:04.28]voy a renacer. 🌅🪽
+[02:06.61]Caí… para aprender a volar, 🪽
+[02:09.16]perdí… para volver a crear. ✨
+[02:11.80]El fuego no pide permiso, 🔥
+[02:14.65]solo prende… y ya. ⚡
+[02:18.19]Y aunque duela lo que dejé atrás, 🖤
+[02:23.28]sé que no me voy a quebrar. 💪
+[02:26.36]¡Arde! 🔥
+[02:28.07]¡Arde! ¡Arde! 🔥🔥
+[02:30.59]¡Vuela! 🪽
+[02:31.52]¡Vuela! ¡Vuela! 🪽🪽
+[02:32.82]¡Renace! 🌅
+[02:34.29]¡Renace! ¡Renace! 🌅🔥
+[02:37.06]No es final… es empezar. ✨
+[02:39.66]Fénix… ardo de nuevo, 🔥🪽
+[02:42.43]de las cenizas vuelo. 🌋🪽
+[02:44.59]Fénix… rompo el cielo, ☄️
+[02:47.31]ya no hay jaula, solo yo. 🕊️
+[02:49.79]Fénix… somos miles, 🔥👥
+[02:52.88]levantando la voz. 📢
+[02:54.99]Fénix… sin final, ♾️🔥
+[02:57.75]renaciendo en el sol. ☀️🪽
+[03:04.00]Ahora… vuelo. 🪽
+[03:09.05]Sigo ardiendo… vivo. 🔥❤️
+`;
+
 
 const amjirf = `
 [00:00.00] 🦒✨
@@ -1416,6 +1602,97 @@ const mamacuento = `
 [03:41.79]antes de soñar. 🌙😴✨
 `;
 
+const blqblq = `
+[00:00.00] 🧱✨
+[00:02.00]Hay sombras que bailan… 👻
+[00:05.02]chúmbala en la pared. 🌙
+[00:07.25]Pero yo no corro. 💪
+[00:09.35]Tomo el bloque… 🧱
+[00:11.00]y empiezo. ✨
+[00:13.64]En la noche se asoman caras de hueso, 💀🌙
+[00:15.55]bailan chumbalacachumbala, 👻🎶
+[00:16.87]me quieren asustar. 😱
+[00:18.17]Sombras que estiran dedos, ruidos que no sé qué son, 👻🖐️
+[00:20.83]bajo la cama o en el armario, siempre el mismo show. 🛏️🚪
+[00:23.50]Me dicen cállate, me llaman pequeño, tonto, llorón, 🗣️
+[00:26.19]pero ese nombre no me cabe, no es mi piel, no es mi canción. ❤️
+[00:29.01]Si no me gusta cómo suena, lo digo sin temblar: 💬
+[00:31.96]"No me llames así…
+[00:33.10]soy yo, y punto final." ✋
+[00:35.08]El miedo grita fuerte… pero yo más. 💪🔥
+[00:37.95]No será mi forma de ser.
+[00:41.85]Bloque a bloque… 🧱
+[00:43.46]construyo mi torre 🏗️
+[00:44.96]La más alta, la que nadie derriba 🏰✨
+[00:47.17]Bloque a bloque… 🧱
+[00:48.53]si caigo, no importa 🙂
+[00:49.65]Me levanto más alto que antes, ¡más fuerte que nunca! 💪🚀
+[00:53.16]No habrá nadie que me intimide 🙅
+[00:55.42]Porque grito lo que siento, claro y sin miedo 📢❤️
+[00:58.27]Bloque a bloque… 🧱
+[00:59.39]soy yo quien decide 👊
+[01:00.85]¡Bloque a bloque… 🧱
+[01:02.02]la torre crece! 🏗️⬆️
+[01:03.40]Caí mil veces, torres de bloques al suelo ¡pum!, 💥🧱
+[01:05.82]piezas volando, pero las recojo, no me quedo en el suelo. ✋
+[01:08.45]Esos monstruos de cuento que bailan en la oscuridad, 👹🌑
+[01:10.79]los miro fijo y digo: 👀
+[01:11.92]"Vengan, que yo no huyo ya". 😎
+[01:13.44]Si algo me asusta, no finjo que no pasa,
+[01:15.40]lo enfrento de frente, lo nombro, 🛡️
+[01:17.11]lo desarmo en mi cabeza. 🧠
+[01:18.61]Cada "no" que digo es un bloque nuevo, sólido, 🧱
+[01:21.28]cada miedo que enfrento… otro piso más arriba. ⬆️
+[01:24.38]El miedo grita fuerte… pero yo más. 💪🔥
+[01:27.33]No será mi forma de ser…
+[01:30.45]¡nunca más! ✨
+[01:31.88]Bloque a bloque… 🧱
+[01:33.14]construyo mi torre 🏗️
+[01:34.66]La más alta, la que nadie derriba 🏰
+[01:37.09]Bloque a bloque… 🧱
+[01:38.35]si caigo, no importa 🙂
+[01:39.63]Me levanto más alto que antes,
+[01:41.34]¡más fuerte que nunca! 💪🚀
+[01:42.92]No habrá nadie que me intimide 🙅
+[01:45.08]Porque grito lo que siento, claro y sin miedo 📢❤️
+[01:47.87]Bloque a bloque… 🧱
+[01:49.19]soy yo quien decide 👊
+[01:50.65]¡Bloque a bloque… 🧱
+[01:51.80]la torre crece! 🏗️⬆️
+[01:53.54]A veces tiemblo…
+[01:54.86]cuando todo está oscuro. 🌑
+[01:56.97]A veces caigo… y duele el golpe.
+[01:59.09]Pero miro los bloques esparcidos… 🧱
+[02:01.38]y elijo uno a uno…
+[02:03.56]para volver a empezar. ✨
+[02:05.46]¡Bloque! ¡Bloque! 🧱🧱
+[02:06.87]¡Bloque a bloque! 🏗️
+[02:08.05]No del miedo… mi forma de ser.
+[02:10.53]¡Bloque! ¡Bloque! ¡Levántate más alto! ⬆️💪
+[02:13.06]¡Soy yo… ❤️
+[02:14.28]y construyo! 🧱
+[02:15.60]Bloque a bloque… 🧱
+[02:16.81]la torre más alta 🏰
+[02:18.03]¡Más alta que el miedo, más alta que ayer! 🚀
+[02:20.63]Bloque a bloque… 🧱
+[02:21.86]si caigo, me río 😄
+[02:23.06]Me levanto volando, 🪽
+[02:24.30]¡soy invencible ya! ⭐
+[02:26.43]Ya no habrá nadie… que me pare ✋
+[02:29.11]Porque grito mi nombre… 📢
+[02:30.90]¡y el mundo lo sabe! 🌍✨
+[02:35.87]Bloque a bloque… 🧱
+[02:37.67]bloque 🧱
+[02:38.57]soy yo quien decide 👊
+[02:40.97]¡Bloque a bloque… 🧱
+[02:42.52]bloque 🧱
+[02:43.64]la torre NO cae! 🏰💪
+[02:48.41]Bloque a bloque… 🧱
+[02:50.13]ya no hay calaveras que me asusten. 💀❌
+[02:52.94]Solo… mi torre. 🏰
+[02:56.00]Y sigo subiendo. ⬆️✨
+`;
+
 const drkld = `
 [00:00.00]Luces rotas en Nólun, caos total 💥🏙️
 [00:05.22]Nos atacan desde el cielo, todo va a estallar ☄️⚔️
@@ -1486,7 +1763,184 @@ const drkld = `
 [03:33.86]Cien plantas del Demon Shaft 💯🏰
 [03:36.80]The chaos fell — I’m still alive at last 🎉🔥
 `;
-	  
+
+const expexp = `
+[00:00.00]Chip en la PS2, quemando DVD pirata 🎮💿
+[00:03.89]DVD pirata 💿
+[00:05.39]Clip en la Switch, jig RCM, ¡ya está! ⚡🎮
+[00:09.58]¡ya está! ✅
+[00:10.76]Infinite lives, ♾️❤️
+[00:12.91]god mode on… 👑⚡
+[00:15.56]Exploit explosion! 💥🚀
+[00:25.98]En el 2002, modchip chino por eBay 🕹️📦
+[00:31.37]Free McBoot, swap magic, rompiendo el candado 🔓✨
+[00:37.10]Gran Turismo con nitro ilimitado 🏎️💨
+[00:41.29]Resident Evil, balas eternas, 🧟
+[00:44.50]zombies al suelo 💀
+[00:46.85]Burneaba ISOs en la noche, 🌙💿
+[00:48.71]amigos en la casa 🏠🎉
+[00:49.60]Metal Gear sin Game Over, 🎖️
+[00:50.68]puro caos sin drama 💥
+[00:52.50]No pagaba Sony, jugaba todo gratis 🎮
+[00:54.97]Del Final Fantasy al God of War, ⚔️
+[00:56.80]mi biblioteca infinita. 📚♾️
+[00:58.66]No DRM, no bans, just pure untamed play 🚫
+[01:01.27]Crack the code, load the payload today 💻⚡
+[01:03.95]From disc swaps to USB loaders 💿🔌
+[01:06.52]We own the console, fuck the owners! 🔥
+[01:09.25]Exploit Explosion! 💥🚀
+[01:11.23]Go! Go! Go! 🚀
+[01:13.06]¡Chip de PS2 al clip de Switch, 🎮➡️🎮
+[01:15.37]todo explotó! 💥
+[01:18.10]Exploit Explosion! 💥⚡
+[01:20.13]Hey! Hey! Hey! 🙌
+[01:22.07]Cheats activados, 🎯
+[01:23.17]juegos sin fin, ♾️🎮
+[01:25.36]god mode rey 👑
+[01:27.59]Infinite ammo, 🔫♾️
+[01:29.01]money hack, levels skip 💰⏩
+[01:31.37]¡Explota la rom pa, la Switch vibra, 💥🎮
+[01:34.42]no hay stop! 🚀
+[01:35.67]This is piracy paradise 🏴‍☠️
+[01:37.99]EXPLOIT EXPLOSION! 💥🔥
+[01:40.62]Ahora Atmosphere, Hekate boot, clip en el JoyCon 🎮⚙️
+[01:44.16]Sigpatches listos, Tinfoil para dumps masivos 📂
+[01:47.00]Animal Crossing con islas infinitas 🏝️♾️
+[01:49.32]Zelda con rupees max, rupees max, rupees max 💎
+[01:52.29]EdiZon cheats, 99 corazones en Smash ❤️❤️
+[01:54.89]No esperes sales, descarga todo el catálogo 📚
+[01:57.45]Wii U y PS3 en 🎮
+[01:59.39]emuladores en Other drive 💾
+[02:01.34]de Retro Next-Gen 🕹️✨
+[02:03.25]Mi set up es el rey del Hack 👑💻
+[02:07.51]Jailbreak the future, 🚀
+[02:08.85]homebrew the past 🍺🕹️
+[02:10.19]No paywalls, no subs, freedom at last ✨
+[02:12.37]Glitch the system, cheat the game ⚡🎮
+[02:15.20]We're the pirates, 🏴‍☠️
+[02:16.70]stake our claim! ⚑
+[02:18.41]Exploit Explosion! 💥🚀
+[02:20.28]Go! Go! Go! 🚀
+[02:21.99]¡Del modchip viejo al jig nuevo, 🔧➡️⚡
+[02:24.66]todo explotó! 💥
+[02:27.55]Exploit Explosion! 💥
+[02:29.43]Hey! Hey! Hey! 🙌
+[02:30.51]Cheats en masa, roms por TB, 📦
+[02:33.08]no hay ley ⚡
+[02:35.19]Moon jumps, no clip, 🌙
+[02:37.48]super speed run 💨
+[02:38.90]¡Explota el cartucho, la NAND se quema, 🔥🎮
+[02:41.17]full fun! 😎
+[02:43.37]This is our hacked horizon 🌅
+[02:47.02]EXPLOIT EXPLOSION! 💥🚀
+[02:49.41]Riesgos? ⚠️
+[02:50.39]Brickeo? 🧱
+[02:51.86]Ban wave? 🚫
+[02:53.00]¿Y qué? 😏
+[02:54.66]vale por un Zelda free 🗡️
+[02:56.20]por un PSchip 🎮
+[02:58.80]La industria llora, 😢
+[03:00.99]nosotros reímos alto 😂
+[03:03.23]De torrents oscuros a GitHub repos 🌐💻
+[03:06.92]No more waiting, no more paying ⏩
+[03:11.26]Pirate life forever 🏴‍☠️♾️
+[03:14.10]exploiting, slaying! ⚔️
+[03:16.86]Chip! Clip! Cheat! Load! ⚡🎮
+[03:19.43]Infinite games ♾️🎮
+[03:20.81]EXPLODE! 💥
+[03:22.23]Exploit Explosion! 🚀💥
+[03:24.35]Go! Go! Go! 🚀
+[03:25.90]¡PS2 al Switch, cheats forever, 🎮➡️🎮
+[03:29.96]explotó! 💥
+[03:32.81]Exploit Explosion! 💥
+[03:34.76]Hey! Hey! Hey! 🙌
+[03:36.26]¡Roms ilimitadas, 📚♾️
+[03:38.74]hacks sin fin, soy el boss! 👑
+[03:42.67]No buy, just fly ✈️
+[03:45.40]god mode glory ⚡👑
+[03:49.14]Exploit Explosion! 💥
+[03:50.61]We cracked the world 🌍⚡
+[03:53.34]FREEPLAY VICTORY! 🏆🎮
+[03:58.54]Modchip encendido… 🔥
+[04:01.50]clip conectado… 🔌
+[04:03.94]Cheats loaded… ⚡
+[04:08.65]Exploit explosion… 💥
+[04:11.94]forever. ♾️
+[04:19.29]Infinite lives ♾️❤️
+[04:22.31]forever. ✨
+`;
+
+
+const engravci = `
+[00:00.00] ⚙️
+[00:23.00]Desperté otra vez con las manos vacías 🤲🌫️
+[00:26.16]buscando algo mío entre tanto ruido 🔍🔊
+[00:28.63]el lápiz ya no sangra como antes lo hacía ✏️🩸
+[00:31.23]soy un cuadro en blanco que el tiempo ha diluido 🖼️⏳
+[00:33.96]Recuerdo cuándo todo tenía color 🎨🌈
+[00:36.07]cuando mis errores valían más que su perfección 💔✨
+[00:39.40]ahora firmo el mismo día hasta el amanecer 📄🌅
+[00:41.96]y llamo a eso vivir, llamo a eso crecer 🧍⏳
+[00:45.25]Pero algo se fue 🍂💨
+[00:48.41]sin que nadie lo viera 👤🌫️
+[00:50.73]algo se apagó 🕯️🖤
+[00:53.12]detrás de la quincena 💵⛓️
+[00:55.52]Siento que el mundo me llenó de tornillos ⚙️🫥
+[00:58.85]me pulió los bordes, me quitó los brillos 🪵✨➡️🌑
+[01:01.66]me enseñó a producir sin necesitar sentir 🏭🤖
+[01:04.25]a sonreír por contrato, a obedecer, a seguir 🙂📋
+[01:09.41]¿Dónde quedé yo? ❓🪞
+[01:12.25]¿Dónde está mi voz? 🎙️🌫️
+[01:14.60]enterrada bajo horas, bajo metas y pavor ⏰📈😨
+[01:19.81]soy el último latido de algo que ya no soy ❤️‍🩹💔
+[01:24.68]Engranaje del Vacío ⚙️🕳️
+[01:31.22]Veinte años de urgencias que nadie pidió 📆⚠️
+[01:33.66]creatividad vendida por lo que el mercado ordenó 🎨💸
+[01:36.30]me dijeron "sé grande" pero en molde prefabricado 🏗️📦
+[01:39.02]me dijeron "sé libre" con el sueldo encadenado 💼⛓️
+[01:41.57]cada idea que tuve fue archivada o ignorada 🗂️🚫
+[01:44.01]cada chispa apagada antes de ser llamarada ✨🧯
+[01:46.62]hoy ejecuto tareas que una máquina haría 🤖🛠️
+[01:49.62]¿y yo qué soy entonces? ¿la sombra de la mía? 👤🌑
+[01:52.19]Ya no sé si pienso o si proceso 🧠⚙️
+[01:54.70]si siento de verdad o simulo el proceso ❤️🎭
+[01:57.17]el reloj me come vivo y lo llaman progreso 🕰️🦷
+[01:59.81]mientras yo me pierdo en mi propio regreso 🌫️🚶
+[02:04.03]Pero algo se fue 🍂💨
+[02:06.84]sin que nadie lo viera 👤🌫️
+[02:09.52]algo se apagó 🕯️🖤
+[02:11.62]detrás de la quincena 💵⛓️
+[02:13.85]Siento que el mundo me llenó de tornillos ⚙️🫥
+[02:17.06]me pulió los bordes, me quitó los brillos 🪵✨➡️🌑
+[02:19.90]me enseñó a producir sin necesitar sentir 🏭🤖
+[02:22.42]a sonreír por contrato, a obedecer, a seguir 🙂📋
+[02:27.90]¿Dónde quedé yo? ❓🪞
+[02:30.78]¿Dónde está mi voz? 🎙️🌫️
+[02:33.10]enterrada bajo horas, bajo metas y pavor ⏰📈😨
+[02:37.73]soy el último latido de algo que ya no soy ❤️‍🩹💔
+[02:42.81]Engranaje del Vacío ⚙️🕳️
+[03:08.39]Me acuerdo de cuándo el tiempo era mío...
+[03:11.39]cuando la tarde sin rumbo era lo más serio
+[03:13.39]cuando perderme era encontrarme 🌌🧭
+[03:19.57]y quedar era simplemente... estar 🎨🌱
+[03:25.95]Y ahora me preguntan qué quiero ser 🤔❓
+[03:28.55]cuando ya entregué lo mejor de quien iba a ser 💔🕊️
+[03:30.90]cuando las horas me robaron lo que nunca devolverán ⏳🖤
+[03:34.15]y lo que queda de mí ya no cabe en ningún plan 📋🚫
+[03:36.95]Pero en algún lugar del ruido 🔊✨
+[03:39.10]todavía late algo que no han podido ❤️🔥
+[03:41.67]algo que resiste, que no aprende a morir 🛡️🌱
+[03:44.63]algo que recuerda por qué quise existir 💭💖
+[03:48.00]Ya no pido que el mundo me entienda 🌍🤲
+[03:51.16]solo quiero salir de esta fábrica inmensa 🏭🚪
+[03:53.60]quiero fallar sin que nadie me mida 💥📏
+[03:56.09]quiero ser defecto... quiero ser vida 💔❤️
+[03:59.10]¿Dónde quedé yo? ❓🪞
+[04:01.17]aquí, entre el polvo y el frío 🌫️❄️
+[04:03.98]soy el último grito de algo que fue mío 📣🖤
+[04:09.23]ENGRANAJE DEL VACÍO ⚙️🕳️
+`;
+
 const b93 = `
 [00:00.00]🎸🤘🎸
 [00:10.11]Born in '93, Madrid summer heat ☀️🔥
@@ -1536,6 +1990,8 @@ const b93 = `
 [03:11.56]We had it all, the good times, the dumb fights 😂🤜🤛
 [03:14.30]Still singing along to those old nights 🎤🌙
 [03:17.31]The kids aren't alright? Screw that, we're alright right now 😎🔥
+
+
 `;
 	  
 const machlow = `
@@ -1596,7 +2052,7 @@ const machlow = `
 [03:53.90]MACHALA LOW LIFE, VERGA…
 `;
 const musicData = [
-    {
+     {
         title: "Mi color es especial",
         img: "https://cdn2.suno.ai/image_large_c441c1c6-b45f-404a-b7be-c2e0985fb131.jpeg",
         audio: "https://cdn1.suno.ai/c441c1c6-b45f-404a-b7be-c2e0985fb131.mp3",
@@ -1616,7 +2072,7 @@ const musicData = [
     },
 	    {
         title: "Dark Cloud",
-        img: "https://i.ibb.co/fVzcM6CC/one-more-floor3-bajo-30mb.gif", 
+        img: "https://wallpapercave.com/wp/wp2974051.jpg", 
         audio: "https://cdn1.suno.ai/156e1ddc-0ec3-43fd-8267-020296c85263.mp3",
         lyrics: drkld // Aquí vinculas la variable que creaste arriba
     },
@@ -1664,7 +2120,7 @@ const musicData = [
     },
     {
         title: "Garacias a Dios hay Chamba",
-        img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg", 
+        img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
 		author: "Dani Chalán",
         audio: "https://cdn1.suno.ai/799c6554-7dcc-4377-b571-e360c40f8f2f.mp3",
         lyrics: haychamba // Aquí vinculas la variable que creaste arriba
@@ -1676,7 +2132,6 @@ const musicData = [
         lyrics: upup // Aquí vinculas la variable que creaste arriba
     },
 	    {
-		id: "mi-amiga-jirafa",
         title: "Mi amiga jirafa ",
         img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
         audio: "https://cdn1.suno.ai/4c9defc7-f171-48f2-8089-76bd2f0afeb1.mp3",
@@ -1713,16 +2168,50 @@ const musicData = [
     },
 	    {
         title: "Gallinita Espacial",
-        img: "https://i.ibb.co/XfV791Sp/video6023775384502286725-bajo-30mb.gif", 
+        img: "https://i.ibb.co/d0Cqj92f/image-jpg-75.jpg", 
         audio: "https://cdn1.suno.ai/457158d0-0434-41ee-96a3-2cb51d893577.mp3",
         lyrics: espagal // Aquí vinculas la variable que creaste arriba
     },
 	{
         title: "Iguana del Caos",
-        img: "https://i.ibb.co/DD39wfc9/video6023775384502286742-bajo-30mb.gif", 
+        img: "https://i.ibb.co/rgJdfSr/content-75.jpg",
 		author: "Metal Insano",
         audio: "https://cdn1.suno.ai/7c37e025-dc89-4c6a-bb71-3ce7a30c60bf.mp3",
         lyrics: iguanacaos // Aquí vinculas la variable que creaste arriba
+    },
+	{
+        title: "Engranaje del vacío",
+        img: "https://cdn2.suno.ai/image_large_31f502aa-fc9a-485b-a99a-34cc9a0b18ad.jpeg",
+		author: "Metal Insano",
+        audio: "https://cdn1.suno.ai/c96e2fee-8d6d-4d14-bc56-c01166fd6337.mp3",
+        lyrics: engravci // Aquí vinculas la variable que creaste arriba
+    },
+	{
+        title: "Espejo ciego",
+        img: "https://cdn2.suno.ai/image_large_9f7ad9b3-997b-4795-bb15-050343640e46.jpeg",
+		author: "Metal Insano",
+        audio: "https://cdn1.suno.ai/9f7ad9b3-997b-4795-bb15-050343640e46.mp3",
+        lyrics: espcieg // Aquí vinculas la variable que creaste arriba
+    },
+	{
+        title: "Fénix",
+        img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
+		author: "Metal Insano",
+        audio: "https://cdn1.suno.ai/87f5d0f6-92e5-4ee6-b6a9-027b76f2beed.mp3",
+        lyrics: fenixx // Aquí vinculas la variable que creaste arriba
+    },
+	{
+        title: "Bloque a Bloque",
+        img: "https://cdn2.suno.ai/image_large_bd51f09a-26f6-42f9-8697-79449d3f5c7f.jpeg",
+		author: "Metal Insano",
+        audio: "https://cdn1.suno.ai/bd51f09a-26f6-42f9-8697-79449d3f5c7f.mp3",
+        lyrics: blqblq // Aquí vinculas la variable que creaste arriba
+    },
+	{
+        title: "Exploit Explosion",
+        img: "https://i.ibb.co/JW6Yfhxx/6868c0ae-3e1c-4b6a-95c7-893900519c38-75.jpg", 
+        audio: "https://cdn1.suno.ai/1f6050ec-2873-43a7-bfa2-be8f0a361094.mp3",
+        lyrics: expexp // Aquí vinculas la variable que creaste arriba
     },
 	{
         title: "Machala Low Life",
@@ -1732,14 +2221,14 @@ const musicData = [
         lyrics: machlow // Aquí vinculas la variable que creaste arriba
     }
 	];
-      let currentAudio = new Audio();
+    let currentAudio = new Audio();
     let currentIndex = 0;
     let parsedLyrics = [];
     let isSingleSongMode = false;
+    let activeAuthorFilter = null;
 
     currentAudio.volume = 0.75;
 
-    // --- FUNCIONES ALEATORIAS ---
     function getRandomViews() {
         const rangeChoice = Math.floor(Math.random() * 3);
         let num;
@@ -1770,7 +2259,6 @@ const musicData = [
         }
     }
 
-    // Aplicar los campos iniciales de forma segura
     musicData.forEach(item => {
         item.author = (item.author && item.author.trim() !== "") ? item.author : DEFAULT_AUTHOR;
         item.views = getRandomViews();
@@ -1810,6 +2298,9 @@ const musicData = [
     }
 
     function renderCardHTML(item, index, isActive = false) {
+        const authorClickAttr = (!isSingleSongMode) ? `onclick="event.stopPropagation(); filterByAuthor('${item.author}')"` : '';
+        const authorClass = (!isSingleSongMode) ? 'clickable-author' : '';
+
         return `
             <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" onclick="playTrack(${index})">
                 <div class="yt-thumb-container">
@@ -1818,7 +2309,7 @@ const musicData = [
                 </div>
                 <div class="yt-info">
                     <h3 class="yt-title">${item.title}</h3>
-                    <p class="yt-author">${item.author}</p>
+                    <p class="yt-author ${authorClass}" ${authorClickAttr}>${item.author}</p>
                     <p class="yt-meta">
                         <span class="yt-meta-play-icon"></span>${item.views}
                         <span class="yt-dot-separator">•</span>
@@ -1832,18 +2323,59 @@ const musicData = [
     function updateTrackUI(song) {
         document.title = `${song.title} - ${song.author}`;
         document.getElementById('current-track-title').innerText = song.title;
-        document.getElementById('current-track-author').innerText = song.author;
+        
+        const authorEl = document.getElementById('current-track-author');
+        authorEl.innerText = song.author;
+        
+        if (!isSingleSongMode) {
+            authorEl.classList.add('clickable-author');
+            authorEl.onclick = () => filterByAuthor(song.author);
+        } else {
+            authorEl.classList.remove('clickable-author');
+            authorEl.onclick = null;
+        }
     }
 
     function loadPlaylist() {
         const container = document.getElementById('playlist');
+        const header = document.getElementById('playlist-header');
+        const resetBtn = document.getElementById('btn-reset-filter');
         
         if (isSingleSongMode) {
             const song = musicData[currentIndex];
+            header.innerText = "Canción compartida";
+            resetBtn.style.display = 'none';
             container.innerHTML = renderCardHTML(song, currentIndex, true);
         } else {
-            container.innerHTML = musicData.map((item, index) => renderCardHTML(item, index, index === currentIndex)).join('');
+            let filteredList = musicData;
+            
+            if (activeAuthorFilter) {
+                header.innerText = `Canciones de: ${activeAuthorFilter}`;
+                resetBtn.style.display = 'inline-block';
+                filteredList = musicData.filter(item => item.author === activeAuthorFilter);
+            } else {
+                header.innerText = "A continuación";
+                resetBtn.style.display = 'none';
+            }
+
+            container.innerHTML = musicData.map((item, index) => {
+                if (activeAuthorFilter && item.author !== activeAuthorFilter) {
+                    return '';
+                }
+                return renderCardHTML(item, index, index === currentIndex);
+            }).join('');
         }
+    }
+
+    function filterByAuthor(authorName) {
+        if (isSingleSongMode) return;
+        activeAuthorFilter = authorName;
+        loadPlaylist();
+    }
+
+    function clearAuthorFilter() {
+        activeAuthorFilter = null;
+        loadPlaylist();
     }
 
     function playTrack(index) {
@@ -1876,8 +2408,9 @@ const musicData = [
     }
 
     function updateVisualFocus() {
-        document.querySelectorAll('.yt-card').forEach((el, index) => {
-            if (index === currentIndex) {
+        document.querySelectorAll('.yt-card').forEach((el) => {
+            const itemIndex = parseInt(el.id.replace('item-', ''), 10);
+            if (itemIndex === currentIndex) {
                 el.classList.add('active');
                 el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
@@ -1959,15 +2492,14 @@ const musicData = [
         });
     }
 
-    /* --- GESTIÓN DE PANTALLA COMPLETA --- */
     function toggleFullscreen() {
         const player = document.getElementById('player-container');
         if (!document.fullscreenElement) {
             if (player.requestFullscreen) {
                 player.requestFullscreen();
-            } else if (player.webkitRequestFullscreen) { /* Safari */
+            } else if (player.webkitRequestFullscreen) {
                 player.webkitRequestFullscreen();
-            } else if (player.msRequestFullscreen) { /* IE11 */
+            } else if (player.msRequestFullscreen) {
                 player.msRequestFullscreen();
             }
         } else {
@@ -2094,5 +2626,3 @@ const musicData = [
     </script>
 </body>
 </html>
-	
-
