@@ -2394,65 +2394,6 @@ const musicData = [
     }
 	];
 
-	const fs = require('fs');
-const path = require('path');
-
-// Tu dominio en GitHub Pages
-const DOMAIN = "https://luxiodev93.github.io";
-
-// Lista completa de canciones tomada de tu código
-const canciones = [
-  { title: "Mi color es especial", img: "https://cdn2.suno.ai/image_large_c441c1c6-b45f-404a-b7be-c2e0985fb131.jpeg", author: "Cuco Club" },
-  { title: "Voy a cocinar una gallina", img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif", author: "Cuco Club" },
-  { title: "The 93 Kid", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", author: "Cuco Club" },
-  { title: "Dark Cloud", img: "https://wallpapercave.com/wp/wp2974051.jpg", author: "No Respawn" },
-  { title: "A máxima velocidad", img: "https://previews.123rf.com/images/twinsterphoto/twinsterphoto1612/twinsterphoto161200036/66805425-father-and-son-running-and-chasing-each-other-in-green-park.jpg", author: "Cuco Club" },
-  { title: "Pásame la sosa", img: "https://i.ibb.co/BMmLRXJ/minipika1f7-b691-643680fea33a.gif", author: "Cuco Club" },
-  { title: "Hey hermanito!", img: "https://cdn2.suno.ai/image_large_cd7f792d-8b1e-4cab-86aa-bc3e4bb50f33.jpeg", author: "Cuco Club" },
-  { title: "La cucaracha", img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", author: "Cuco Club" },
-  { title: "Los países", img: "https://cdn.forum.snap.berkeley.edu/original/3X/9/f/9fae0a709a729e6e7c6b655e80f305cdc3e7f471.gif", author: "Cuco Club" },
-  { title: "La canción de Nico", img: "https://www.shutterstock.com/shutterstock/videos/3634968147/thumb/6.jpg?ip=x480", author: "Cuco Club" },
-  { title: "Pásame la gallina", img: "https://cdn2.suno.ai/image_large_6ecfaf1f-d7a2-4e47-b473-e0884791717e.jpeg", author: "Cuco Club" },
-  { title: "Garacias a Dios hay Chamba", img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg", author: "Dani Chalán" },
-  { title: "Prepositions", img: "https://cdn2.suno.ai/image_large_5f291070-1aa3-4a39-a0fe-4b1d8ff72e05.jpeg", author: "Cuco Club" },
-  { title: "Mi amiga jirafa", img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", author: "Cuco Club" },
-  { title: "Mamá cuéntame un cuento", img: "https://i.ibb.co/PvWpJYxZ/Gemini-Generated-Image-be2jvube2jvube2j.png", author: "Cuco Club" },
-  { title: "Lávate las manos", img: "https://i.ibb.co/jPD2yypm/elmogrok-video-0ea73052-54a9-4344-84e6-67a8bf89a2cd.gif", author: "Cuco Club" },
-  { title: "La Serpiente", img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", author: "Cuco Club" },
-  { title: "Level 99 Slitherbreak", img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg", author: "Cuco Club" },
-  { title: "La gallinita Ciega", img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg", author: "Cuco Club" },
-  { title: "Gallinita Espacial", img: "https://i.ibb.co/d0Cqj92f/image-jpg-75.jpg", author: "Cuco Club" },
-  { title: "Iguana del Caos", img: "https://i.ibb.co/rgJdfSr/content-75.jpg", author: "Metal Insano" },
-  { title: "Engranaje del vacío", img: "https://cdn2.suno.ai/image_large_31f502aa-fc9a-485b-a99a-34cc9a0b18ad.jpeg", author: "Metal Insano" },
-  { title: "Espejo ciego", img: "https://cdn2.suno.ai/image_large_9f7ad9b3-997b-4795-bb15-050343640e46.jpeg", author: "Metal Insano" },
-  { title: "Fénix", img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg", author: "Metal Insano" },
-  { title: "Bloque a Bloque", img: "https://cdn2.suno.ai/image_large_bd51f09a-26f6-42f9-8697-79449d3f5c7f.jpeg", author: "Metal Insano" },
-  { title: "Exploit Explosion", img: "https://i.ibb.co/JW6Yfhxx/6868c0ae-3e1c-4b6a-95c7-893900519c38-75.jpg", author: "No Respawn" },
-  { title: "Level 99 Heartbreak", img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg", author: "No Respawn" },
-  { title: "Por ustedes hijos míos", img: "https://cdn2.suno.ai/image_large_74737745-03b8-4b54-9412-249f6b2123e9.jpeg", author: "Doña Madre" },
-  { title: "Machala Low Life", img: "https://i.ibb.co/VWTW3qKX/25c84b74-45eb-4614-8b38-bb15405bfbff-75.jpg", author: "Macha-K" }
-];
-
-// Función para transformar títulos en URLs válidas
-function crearSlug(texto) {
-  return texto
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Remueve tildes
-    .replace(/[^a-z0-9\s-]/g, "")    // Remueve signos especiales como !, ¿, etc.
-    .replace(/\s+/g, "-")            // Reemplaza espacios por guiones
-    .replace(/-+/g, "-");           // Elimina guiones dobles
-}
-
-canciones.forEach(song => {
-  const slug = crearSlug(song.title);
-  const dir = path.join(__dirname, slug);
-  const autor = song.author || "Cuco Club";
-  
-  if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir);
-  }
       
    let currentAudio = new Audio();
     let currentIndex = 0;
@@ -2931,6 +2872,7 @@ canciones.forEach(song => {
         updateTrackUI(initialSong);
         document.getElementById('player-bg').style.backgroundImage = `url('${initialSong.img}')`;
     };
+    
     </script>
 </body>
 </html>
