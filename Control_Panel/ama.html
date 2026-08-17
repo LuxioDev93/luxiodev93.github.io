@@ -1,1 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Admin - Reservas</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #f4f6f8;
+            --card: #ffffff;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
 
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .btn-refresh {
+            padding: 10px 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s ease, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-refresh:active {
+            transform: scale(0.98);
+        }
+
+        .table-card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #f9fafb;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .item-text {
+            font-size: 0.95rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid #fca5a5;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Panel de Administración</h1>
+            <button class="btn-refresh" onclick="cargarReservas()">🔄 Actualizar</button>
+        </div>
+
+        <div class="table-card">
+            <table id="reservasTable">
+                <thead>
+                    <tr>
+                        <th>Artículo</th>
+                        <th>Reservado por</th>
+                        <th style="width: 100px; text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBody"></tbody>
+            </table>
+
+            <div id="emptyMessage" class="empty" style="display:none;">
+                No hay reservas registradas.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoYWt4a2JxYmdmdWhpamtjbnh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzODM1NDUsImV4cCI6MjA5OTk1OTU0NX0.FNELyDZERxePnoMg-C6aLcV5SJcNK3fRadlstT3heQ0';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Función auxiliar para formatear el nombre del artículo
+        function formatearArticulo(idRaw) {
+            if (!idRaw) return '';
+            // Remueve 'item-' (ignorando mayúsculas/minúsculas)
+            let limpio = idRaw.replace(/^item-/i, '').trim();
+            // Capitaliza la primera letra y deja el resto igual
+            return limpio.charAt(0).toUpperCase() + limpio.slice(1);
+        }
+
+        async function cargarReservas() {
+            const tbody = document.getElementById('tablaBody');
+            const emptyMsg = document.getElementById('emptyMessage');
+            
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px; color: var(--text-muted);">Cargando reservas...</td></tr>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('reservas')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                tbody.innerHTML = '';
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    emptyMsg.style.display = 'block';
+                    return;
+                }
+
+                emptyMsg.style.display = 'none';
+
+                data.forEach(res => {
+                    const row = document.createElement('tr');
+                    const articuloNombre = formatearArticulo(res.articulo_id);
+
+                    row.innerHTML = `
+                        <td class="item-text"><strong>${articuloNombre}</strong></td>
+                        <td class="item-text">${res.usuario}</td>
+                        <td style="text-align:center;">
+                            <button class="btn-delete" title="Eliminar reserva" 
+                                onclick="eliminarReserva('${res.articulo_id}', '${res.usuario}')">
+                                Eliminar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="3" style="color:var(--danger); text-align:center; padding:40px;">
+                    Error al cargar datos: ${err.message}<br><br>
+                    <button onclick="cargarReservas()" class="btn-refresh">Intentar de nuevo</button>
+                </td></tr>`;
+            }
+        }
+
+        async function eliminarReserva(articulo_id, usuario) {
+            const articuloNombre = formatearArticulo(articulo_id);
+            if (!confirm(`¿Estás seguro de eliminar la reserva de "${usuario}" para "${articuloNombre}"?`)) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('reservas')
+                    .delete()
+                    .eq('articulo_id', articulo_id)
+                    .eq('usuario', usuario);
+
+                if (error) throw error;
+
+                cargarReservas();
+
+            } catch (err) {
+                console.error(err);
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+
+        window.onload = cargarReservas;
+    </script>
+</body>
+</html>
