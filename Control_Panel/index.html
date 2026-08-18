@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👁️ Visualizador - Reservas y Accesos</title>
+    <title>Reservas y Accesos</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -17,14 +17,9 @@
             padding: 20px;
             color: #333;
         }
-        h1, h2 {
-            color: #2c3e50;
-        }
-        h1 {
-            text-align: center;
-        }
         h2 {
-            margin-top: 40px;
+            color: #2c3e50;
+            margin-top: 20px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -70,13 +65,10 @@
         .btn-refresh:hover {
             background: #219150;
         }
-        .header {
+        .header-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 10px;
         }
         .empty {
             text-align: center;
@@ -87,9 +79,6 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             margin-bottom: 20px;
-        }
-        .id-column {
-            font-family: monospace;
         }
         .badge-visitas {
             background: #e8f8f5;
@@ -102,8 +91,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>👁️ Visualizador de Datos</h1>
+        <div class="header-actions">
             <button class="btn-refresh" onclick="cargarTodo()">🔄 Actualizar Datos</button>
         </div>
 
@@ -112,7 +100,7 @@
         <table id="reservasTable">
             <thead>
                 <tr>
-                    <th>Artículo ID</th>
+                    <th>Regalo</th>
                     <th>Reservado por</th>
                 </tr>
             </thead>
@@ -145,7 +133,6 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Carga simultánea de ambas tablas
         function cargarTodo() {
             cargarReservas();
             cargarAccesos();
@@ -176,9 +163,12 @@
                 emptyMsg.style.display = 'none';
 
                 data.forEach(res => {
+                    // Se elimina el prefijo 'item-' si existe
+                    const nombreRegalo = res.articulo_id ? res.articulo_id.replace(/^item-/, '') : '';
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="id-column"><strong>${res.articulo_id}</strong></td>
+                        <td><strong>${nombreRegalo}</strong></td>
                         <td>${res.usuario}</td>
                     `;
                     tbody.appendChild(row);
@@ -245,7 +235,6 @@
             }
         }
 
-        // Cargar todo al abrir la página
         window.onload = cargarTodo;
     </script>
 </body>
