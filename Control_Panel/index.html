@@ -3,142 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📋 Visualizador - Reservas</title>
+    <title>👁️ Visualizador - Reservas y Accesos</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg: #f4f6f8;
+            --bg: #f8f9fa;
             --card: #ffffff;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
         }
-
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: var(--bg);
             margin: 0;
-            padding: 40px 20px;
-            color: var(--text);
+            padding: 20px;
+            color: #333;
         }
-
+        h1, h2 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
-
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
-            margin: 0;
+        th, td {
+            padding: 16px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
         }
-
+        th {
+            background: #3498db;
+            color: white;
+        }
+        .accesos-header th {
+            background: #8e44ad;
+        }
+        tr:hover {
+            background: #f1f8ff;
+        }
         .btn-refresh {
-            padding: 10px 18px;
-            background: var(--primary);
+            padding: 10px 20px;
+            background: #27ae60;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: background 0.2s ease, transform 0.1s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-weight: bold;
         }
-
         .btn-refresh:hover {
-            background: var(--primary-hover);
+            background: #219150;
         }
-
-        .btn-refresh:active {
-            transform: scale(0.98);
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
-        .table-card {
-            background: var(--card);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: #f9fafb;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover {
-            background: #f8fafc;
-        }
-
-        .item-text {
-            font-size: 0.95rem;
-            color: var(--text);
-            font-weight: 500;
-        }
-
         .empty {
             text-align: center;
-            padding: 48px 20px;
-            color: var(--text-muted);
-            font-size: 1rem;
+            padding: 30px 20px;
+            color: #777;
+            font-size: 1.1rem;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .id-column {
+            font-family: monospace;
+        }
+        .badge-visitas {
+            background: #e8f8f5;
+            color: #16a085;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📋 Reservas Actuales</h1>
-            <button class="btn-refresh" onclick="cargarReservas()">🔄 Actualizar</button>
+            <h1>👁️ Visualizador de Datos</h1>
+            <button class="btn-refresh" onclick="cargarTodo()">🔄 Actualizar Datos</button>
         </div>
 
-        <div class="table-card">
-            <table id="reservasTable">
-                <thead>
-                    <tr>
-                        <th>Artículo</th>
-                        <th>Reservado por</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody"></tbody>
-            </table>
+        <!-- TABLA 1: RESERVAS -->
+        <h2>📦 Reservas de Regalos</h2>
+        <table id="reservasTable">
+            <thead>
+                <tr>
+                    <th>Artículo ID</th>
+                    <th>Reservado por</th>
+                </tr>
+            </thead>
+            <tbody id="tablaBody"></tbody>
+        </table>
+        <div id="emptyMessage" class="empty" style="display:none;">
+            No hay reservas registradas.
+        </div>
 
-            <div id="emptyMessage" class="empty" style="display:none;">
-                No hay reservas registradas.
-            </div>
+        <!-- TABLA 2: REGISTRO DE ACCESOS -->
+        <h2>👁️ Registro de Accesos a la Web</h2>
+        <table id="accesosTable">
+            <thead class="accesos-header">
+                <tr>
+                    <th>Usuario</th>
+                    <th style="width: 150px; text-align:center;">Veces Ingresado</th>
+                    <th>Último Acceso</th>
+                </tr>
+            </thead>
+            <tbody id="tablaAccesosBody"></tbody>
+        </table>
+        <div id="emptyAccesosMessage" class="empty" style="display:none;">
+            No hay registros de acceso aún.
         </div>
     </div>
 
@@ -148,17 +145,18 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function formatearArticulo(idRaw) {
-            if (!idRaw) return '';
-            let limpio = idRaw.replace(/^item-/i, '').trim();
-            return limpio.charAt(0).toUpperCase() + limpio.slice(1);
+        // Carga simultánea de ambas tablas
+        function cargarTodo() {
+            cargarReservas();
+            cargarAccesos();
         }
 
+        // --- LÓGICA DE RESERVAS ---
         async function cargarReservas() {
             const tbody = document.getElementById('tablaBody');
             const emptyMsg = document.getElementById('emptyMessage');
             
-            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:40px; color: var(--text-muted);">Cargando reservas...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:40px;">Cargando reservas...</td></tr>';
 
             try {
                 const { data, error } = await supabaseClient
@@ -179,25 +177,76 @@
 
                 data.forEach(res => {
                     const row = document.createElement('tr');
-                    const articuloNombre = formatearArticulo(res.articulo_id);
-
                     row.innerHTML = `
-                        <td class="item-text"><strong>${articuloNombre}</strong></td>
-                        <td class="item-text">${res.usuario}</td>
+                        <td class="id-column"><strong>${res.articulo_id}</strong></td>
+                        <td>${res.usuario}</td>
                     `;
                     tbody.appendChild(row);
                 });
 
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="2" style="color:#ef4444; text-align:center; padding:40px;">
-                    Error al cargar datos: ${err.message}<br><br>
-                    <button onclick="cargarReservas()" class="btn-refresh">Intentar de nuevo</button>
+                tbody.innerHTML = `<tr><td colspan="2" style="color:red; text-align:center; padding:20px;">
+                    Error al cargar reservas: ${err.message}
                 </td></tr>`;
             }
         }
 
-        window.onload = cargarReservas;
+        // --- LÓGICA DE ACCESOS ---
+        async function cargarAccesos() {
+            const tbody = document.getElementById('tablaAccesosBody');
+            const emptyMsg = document.getElementById('emptyAccesosMessage');
+            
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px;">Cargando accesos...</td></tr>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('accesos')
+                    .select('*')
+                    .order('ultimo_acceso', { ascending: false });
+
+                tbody.innerHTML = '';
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    emptyMsg.style.display = 'block';
+                    return;
+                }
+
+                emptyMsg.style.display = 'none';
+
+                data.forEach(acc => {
+                    const fecha = acc.ultimo_acceso 
+                        ? new Date(acc.ultimo_acceso).toLocaleString('es-ES', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric',
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })
+                        : 'Sin fecha';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${acc.usuario}</strong></td>
+                        <td style="text-align:center;"><span class="badge-visitas">${acc.visitas}</span></td>
+                        <td>${fecha}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="3" style="color:red; text-align:center; padding:20px;">
+                    Error al cargar accesos: ${err.message}
+                </td></tr>`;
+            }
+        }
+
+        // Cargar todo al abrir la página
+        window.onload = cargarTodo;
     </script>
 </body>
 </html>
