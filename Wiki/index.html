@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buscador de Animales - Lectura Fácil</title>
+  <title>Buscador de Animales - Pantalla Completa</title>
   <style>
     :root {
       --bg-color: #1a1a1a;
       --card-bg: #ffffff;
       --text-main: #111111;
-      --text-muted: #333333;
+      --text-muted: #222222;
       --accent-color: #0056b3;
     }
 
@@ -21,45 +21,45 @@
       font-family: Verdana, Geneva, Tahoma, sans-serif;
       background-color: var(--bg-color);
       margin: 0;
-      padding: 15px;
+      /* Margen exacto: 5% arriba/abajo, 1% a los lados */
+      padding: 5vh 1vw;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    /* Contenedor principal adaptable */
+    /* Contenedor que ocupa casi la totalidad de la pantalla disponible */
     .app-container {
-      width: 100%;
-      max-width: 900px;
+      width: 98vw;
+      height: 90vh;
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 20px;
+      padding: 2.5vh 2vw;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    /* 1. Buscador en la parte superior */
+    /* 1. Buscador Superior */
     .search-box {
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 2vh;
       width: 100%;
     }
 
     .search-input {
       width: 100%;
-      padding: 16px 20px;
-      font-size: 1.25rem; /* 20px */
+      padding: 1.5vh 1.5vw;
+      /* La fuente escala dinámicamente según el ancho del monitor */
+      font-size: clamp(1.2rem, 1.8vw, 2.2rem);
       font-weight: bold;
       border: 3px solid var(--accent-color);
       border-radius: 8px;
       outline: none;
       background-color: #f8f9fa;
       color: #000;
-    }
-
-    .search-input:focus {
-      background-color: #fff;
-      box-shadow: 0 0 8px rgba(0, 86, 179, 0.4);
     }
 
     .suggestions-list {
@@ -71,15 +71,15 @@
       border: 3px solid var(--accent-color);
       border-top: none;
       border-radius: 0 0 8px 8px;
-      max-height: 220px;
+      max-height: 35vh;
       overflow-y: auto;
       z-index: 100;
       display: none;
     }
 
     .suggestion-item {
-      padding: 14px 20px;
-      font-size: 1.1rem;
+      padding: 1.5vh 1.5vw;
+      font-size: clamp(1rem, 1.5vw, 1.8rem);
       cursor: pointer;
       border-bottom: 1px solid #ddd;
       color: #000;
@@ -91,18 +91,20 @@
       font-weight: bold;
     }
 
-    /* 2. Pantalla principal */
+    /* 2. Pantalla principal que llena el alto restante */
     .screen {
+      flex: 1;
       display: flex;
       flex-direction: row;
-      gap: 20px;
-      align-items: flex-start;
-      min-height: 250px;
+      gap: 2vw;
+      align-items: stretch;
+      overflow: hidden;
     }
 
     .animal-image {
-      width: 240px;
-      height: 240px;
+      width: 35%;
+      max-width: 400px;
+      height: 100%;
       object-fit: cover;
       border-radius: 8px;
       border: 2px solid #ccc;
@@ -114,51 +116,56 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      height: 100%;
+      overflow: hidden;
     }
 
+    /* Fuentes gigantes que escalan para llenar espacio */
     .animal-title {
-      font-size: 2.2rem; /* 35px */
-      margin: 0 0 15px 0;
+      font-size: clamp(2rem, 3.5vw, 4.5rem);
+      margin: 0 0 1.5vh 0;
       color: var(--text-main);
       text-transform: capitalize;
       line-height: 1.1;
-      border-bottom: 3px solid var(--accent-color);
-      padding-bottom: 5px;
+      border-bottom: 4px solid var(--accent-color);
+      padding-bottom: 0.5vh;
     }
 
     .animal-description {
-      font-size: 1.25rem; /* 20px */
+      font-size: clamp(1.2rem, 2vw, 2.5rem); /* Ocupa y llena bien el espacio */
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.5;
       margin: 0;
-      max-height: 300px;
       overflow-y: auto;
+      flex: 1;
+      padding-right: 1vw;
     }
 
-    /* Estado Inicial / Mensajes de Estado */
+    /* Estado Inicial */
     .initial-state {
       width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
     }
 
     .placeholder-text {
-      font-size: 1.3rem;
+      font-size: clamp(1.4rem, 2.2vw, 3rem);
       color: #333;
       text-align: center;
       width: 100%;
-      margin: 10px 0 25px 0;
+      margin-bottom: 4vh;
       font-weight: bold;
     }
 
-    /* Galería de sugerencias aleatorias iniciales */
+    /* Galería de 3 Sugerencias */
     .random-suggestions {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 3vw;
       width: 100%;
-      flex-wrap: wrap;
     }
 
     .suggestion-card {
@@ -166,7 +173,7 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.2s ease;
     }
 
     .suggestion-card:hover {
@@ -174,13 +181,13 @@
     }
 
     .suggestion-card img {
-      width: 150px;
-      height: 150px;
+      width: clamp(120px, 15vw, 250px);
+      height: clamp(120px, 15vw, 250px);
       object-fit: cover;
       border-radius: 8px;
       border: 2px solid #888;
-      filter: grayscale(100%); /* Blanco y negro */
-      opacity: 0.1;           /* Opacidad reducida al 10% */
+      filter: grayscale(100%);
+      opacity: 0.1; /* 10% opacidad */
       transition: opacity 0.3s ease, filter 0.3s ease;
     }
 
@@ -190,34 +197,15 @@
     }
 
     .suggestion-card span {
-      margin-top: 8px;
-      font-size: 1rem;
+      margin-top: 1vh;
+      font-size: clamp(1rem, 1.5vw, 1.8rem);
       font-weight: bold;
-      color: #666;
+      color: #555;
       text-transform: capitalize;
     }
 
     .suggestion-card:hover span {
       color: var(--accent-color);
-    }
-
-    /* Ajuste para pantallas pequeñas */
-    @media (max-width: 650px) {
-      .screen {
-        flex-direction: column;
-        align-items: center;
-      }
-      .animal-image {
-        width: 100%;
-        height: 200px;
-      }
-      .random-suggestions {
-        gap: 10px;
-      }
-      .suggestion-card img {
-        width: 100px;
-        height: 100px;
-      }
     }
   </style>
 </head>
@@ -259,7 +247,6 @@
     const animalTitle = document.getElementById('animal-title');
     const animalDesc = document.getElementById('animal-desc');
 
-    // Banco de animales para sugerencias aleatorias al inicio
     const ANIMAL_POOL = [
       'León', 'Elefante', 'Oso panda', 'Tigre', 'Águila', 
       'Delfín', 'Lobo', 'Jirafa', 'Canguro', 'Pingüino', 
@@ -269,12 +256,10 @@
     const BAD_WORDS = ['juego', 'película', 'novela', 'suicidio', 'desambiguación', 'reto', 'álbum', 'canción', 'videojuego'];
     let debounceTimer;
 
-    // Cargar 3 sugerencias aleatorias al iniciar la página
     window.addEventListener('DOMContentLoaded', loadRandomSuggestions);
 
     async function loadRandomSuggestions() {
       randomSuggestionsContainer.innerHTML = '';
-      // Mezclar y tomar 3 aleatorios
       const shuffled = [...ANIMAL_POOL].sort(() => 0.5 - Math.random());
       const selected = shuffled.slice(0, 3);
 
@@ -284,7 +269,7 @@
 
         const img = document.createElement('img');
         img.alt = animalName;
-        img.src = 'https://via.placeholder.com/150?text=Cargando...';
+        img.src = 'https://via.placeholder.com/200?text=...';
 
         const span = document.createElement('span');
         span.textContent = animalName;
@@ -292,7 +277,6 @@
         card.appendChild(img);
         card.appendChild(span);
 
-        // Al hacer clic en la sugerencia, buscar el animal
         card.addEventListener('click', () => {
           searchInput.value = animalName;
           loadAnimalCard(animalName);
@@ -300,17 +284,14 @@
 
         randomSuggestionsContainer.appendChild(card);
 
-        // Obtener la imagen de Wikipedia para la sugerencia
         try {
           const res = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(animalName)}`);
           const data = await res.json();
           if (data.thumbnail && data.thumbnail.source) {
             img.src = data.thumbnail.source;
-          } else {
-            img.src = 'https://via.placeholder.com/150?text=Sin+Imagen';
           }
         } catch (e) {
-          img.src = 'https://via.placeholder.com/150?text=Error';
+          img.src = 'https://via.placeholder.com/200?text=Sin+Imagen';
         }
       }
     }
@@ -374,7 +355,7 @@
     async function loadAnimalCard(animalName) {
       initialState.style.display = 'flex';
       placeholder.textContent = 'Cargando datos del animal...';
-      randomSuggestionsContainer.style.display = 'none'; // Ocultar tarjetas mientras carga
+      randomSuggestionsContainer.style.display = 'none';
       animalImg.style.display = 'none';
       contentArea.style.display = 'none';
       animalTitle.textContent = '';
@@ -395,7 +376,6 @@
           return;
         }
 
-        // Mostrar ficha y ocultar mensaje inicial
         initialState.style.display = 'none';
         contentArea.style.display = 'flex';
         animalTitle.textContent = data.title;
@@ -405,7 +385,7 @@
           animalImg.src = data.thumbnail.source;
           animalImg.style.display = 'block';
         } else {
-          animalImg.src = 'https://via.placeholder.com/240?text=Sin+Imagen';
+          animalImg.src = 'https://via.placeholder.com/300?text=Sin+Imagen';
           animalImg.style.display = 'block';
         }
 
