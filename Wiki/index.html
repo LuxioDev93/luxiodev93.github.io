@@ -3,80 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pokédex de Animales</title>
+  <title>Buscador de Animales - Lectura Fácil</title>
   <style>
     :root {
-      --pokedex-red: #dc0a2d;
-      --pokedex-dark-red: #8b0000;
-      --screen-blue: #232323;
-      --accent-cyan: #51adcf;
+      --bg-color: #1a1a1a;
+      --card-bg: #ffffff;
+      --text-main: #111111;
+      --text-muted: #333333;
+      --accent-color: #0056b3;
     }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #2b2b2b;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
+    * {
       box-sizing: border-box;
     }
 
-    /* Estructura Principal de la Pokédex */
-    .pokedex-container {
-      background-color: var(--pokedex-red);
-      width: 100%;
-      max-width: 450px;
-      border-radius: 25px;
-      padding: 25px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 -5px 10px var(--pokedex-dark-red);
-      border: 4px solid #500000;
-      position: relative;
-    }
-
-    /* Luces superiores estilo Pokédex */
-    .top-lights {
+    body {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 15px;
+      min-height: 100vh;
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
     }
 
-    .big-light {
-      width: 45px;
-      height: 45px;
-      background-color: var(--accent-cyan);
-      border-radius: 50%;
-      border: 4px solid #fff;
-      box-shadow: 0 0 15px var(--accent-cyan);
+    /* Contenedor principal adaptable */
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
 
-    .small-light {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 2px solid #000;
-    }
-    .red { background-color: #ff5f56; }
-    .yellow { background-color: #ffbd2e; }
-    .green { background-color: #27c93f; }
-
-    /* Buscador con Autocompletado */
+    /* 1. Buscador en la parte superior */
     .search-box {
       position: relative;
       margin-bottom: 20px;
+      width: 100%;
     }
 
     .search-input {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 2px solid #333;
-      box-sizing: border-box;
+      padding: 16px 20px;
+      font-size: 1.25rem; /* 20px */
+      font-weight: bold;
+      border: 3px solid var(--accent-color);
+      border-radius: 8px;
       outline: none;
+      background-color: #f8f9fa;
+      color: #000;
+    }
+
+    .search-input:focus {
+      background-color: #fff;
+      box-shadow: 0 0 8px rgba(0, 86, 179, 0.4);
     }
 
     .suggestions-list {
@@ -85,148 +68,253 @@
       left: 0;
       right: 0;
       background: white;
-      border: 2px solid #333;
+      border: 3px solid var(--accent-color);
       border-top: none;
-      border-radius: 0 0 10px 10px;
-      max-height: 150px;
+      border-radius: 0 0 8px 8px;
+      max-height: 220px;
       overflow-y: auto;
-      z-index: 10;
+      z-index: 100;
       display: none;
     }
 
     .suggestion-item {
-      padding: 10px;
+      padding: 14px 20px;
+      font-size: 1.1rem;
       cursor: pointer;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #ddd;
+      color: #000;
     }
 
     .suggestion-item:hover {
-      background-color: #f0f0f0;
+      background-color: var(--accent-color);
+      color: white;
       font-weight: bold;
     }
 
-    /* Pantalla de datos */
+    /* 2. Pantalla principal */
     .screen {
-      background-color: #f5f5f5;
-      border-radius: 15px;
-      padding: 15px;
-      border: 4px solid #333;
-      min-height: 320px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+      flex-direction: row;
+      gap: 20px;
+      align-items: flex-start;
+      min-height: 250px;
     }
 
     .animal-image {
-      width: 180px;
-      height: 180px;
+      width: 240px;
+      height: 240px;
       object-fit: cover;
-      border-radius: 10px;
-      border: 3px solid #333;
-      background-color: #fff;
-      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      flex-shrink: 0;
       display: none;
     }
 
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
     .animal-title {
-      font-size: 22px;
-      margin: 5px 0;
-      color: #333;
+      font-size: 2.2rem; /* 35px */
+      margin: 0 0 15px 0;
+      color: var(--text-main);
       text-transform: capitalize;
+      line-height: 1.1;
+      border-bottom: 3px solid var(--accent-color);
+      padding-bottom: 5px;
     }
 
     .animal-description {
-      font-size: 14px;
-      color: #555;
-      line-height: 1.4;
-      max-height: 100px;
+      font-size: 1.25rem; /* 20px */
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+      max-height: 300px;
       overflow-y: auto;
-      padding-right: 5px;
+    }
+
+    /* Estado Inicial / Mensajes de Estado */
+    .initial-state {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .placeholder-text {
-      margin-auto: 0;
-      color: #777;
-      font-style: italic;
-      margin-top: 100px;
+      font-size: 1.3rem;
+      color: #333;
+      text-align: center;
+      width: 100%;
+      margin: 10px 0 25px 0;
+      font-weight: bold;
     }
 
-    /* Controles inferiores decorativos */
-    .controls {
+    /* Galería de sugerencias aleatorias iniciales */
+    .random-suggestions {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .suggestion-card {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      margin-top: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
-    .d-pad {
-      width: 60px;
-      height: 60px;
-      background-color: #333;
-      position: relative;
-      border-radius: 10px;
+    .suggestion-card:hover {
+      transform: scale(1.05);
     }
 
-    .d-pad::after {
-      content: '';
-      position: absolute;
-      top: 20px;
-      left: -10px;
-      width: 80px;
-      height: 20px;
-      background-color: #333;
-      border-radius: 5px;
-      z-index: 0;
+    .suggestion-card img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #888;
+      filter: grayscale(100%); /* Blanco y negro */
+      opacity: 0.1;           /* Opacidad reducida al 10% */
+      transition: opacity 0.3s ease, filter 0.3s ease;
+    }
+
+    .suggestion-card:hover img {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+
+    .suggestion-card span {
+      margin-top: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #666;
+      text-transform: capitalize;
+    }
+
+    .suggestion-card:hover span {
+      color: var(--accent-color);
+    }
+
+    /* Ajuste para pantallas pequeñas */
+    @media (max-width: 650px) {
+      .screen {
+        flex-direction: column;
+        align-items: center;
+      }
+      .animal-image {
+        width: 100%;
+        height: 200px;
+      }
+      .random-suggestions {
+        gap: 10px;
+      }
+      .suggestion-card img {
+        width: 100px;
+        height: 100px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="pokedex-container">
-    <!-- Luces decorativas Pokédex -->
-    <div class="top-lights">
-      <div class="big-light"></div>
-      <div class="small-light red"></div>
-      <div class="small-light yellow"></div>
-      <div class="small-light green"></div>
-    </div>
-
-    <!-- Buscador con lista desplegable -->
+  <div class="app-container">
+    <!-- Buscador Superior -->
     <div class="search-box">
-      <input type="text" id="search-input" class="search-input" placeholder="Escribe un animal (ej. León, Ballena)..." autocomplete="off">
+      <input type="text" id="search-input" class="search-input" placeholder="🔍 Escribe un animal (ej. León, Águila)..." autocomplete="off">
       <div id="suggestions" class="suggestions-list"></div>
     </div>
 
-    <!-- Pantalla de la Pokédex -->
+    <!-- Pantalla de Datos -->
     <div class="screen" id="screen">
-      <p id="placeholder" class="placeholder-text">¡Escribe el nombre de un animal para consultar su ficha!</p>
+      <div id="initial-state" class="initial-state">
+        <p id="placeholder" class="placeholder-text">Escribe el nombre de un animal en el buscador para ver la información.</p>
+        
+        <!-- Galería de 3 Sugerencias Aleatorias B/N -->
+        <div id="random-suggestions" class="random-suggestions"></div>
+      </div>
+      
       <img id="animal-img" class="animal-image" src="" alt="Imagen del animal">
-      <h2 id="animal-title" class="animal-title"></h2>
-      <p id="animal-desc" class="animal-description"></p>
-    </div>
-
-    <!-- Botones decorativos inferiores -->
-    <div class="controls">
-      <div style="background:#333; width:40px; height:40px; border-radius:50%;"></div>
-      <div class="d-pad"></div>
+      
+      <div class="content-area" id="content-area" style="display: none;">
+        <h1 id="animal-title" class="animal-title"></h1>
+        <p id="animal-desc" class="animal-description"></p>
+      </div>
     </div>
   </div>
 
   <script>
     const searchInput = document.getElementById('search-input');
     const suggestionsBox = document.getElementById('suggestions');
+    const initialState = document.getElementById('initial-state');
     const placeholder = document.getElementById('placeholder');
+    const randomSuggestionsContainer = document.getElementById('random-suggestions');
     const animalImg = document.getElementById('animal-img');
+    const contentArea = document.getElementById('content-area');
     const animalTitle = document.getElementById('animal-title');
     const animalDesc = document.getElementById('animal-desc');
 
-    // Palabras no aptas o fuera de contexto para filtrar
-    const BAD_WORDS = ['juego', 'película', 'novela', 'suicidio', 'desambiguación', 'reto', 'álbum', 'canción', 'videojuego'];
+    // Banco de animales para sugerencias aleatorias al inicio
+    const ANIMAL_POOL = [
+      'León', 'Elefante', 'Oso panda', 'Tigre', 'Águila', 
+      'Delfín', 'Lobo', 'Jirafa', 'Canguro', 'Pingüino', 
+      'Guepardo', 'Cebra', 'Zorro', 'Búho', 'Gorila'
+    ];
 
+    const BAD_WORDS = ['juego', 'película', 'novela', 'suicidio', 'desambiguación', 'reto', 'álbum', 'canción', 'videojuego'];
     let debounceTimer;
 
-    // Escuchar la entrada del usuario
+    // Cargar 3 sugerencias aleatorias al iniciar la página
+    window.addEventListener('DOMContentLoaded', loadRandomSuggestions);
+
+    async function loadRandomSuggestions() {
+      randomSuggestionsContainer.innerHTML = '';
+      // Mezclar y tomar 3 aleatorios
+      const shuffled = [...ANIMAL_POOL].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, 3);
+
+      for (const animalName of selected) {
+        const card = document.createElement('div');
+        card.className = 'suggestion-card';
+
+        const img = document.createElement('img');
+        img.alt = animalName;
+        img.src = 'https://via.placeholder.com/150?text=Cargando...';
+
+        const span = document.createElement('span');
+        span.textContent = animalName;
+
+        card.appendChild(img);
+        card.appendChild(span);
+
+        // Al hacer clic en la sugerencia, buscar el animal
+        card.addEventListener('click', () => {
+          searchInput.value = animalName;
+          loadAnimalCard(animalName);
+        });
+
+        randomSuggestionsContainer.appendChild(card);
+
+        // Obtener la imagen de Wikipedia para la sugerencia
+        try {
+          const res = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(animalName)}`);
+          const data = await res.json();
+          if (data.thumbnail && data.thumbnail.source) {
+            img.src = data.thumbnail.source;
+          } else {
+            img.src = 'https://via.placeholder.com/150?text=Sin+Imagen';
+          }
+        } catch (e) {
+          img.src = 'https://via.placeholder.com/150?text=Error';
+        }
+      }
+    }
+
     searchInput.addEventListener('input', () => {
       clearTimeout(debounceTimer);
       const query = searchInput.value.trim();
@@ -241,7 +329,6 @@
       }, 300);
     });
 
-    // 1. Obtener sugerencias filtradas mediante Wikidata
     async function fetchSuggestions(query) {
       const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(query)}&language=es&format=json&origin=*&type=item`;
 
@@ -249,13 +336,10 @@
         const response = await fetch(url);
         const data = await response.json();
         
-        // Filtrar conceptos que no sean biológicos
         const filteredResults = data.search.filter(item => {
           const desc = (item.description || '').toLowerCase();
           const label = (item.label || '').toLowerCase();
-          
-          const hasBadWord = BAD_WORDS.some(word => desc.includes(word) || label.includes(word));
-          return !hasBadWord;
+          return !BAD_WORDS.some(word => desc.includes(word) || label.includes(word));
         }).map(item => item.label);
 
         showSuggestions([...new Set(filteredResults)]);
@@ -264,7 +348,6 @@
       }
     }
 
-    // 2. Renderizar lista desplegable
     function showSuggestions(list) {
       suggestionsBox.innerHTML = '';
 
@@ -288,11 +371,12 @@
       suggestionsBox.style.display = 'block';
     }
 
-    // 3. Cargar datos verificados en la pantalla
     async function loadAnimalCard(animalName) {
+      initialState.style.display = 'flex';
       placeholder.textContent = 'Cargando datos del animal...';
-      placeholder.style.display = 'block';
+      randomSuggestionsContainer.style.display = 'none'; // Ocultar tarjetas mientras carga
       animalImg.style.display = 'none';
+      contentArea.style.display = 'none';
       animalTitle.textContent = '';
       animalDesc.textContent = '';
 
@@ -305,32 +389,32 @@
         const data = await response.json();
         const extract = (data.extract || '').toLowerCase();
 
-        // Verificación de seguridad secundaria
         if (BAD_WORDS.some(word => extract.includes(word)) || data.type === 'disambiguation') {
-          placeholder.textContent = '⚠️ Este resultado no parece ser un animal válido.';
-          placeholder.style.display = 'block';
+          placeholder.textContent = '⚠️ El término ingresado no parece ser un animal válido.';
+          randomSuggestionsContainer.style.display = 'flex';
           return;
         }
 
-        placeholder.style.display = 'none';
+        // Mostrar ficha y ocultar mensaje inicial
+        initialState.style.display = 'none';
+        contentArea.style.display = 'flex';
         animalTitle.textContent = data.title;
-        animalDesc.textContent = data.extract || 'No hay descripción disponible para este animal.';
+        animalDesc.textContent = data.extract || 'Sin descripción disponible para este animal.';
 
         if (data.thumbnail && data.thumbnail.source) {
           animalImg.src = data.thumbnail.source;
           animalImg.style.display = 'block';
         } else {
-          animalImg.src = 'https://via.placeholder.com/180?text=Sin+Imagen';
+          animalImg.src = 'https://via.placeholder.com/240?text=Sin+Imagen';
           animalImg.style.display = 'block';
         }
 
       } catch (error) {
         placeholder.textContent = '❌ No se encontraron datos para este animal.';
-        placeholder.style.display = 'block';
+        randomSuggestionsContainer.style.display = 'flex';
       }
     }
 
-    // Ocultar desplegable si se hace clic fuera
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.search-box')) {
         suggestionsBox.style.display = 'none';
