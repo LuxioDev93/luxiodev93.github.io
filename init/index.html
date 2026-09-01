@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Navegador y Teclado QWERTY</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra superior estilo Google Chrome */
+        .browser-bar {
+            width: 100%;
+            background-color: #dee1e6;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            cursor: default;
+            color: #5f6368;
+            font-size: 16px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-btn:disabled {
+            color: #bdc1c6;
+        }
+
+        .address-bar-container {
+            flex-grow: 1;
+            max-width: 700px;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #dfe1e5;
+        }
+
+        .search-input-wrapper:focus-within {
+            box-shadow: 0 1px 4px rgba(0,0,0,0.16);
+        }
+
+        .suggestion-layer {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: transparent;
+            pointer-events: none;
+            white-space: pre;
+            font-family: inherit;
+        }
+
+        .suggestion-layer .highlight {
+            background-color: #1a73e8;
+            color: #ffffff;
+            border-radius: 2px;
+            padding: 1px 0px;
+        }
+
+        #searchBar {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+            font-family: inherit;
+            color: #202124;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Contenido principal */
+        #mainContent {
+            margin-top: 52px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            position: relative;
+            padding: 20px;
+        }
+
+        .error-message {
+            font-size: 64px;
+            font-weight: bold;
+            color: #d93025;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Estilos del Teclado QWERTY en Español ampliado con números */
+        .keyboard-container {
+            background-color: #e4e7eb;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 760px;
+            width: 100%;
+            user-select: none;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .key {
+            background-color: #ffffff;
+            color: #202124;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            height: 45px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        .key.highlight-key {
+            background-color: #1a73e8 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 8px rgba(26, 115, 232, 0.6);
+        }
+
+        .key.space {
+            flex: 6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegación superior estilo Chrome -->
+    <header class="browser-bar">
+        <div class="nav-buttons">
+            <button class="nav-btn" disabled title="Atrás">&#10094;</button>
+            <button class="nav-btn" disabled title="Adelante">&#10095;</button>
+            <button class="nav-btn" title="Página principal">&#8962;</button>
+        </div>
+        <div class="address-bar-container">
+            <div class="search-input-wrapper">
+                <div class="suggestion-layer" id="suggestionLayer"></div>
+                <input type="text" id="searchBar" autocomplete="off" spellcheck="false" autofocus placeholder="Buscar en Google o escribir una URL">
+            </div>
+        </div>
+    </header>
+
+    <!-- Pantalla principal y Teclado -->
+    <main id="mainContent">
+        <div class="keyboard-container" id="keyboard">
+            <!-- Fila de Números (1 al 0) -->
+            <div class="keyboard-row">
+                <button class="key" data-key="1">1</button>
+                <button class="key" data-key="2">2</button>
+                <button class="key" data-key="3">3</button>
+                <button class="key" data-key="4">4</button>
+                <button class="key" data-key="5">5</button>
+                <button class="key" data-key="6">6</button>
+                <button class="key" data-key="7">7</button>
+                <button class="key" data-key="8">8</button>
+                <button class="key" data-key="9">9</button>
+                <button class="key" data-key="0">0</button>
+            </div>
+            <!-- Fila 1 -->
+            <div class="keyboard-row">
+                <button class="key" data-key="q">Q</button>
+                <button class="key" data-key="w">W</button>
+                <button class="key" data-key="e">E</button>
+                <button class="key" data-key="r">R</button>
+                <button class="key" data-key="t">T</button>
+                <button class="key" data-key="y">Y</button>
+                <button class="key" data-key="u">U</button>
+                <button class="key" data-key="i">I</button>
+                <button class="key" data-key="o">O</button>
+                <button class="key" data-key="p">P</button>
+            </div>
+            <!-- Fila 2 -->
+            <div class="keyboard-row">
+                <button class="key" data-key="a">A</button>
+                <button class="key" data-key="s">S</button>
+                <button class="key" data-key="d">D</button>
+                <button class="key" data-key="f">F</button>
+                <button class="key" data-key="g">G</button>
+                <button class="key" data-key="h">H</button>
+                <button class="key" data-key="j">J</button>
+                <button class="key" data-key="k">K</button>
+                <button class="key" data-key="l">L</button>
+                <button class="key" data-key="ñ">Ñ</button>
+            </div>
+            <!-- Fila 3 -->
+            <div class="keyboard-row">
+                <button class="key" data-key="z">Z</button>
+                <button class="key" data-key="x">X</button>
+                <button class="key" data-key="c">C</button>
+                <button class="key" data-key="v">V</button>
+                <button class="key" data-key="b">B</button>
+                <button class="key" data-key="n">N</button>
+                <button class="key" data-key="m">M</button>
+                <button class="key" data-key=".">.</button>
+            </div>
+            <!-- Fila 4 -->
+            <div class="keyboard-row">
+                <button class="key space" data-key=" "></button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const targetDomain = "luxiodev93.github.io";
+        const searchBar = document.getElementById('searchBar');
+        const suggestionLayer = document.getElementById('suggestionLayer');
+        const mainContent = mainContentElement = document.getElementById('mainContent');
+        const keyboardKeys = document.querySelectorAll('.key');
+        const keyboard = document.getElementById('keyboard');
+
+        let isCorrectSoFar = true;
+
+        function updateKeyboardHighlight() {
+            keyboardKeys.forEach(k => k.classList.remove('highlight-key'));
+
+            const val = searchBar.value;
+
+            if (val.length === 0 || !isCorrectSoFar) {
+                return;
+            }
+
+            if (targetDomain.toLowerCase().startsWith(val.toLowerCase())) {
+                const nextCharIndex = val.length;
+                if (nextCharIndex < targetDomain.length) {
+                    const nextChar = targetDomain[nextCharIndex].toLowerCase();
+                    
+                    keyboardKeys.forEach(key => {
+                        if (key.getAttribute('data-key') === nextChar) {
+                            key.classList.add('highlight-key');
+                        }
+                    });
+                }
+            }
+        }
+
+        function updateSuggestion() {
+            const val = searchBar.value;
+            
+            if (targetDomain.toLowerCase().startsWith(val.toLowerCase()) && val.length > 0 && isCorrectSoFar) {
+                const typedPart = val;
+                const remainingPart = targetDomain.slice(val.length);
+                suggestionLayer.innerHTML = `<span style="color: transparent;">${typedPart}</span><span class="highlight">${remainingPart}</span>`;
+            } else {
+                suggestionLayer.innerHTML = '';
+            }
+        }
+
+        searchBar.addEventListener('input', () => {
+            const val = searchBar.value;
+
+            // Limpiar mensaje de error previo si el usuario borra o corrige para reintentar
+            if (mainContent.querySelector('.error-message')) {
+                mainContent.innerHTML = '';
+                mainContent.appendChild(keyboard);
+            }
+
+            if (targetDomain.toLowerCase().startsWith(val.toLowerCase())) {
+                isCorrectSoFar = true;
+            } else {
+                isCorrectSoFar = false; 
+            }
+
+            updateSuggestion();
+            updateKeyboardHighlight();
+        });
+
+        searchBar.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = searchBar.value.trim().toLowerCase();
+                
+                if (val === targetDomain.toLowerCase()) {
+                    window.location.href = "https://" + targetDomain;
+                } else {
+                    // Ocultar teclado y mostrar error 404
+                    keyboard.remove();
+                    mainContent.innerHTML = `<div class="error-message">Error: 404</div>`;
+                }
+            }
+        });
+
+        document.querySelector('.search-input-wrapper').addEventListener('click', () => {
+            searchBar.focus();
+        });
+    </script>
+</body>
+</html>
