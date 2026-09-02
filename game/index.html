@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>prueba 1
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -355,10 +355,10 @@
     <audio id="game-audio"></audio>
 
     <script>
-const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR'; // (Asegúrate de poner aquí tu clave publishable real)
+        const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const musicData = [
         {
@@ -380,6 +380,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let timerInterval = null;
         let isPausedForTyping = false;
         let errorCharsTyped = "";
+        let pendingDeadKey = false; // Control de tildes muertas en portátiles
 
         window.addEventListener('DOMContentLoaded', () => {
             fetchLeaderboard();
@@ -483,12 +484,12 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 audio.onloadedmetadata = () => {
                     document.getElementById('lyric-text').textContent = "";
                     audio.play().catch(e => {
-                        console.warn("Autoplay bloqueado por el navegador. Haz clic para reproducir.");
+                        console.warn("Autoplay bloqueado por el navegador.");
                     });
                 };
 
             } catch (error) {
-                alert("Error al cargar los recursos de la canción. Revisa la consola o las URLs.");
+                alert("Error al cargar los recursos de la canción.");
                 location.reload();
             }
         }
@@ -499,6 +500,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             audio.currentTime = 0;
             stopTimer();
             isPausedForTyping = false;
+            pendingDeadKey = false;
 
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'none';
@@ -612,6 +614,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             audio.pause();
             isPausedForTyping = true;
             errorCharsTyped = "";
+            pendingDeadKey = false;
             startTimer();
 
             const targetObj = targetWords[currentWordTargetIndex];
@@ -689,12 +692,14 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         window.addEventListener('keydown', (e) => {
             if (!isPausedForTyping) return;
 
-            // Ignorar eventos de tecla muerta pura ("Dead") para que no aparezca en pantalla como error
-            if (e.key === 'Dead' || e.key.toLowerCase().includes('dead')) {
+            const targetObj = targetWords[currentWordTargetIndex];
+
+            // Detectar la tecla de tilde o diéresis muerta de Lenovo / distribución española
+            if (e.key === 'Dead' || e.key === '´' || e.key === '`' || e.key === '¨') {
+                pendingDeadKey = true;
+                e.preventDefault();
                 return;
             }
-
-            const targetObj = targetWords[currentWordTargetIndex];
 
             if (e.key === 'Backspace') {
                 if (errorCharsTyped.length > 0) {
@@ -702,6 +707,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     renderActiveLyricWithMask();
                     highlightNextExpectedKey(targetObj);
                 }
+                pendingDeadKey = false;
                 return;
             }
 
@@ -709,10 +715,20 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 return;
             }
 
+            let typedChar = e.key;
+            // Si el usuario tenía una tilde pendiente y ahora escribe una vocal, unimos ambos caracteres normalizándolos
+            if (pendingDeadKey) {
+                typedChar = ('áéíóúÁÉÍÓÚ'[[ 'a','e','i','o','u','A','E','I','O','U' ].indexOf(e.key)] || e.key);
+                pendingDeadKey = false;
+            }
+
             const expectedChar = targetObj.word[targetObj.typedLength];
 
-            // Validación estricta: se exige la tilde exacta para fomentar la buena ortografía
-            if (e.key.toLowerCase() === expectedChar.toLowerCase()) {
+            // Normalización NFD para comparar de forma segura caracteres con tilde (ej: 'ú')
+            const normalizedTyped = typedChar.normalize("NFD").toLowerCase();
+            const normalizedExpected = expectedChar.normalize("NFD").toLowerCase();
+
+            if (normalizedTyped === normalizedExpected) {
                 correctKeysCount++;
                 updateCounterUI();
                 targetObj.typedLength++;
@@ -741,7 +757,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         function highlightKeyboardKey(char) {
             const keys = document.querySelectorAll('.key');
-            // Mapear acentos a su vocal base en el teclado virtual para que se ilumine correctamente
             const baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
             keys.forEach(k => {
                 let keyVal = k.getAttribute('data-key');
