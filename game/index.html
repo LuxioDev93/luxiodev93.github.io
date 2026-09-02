@@ -1,1 +1,889 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key music</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #202124;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- VISTA DE INICIO --- */
+        #home-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 20px;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        h1.game-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1a73e8;
+            margin-bottom: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-play {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+            transition: background-color 0.2s, transform 0.1s;
+            margin-bottom: 40px;
+        }
+
+        .btn-play:hover {
+            background-color: #1557b0;
+            transform: scale(1.05);
+        }
+
+        .leaderboard-container {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .leaderboard-container h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-table th {
+            color: #5f6368;
+            font-weight: 600;
+        }
+
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* --- VISTA DE JUEGO --- */
+        #game-screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            min-height: 100vh;
+            padding: 16px;
+            justify-content: space-between;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+        }
+
+        .btn-exit {
+            background-color: #ea4335;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-exit:hover {
+            background-color: #c5221f;
+        }
+
+        .key-counter-box {
+            background-color: #333333;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5f6368;
+        }
+
+        .player-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 12px;
+        }
+
+        .player-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: blur(8px);
+            opacity: 0.35;
+            z-index: 1;
+        }
+
+        .lyrics-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        #lyric-text {
+            color: #ffffff;
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
+            line-height: 1.4;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            white-space: pre-line;
+        }
+
+        /* Estilos para fuentes fantasma / contorno y errores */
+        .outline-word {
+            color: transparent;
+            -webkit-text-stroke: 2px #ffffff;
+            text-shadow: none;
+        }
+
+        .typed-correct {
+            color: #1a73e8;
+            -webkit-text-stroke: 0px;
+        }
+
+        .typed-error {
+            color: #ea4335 !important;
+            -webkit-text-stroke: 0px;
+        }
+
+        /* --- TECLADO ILUSTRATIVO --- */
+        .keyboard-container {
+            background-color: #e0e0e0;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .key {
+            background-color: #333333;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            height: 40px;
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding-top: 5px;
+            padding-left: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: background-color 0.1s;
+        }
+
+        .key.narrow { flex: 0.9; }
+        .key.space { flex: 5; justify-content: center; align-items: center; padding: 0; }
+        .key.backspace-key { flex: 1.5; justify-content: center; align-items: center; padding: 0; }
+        .key.enter-rect { flex: 2.2; justify-content: flex-end; align-items: flex-end; padding-bottom: 5px; padding-right: 6px; }
+        .key.shift-key { flex: 2.55; justify-content: flex-end; align-items: flex-start; padding-top: 5px; padding-right: 6px; }
+        .key.spacer-key { background-color: #e0e0e0; box-shadow: none; }
+
+        .key.highlight-key {
+            background-color: #1a73e8 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 8px rgba(26, 115, 232, 0.8);
+        }
+
+        .key.error-highlight {
+            background-color: #ea4335 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 8px rgba(234, 67, 53, 0.8);
+        }
+
+        /* Pantalla de Resultados */
+        #result-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 20px;
+            text-align: center;
+            min-height: 100vh;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-screen">
+        <h1 class="game-title">Key music</h1>
+        <button class="btn-play" onclick="startGame()">Jugar</button>
+        
+        <div class="leaderboard-container">
+            <h2>Clasificación (Top 5)</h2>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Puesto</th>
+                        <th>Jugador</th>
+                        <th>TPM</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="3" style="text-align: center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="game-screen">
+        <div class="game-header">
+            <button class="btn-exit" onclick="exitGame()">Salir</button>
+            <div class="key-counter-box" id="key-counter">0</div>
+            <div class="timer-display" id="timer-display">00:00:00</div>
+        </div>
+
+        <div class="player-box">
+            <div class="player-bg" id="player-bg"></div>
+            <div class="lyrics-container">
+                <p id="lyric-text">Cargando canción...</p>
+            </div>
+        </div>
+
+        <div class="keyboard-container" id="keyboard">
+            <div class="keyboard-row">
+                <div class="key" data-key="º">º</div><div class="key" data-key="1">1</div><div class="key" data-key="2">2</div><div class="key" data-key="3">3</div><div class="key" data-key="4">4</div><div class="key" data-key="5">5</div><div class="key" data-key="6">6</div><div class="key" data-key="7">7</div><div class="key" data-key="8">8</div><div class="key" data-key="9">9</div><div class="key" data-key="0">0</div><div class="key" data-key="'">'</div><div class="key" data-key="¡">¡</div><div class="key backspace-key" data-key="Backspace">←</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key narrow" data-key="q">q</div><div class="key narrow" data-key="w">w</div><div class="key narrow" data-key="e">e</div><div class="key narrow" data-key="r">r</div><div class="key narrow" data-key="t">t</div><div class="key narrow" data-key="y">y</div><div class="key narrow" data-key="u">u</div><div class="key narrow" data-key="i">i</div><div class="key narrow" data-key="o">o</div><div class="key narrow" data-key="p">p</div><div class="key" data-key="`">`</div><div class="key" data-key="+">+</div><div class="key enter-rect" data-key="Enter">↵</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key spacer-key"></div><div class="key narrow" data-key="a">a</div><div class="key narrow" data-key="s">s</div><div class="key narrow" data-key="d">d</div><div class="key narrow" data-key="f">f</div><div class="key narrow" data-key="g">g</div><div class="key narrow" data-key="h">h</div><div class="key narrow" data-key="j">j</div><div class="key narrow" data-key="k">k</div><div class="key narrow" data-key="l">l</div><div class="key narrow" data-key="ñ">ñ</div><div class="key" data-key="{">{</div><div class="key" data-key="}">}</div><div class="key spacer-key"></div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key shift-key" data-key="Shift">⇧</div><div class="key narrow" data-key="<">&lt;</div><div class="key narrow" data-key="z">z</div><div class="key narrow" data-key="x">x</div><div class="key narrow" data-key="c">c</div><div class="key narrow" data-key="v">v</div><div class="key narrow" data-key="b">b</div><div class="key narrow" data-key="n">n</div><div class="key narrow" data-key="m">m</div><div class="key" data-key=",">,</div><div class="key" data-key=".">.</div><div class="key" data-key="-">-</div><div class="key shift-key" data-key="Shift">⇧</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key space" data-key=" ">Espacio</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h1 class="game-title">¡Juego Completado!</h1>
+        <p id="final-stats" style="font-size: 1.4rem; margin-bottom: 20px;"></p>
+        <input type="text" id="player-name" placeholder="Tu nombre" style="padding: 10px; font-size: 1rem; width: 80%; max-width: 300px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 6px;">
+        <button class="btn-play" onclick="saveScore()">Guardar Puntuación</button>
+    </div>
+
+    <audio id="game-audio"></audio>
+
+    <script>
+const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR'; // (Asegúrate de poner aquí tu clave publishable real)
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const musicData = [
+        {
+            title: "Gallina Terrenal",
+            img: "https://i.ibb.co/8LY8GCMM/gallina-terrenal.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/dpezf6.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/galterr.txt"
+        },
+        {
+            title: "Dark Cloud",
+            img: "https://wallpapercave.com/wp/wp2974051.jpg",
+            author: "No Respawn",
+            audio: "https://files.catbox.moe/e451ms.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/drkld.txt"
+        },
+        {
+            title: "Go Faster",
+            img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/c1zzpz.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
+        },
+        {
+            title: "La cucaracha",
+            img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/vunfuh.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
+        },
+        {
+            title: "La cucaracha(versionada)",
+            img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/yrkv8h.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
+        },
+        {
+            title: "Garacias a Dios hay Chamba",
+            img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
+            author: "Dani Chalán",
+            audio: "https://files.catbox.moe/530yy1.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/haychamba.txt"
+        },
+        {
+            title: "Mi amiga jirafa",
+            img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/z25a46.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/amjirf.txt"
+        },
+        {
+            title: "BELIEVE IN THE MAGIC!",
+            img: "https://static.que.es/wp-content/uploads/2021/02/Que-es-la-magia.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/7tub00.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/magic.txt"
+        },
+        {
+            title: "Level 99 Slitherbreak",
+            img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/2nhp1u.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/Slitherbrk.txt"
+        },
+        {
+            title: "La gallinita Ciega",
+            img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/5qynrf.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/ceiga.txt"
+        },
+        {
+            title: "Gallinita Espacial",
+            img: "https://i.ibb.co/d0Cqj92f/image-jpg-75.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/2o58j3.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/espagal.txt"
+        },
+        {
+            title: "Iguana del Caos",
+            img: "https://i.ibb.co/rgJdfSr/content-75.jpg",
+            author: "Metal Insano",
+            audio: "https://files.catbox.moe/e27db5.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/iguanacaos.txt"
+        },
+        {
+            title: "Fénix",
+            img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
+            author: "Metal Insano",
+            audio: "https://files.catbox.moe/b1a57n.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt"
+        },
+        {
+            title: "Exploit Explosion",
+            img: "https://i.ibb.co/JW6Yfhxx/6868c0ae-3e1c-4b6a-95c7-893900519c38-75.jpg", 
+            audio: "https://files.catbox.moe/wd8w2a.mp3",
+            author: "No Respawn",
+            lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt"
+        }
+        ];
+
+        let currentSong = null;
+        let lrcLines = []; 
+        let targetWords = [];
+        let currentWordTargetIndex = 0;
+        
+        let correctKeysCount = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let isPausedForTyping = false;
+        let errorCharsTyped = "";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLeaderboard();
+        });
+
+        async function fetchLeaderboard() {
+            const tbody = document.getElementById('leaderboard-body');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ranking')
+                    .select('name, tpm')
+                    .order('tpm', { ascending: false })
+                    .limit(5);
+
+                if (error || !data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td>1</td><td>Nadie</td><td>0</td></tr>
+                                       <tr><td>2</td><td>Nadie</td><td>0</td></tr>
+                                       <tr><td>3</td><td>Nadie</td><td>0</td></tr>
+                                       <tr><td>4</td><td>Nadie</td><td>0</td></tr>
+                                       <tr><td>5</td><td>Nadie</td><td>0</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                const medals = ['🥇', '🥈', '🥉'];
+                data.forEach((row, idx) => {
+                    const badge = medals[idx] || (idx + 1);
+                    html += `<tr><td>${badge}</td><td>${row.name}</td><td>${row.tpm} TPM</td></tr>`;
+                });
+                for (let i = data.length; i < 5; i++) {
+                    const badge = medals[i] || (i + 1);
+                    html += `<tr><td>${badge}</td><td>Nadie</td><td>0</td></tr>`;
+                }
+                tbody.innerHTML = html;
+            } catch (e) {
+                tbody.innerHTML = `<tr><td>1</td><td>Nadie</td><td>0</td></tr>
+                                   <tr><td>2</td><td>Nadie</td><td>0</td></tr>
+                                   <tr><td>3</td><td>Nadie</td><td>0</td></tr>
+                                   <tr><td>4</td><td>Nadie</td><td>0</td></tr>
+                                   <tr><td>5</td><td>Nadie</td><td>0</td></tr>`;
+            }
+        }
+
+        async function parseLRC(lrcUrl) {
+            if (!lrcUrl) return [];
+            let lrcText = lrcUrl;
+            if (lrcUrl.startsWith('http://') || lrcUrl.startsWith('https://')) {
+                try {
+                    const response = await fetch(lrcUrl);
+                    if (!response.ok) throw new Error('Error al descargar letra');
+                    lrcText = await response.text();
+                } catch (error) {
+                    console.error('No se pudo cargar la letra desde la URL:', error);
+                    return [];
+                }
+            }
+
+            const rawLines = lrcText.replace(/\r\n/g, '\n').split('\n');
+            const parsed = [];
+            const timeReg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
+
+            rawLines.forEach(line => {
+                const match = line.match(timeReg);
+                if (match) {
+                    const minutes = parseInt(match[1], 10);
+                    const seconds = parseInt(match[2], 10);
+                    const millisPart = match[3];
+                    const milliseconds = parseInt(millisPart.length === 2 ? millisPart * 10 : millisPart, 10);
+                    const totalSeconds = minutes * 60 + seconds + milliseconds / 1000;
+
+                    const cleanText = line.replace(timeReg, '').trim();
+                    if (cleanText) {
+                        parsed.push({ time: totalSeconds, text: cleanText });
+                    }
+                }
+            });
+
+            parsed.sort((a, b) => a.time - b.time);
+            return parsed;
+        }
+
+        window.startGame = async function() {
+            currentSong = musicData[Math.floor(Math.random() * musicData.length)];
+            
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            document.getElementById('lyric-text').textContent = "Cargando letra y sincronizando...";
+
+            try {
+                lrcLines = await parseLRC(currentSong.lyrics);
+                if (lrcLines.length === 0) throw new Error("La letra está vacía o no tiene formato LRC válido.");
+                
+                processGameWords();
+
+                document.getElementById('player-bg').style.backgroundImage = `url('${currentSong.img}')`;
+                
+                const audio = document.getElementById('game-audio');
+                audio.src = currentSong.audio;
+                audio.load();
+
+                audio.onloadedmetadata = () => {
+                    document.getElementById('lyric-text').textContent = "";
+                    audio.play().catch(e => {
+                        console.warn("Autoplay bloqueado por el navegador. Haz clic para reproducir.");
+                    });
+                };
+
+            } catch (error) {
+                alert("Error al cargar los recursos de la canción. Revisa la consola o las URLs.");
+                location.reload();
+            }
+        }
+
+        window.exitGame = function() {
+            const audio = document.getElementById('game-audio');
+            audio.pause();
+            audio.currentTime = 0;
+            stopTimer();
+            isPausedForTyping = false;
+
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('home-screen').style.display = 'flex';
+            fetchLeaderboard();
+        }
+
+        function processGameWords() {
+            targetWords = [];
+            const cleanRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/;
+
+            let lineValidity = [];
+            lrcLines.forEach((item, idx) => {
+                let hasValidWord = false;
+                if (idx >= 2) { 
+                    const words = item.text.split(/\s+/);
+                    for (let w of words) {
+                        if (w.length >= 4 && cleanRegex.test(w)) {
+                            hasValidWord = true;
+                            break;
+                        }
+                    }
+                }
+                lineValidity[idx] = hasValidWord;
+            });
+
+            let selected = [];
+            let lastLineIdx = -10;
+            let currentIndex = 2; 
+
+            while (selected.length < 5 && currentIndex < lrcLines.length) {
+                let foundValidInWindow = false;
+                let targetLineIdx = -1;
+
+                for (let offset = 0; offset <= 5; offset++) {
+                    let checkIdx = currentIndex + offset;
+                    if (checkIdx < lrcLines.length && lineValidity[checkIdx]) {
+                        if (checkIdx !== lastLineIdx && checkIdx !== lastLineIdx + 1 && checkIdx !== lastLineIdx - 1) {
+                            targetLineIdx = checkIdx;
+                            foundValidInWindow = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundValidInWindow && targetLineIdx !== -1) {
+                    let item = lrcLines[targetLineIdx];
+                    let words = item.text.split(/\s+/);
+                    let validCandidatesInLine = [];
+                    words.forEach((w, wIdx) => {
+                        if (w.length >= 4 && cleanRegex.test(w)) {
+                            validCandidatesInLine.push({ lrcIdx: targetLineIdx, wordIdx: wIdx, word: w, time: item.time });
+                        }
+                    });
+
+                    if (validCandidatesInLine.length > 0) {
+                        let chosenWord = validCandidatesInLine[Math.floor(Math.random() * validCandidatesInLine.length)];
+                        selected.push(chosenWord);
+                        lastLineIdx = targetLineIdx;
+                        currentIndex = targetLineIdx + 2; 
+                    } else {
+                        currentIndex++;
+                    }
+                } else {
+                    currentIndex += 6;
+                }
+            }
+
+            targetWords = selected;
+            targetWords.sort((a, b) => a.time - b.time);
+
+            currentWordTargetIndex = 0;
+            correctKeysCount = 0;
+            timerSeconds = 0;
+            updateCounterUI();
+            updateTimerUI();
+
+            setupAudioTriggers();
+        }
+
+        function setupAudioTriggers() {
+            const audio = document.getElementById('game-audio');
+            
+            audio.ontimeupdate = () => {
+                const currentTime = audio.currentTime;
+                let activeLineText = "";
+                for (let i = lrcLines.length - 1; i >= 0; i--) {
+                    if (currentTime >= lrcLines[i].time) {
+                        activeLineText = lrcLines[i].text;
+                        break;
+                    }
+                }
+
+                if (isPausedForTyping) {
+                    renderActiveLyricWithMask();
+                } else {
+                    document.getElementById('lyric-text').textContent = activeLineText;
+
+                    if (targetWords.length > 0 && currentWordTargetIndex < targetWords.length) {
+                        const targetObj = targetWords[currentWordTargetIndex];
+                        if (currentTime >= targetObj.time) {
+                            pauseForCurrentWord();
+                        }
+                    }
+                }
+            };
+        }
+
+        function pauseForCurrentWord() {
+            const audio = document.getElementById('game-audio');
+            audio.pause();
+            isPausedForTyping = true;
+            errorCharsTyped = "";
+            startTimer();
+
+            const targetObj = targetWords[currentWordTargetIndex];
+            targetObj.typedLength = 0;
+            
+            renderActiveLyricWithMask();
+            highlightNextExpectedKey(targetObj);
+        }
+
+        function renderActiveLyricWithMask() {
+            const targetObj = targetWords[currentWordTargetIndex];
+            let currentLine = lrcLines[targetObj.lrcIdx].text;
+            let words = currentLine.split(/\s+/);
+            
+            if (!words[targetObj.wordIdx]) {
+                words[targetObj.wordIdx] = targetObj.word;
+            }
+            
+            let correctTypedCount = targetObj.typedLength;
+            
+            let typedDisplay = targetObj.word.substring(0, Math.min(correctTypedCount, targetObj.word.length));
+            let remainingLength = Math.max(0, targetObj.word.length - typedDisplay.length);
+            
+            let htmlWord = `<span class="typed-correct">${typedDisplay}</span>`;
+            if (remainingLength > 0) {
+                let outlinePart = targetObj.word.substring(typedDisplay.length);
+                htmlWord += `<span class="outline-word">${outlinePart}</span>`;
+            }
+
+            if (errorCharsTyped.length > 0) {
+                htmlWord += `<span class="typed-error">${errorCharsTyped}</span>`;
+            }
+
+            words[targetObj.wordIdx] = htmlWord;
+            document.getElementById('lyric-text').innerHTML = words.join(' ');
+        }
+
+        function highlightNextExpectedKey(targetObj) {
+            clearKeyboardHighlights();
+            if (errorCharsTyped.length > 0) {
+                highlightBackspaceKey();
+                return;
+            }
+
+            if (targetObj.typedLength < targetObj.word.length) {
+                let nextChar = targetObj.word[targetObj.typedLength];
+                highlightKeyboardKey(nextChar);
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerUI();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function updateTimerUI() {
+            const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${hrs}:${mins}:${secs}`;
+        }
+
+        function updateCounterUI() {
+            document.getElementById('key-counter').textContent = correctKeysCount;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!isPausedForTyping) return;
+
+            // Ignorar eventos de tecla muerta pura ("Dead") para que no aparezca en pantalla como error
+            if (e.key === 'Dead' || e.key.toLowerCase().includes('dead')) {
+                return;
+            }
+
+            const targetObj = targetWords[currentWordTargetIndex];
+
+            if (e.key === 'Backspace') {
+                if (errorCharsTyped.length > 0) {
+                    errorCharsTyped = errorCharsTyped.slice(0, -1);
+                    renderActiveLyricWithMask();
+                    highlightNextExpectedKey(targetObj);
+                }
+                return;
+            }
+
+            if (errorCharsTyped.length > 0) {
+                return;
+            }
+
+            const expectedChar = targetObj.word[targetObj.typedLength];
+
+            // Validación estricta: se exige la tilde exacta para fomentar la buena ortografía
+            if (e.key.toLowerCase() === expectedChar.toLowerCase()) {
+                correctKeysCount++;
+                updateCounterUI();
+                targetObj.typedLength++;
+
+                renderActiveLyricWithMask();
+
+                if (targetObj.typedLength < targetObj.word.length) {
+                    highlightNextExpectedKey(targetObj);
+                } else {
+                    isPausedForTyping = false;
+                    stopTimer();
+                    currentWordTargetIndex++;
+
+                    if (currentWordTargetIndex >= targetWords.length) {
+                        endGame();
+                    } else {
+                        document.getElementById('game-audio').play();
+                    }
+                }
+            } else {
+                errorCharsTyped += e.key;
+                renderActiveLyricWithMask();
+                highlightNextExpectedKey(targetObj);
+            }
+        });
+
+        function highlightKeyboardKey(char) {
+            const keys = document.querySelectorAll('.key');
+            // Mapear acentos a su vocal base en el teclado virtual para que se ilumine correctamente
+            const baseChar = char.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            keys.forEach(k => {
+                let keyVal = k.getAttribute('data-key');
+                if (keyVal && (keyVal.toLowerCase() === char.toLowerCase() || keyVal.toLowerCase() === baseChar)) {
+                    k.classList.add('highlight-key');
+                }
+            });
+        }
+
+        function highlightBackspaceKey() {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(k => {
+                if (k.getAttribute('data-key') === 'Backspace') {
+                    k.classList.add('error-highlight');
+                }
+            });
+        }
+
+        function clearKeyboardHighlights() {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(k => {
+                k.classList.remove('highlight-key');
+                k.classList.remove('error-highlight');
+            });
+        }
+
+        function endGame() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'flex';
+
+            const totalMinutes = timerSeconds > 0 ? timerSeconds / 60 : 1/60;
+            const tpm = Math.round(correctKeysCount / totalMinutes);
+
+            document.getElementById('final-stats').innerHTML = `¡Has completado las 5 palabras!<br>Tiempo de typing: ${timerSeconds}s<br><b>${tpm} Teclas por Minuto (TPM)</b>`;
+            window.finalTPM = tpm;
+        }
+
+        window.saveScore = async function() {
+            const name = document.getElementById('player-name').value.trim() || 'Anónimo';
+            const tpm = window.finalTPM || 0;
+
+            try {
+                await supabaseClient.from('ranking').insert([{ name: name, tpm: tpm }]);
+                alert('¡Puntuación guardada con éxito!');
+                location.reload();
+            } catch (e) {
+                alert('Error al guardar en Supabase. Comprueba tus credenciales.');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
