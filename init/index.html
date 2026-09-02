@@ -17,6 +17,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         /* Barra superior estilo Google Chrome */
@@ -136,16 +137,16 @@
             margin-bottom: 30px;
         }
 
-        /* Estilos del Teclado QWERTY en Español ampliado con números */
+        /* Contenedor del Teclado con fondo gris claro */
         .keyboard-container {
-            background-color: #e4e7eb;
+            background-color: #e0e0e0;
             padding: 16px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-width: 760px;
+            gap: 6px;
+            max-width: 900px;
             width: 100%;
             user-select: none;
         }
@@ -153,40 +154,160 @@
         .keyboard-row {
             display: flex;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
+            width: 100%;
         }
 
+        /* Teclas en tono gris oscuro, letra blanca, alineada arriba a la izquierda con margen y fuente al 28% del alto */
         .key {
-            background-color: #ffffff;
-            color: #202124;
+            background-color: #333333;
+            color: #ffffff;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
-            height: 45px;
+            border-radius: 5px;
+            height: 46px;
             flex: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            transition: background-color 0.15s, color 0.15s;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding-top: 6px;
+            padding-left: 8px;
+            font-size: 12.88px; /* 28% de 46px */
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            cursor: default;
+            position: relative;
         }
 
+        /* Teclas un 10% más angostas */
+        .key.narrow {
+            flex: 0.9;
+        }
+
+        /* Resaltado con el mismo azul de la barra de búsqueda (#1a73e8) */
         .key.highlight-key {
             background-color: #1a73e8 !important;
             color: #ffffff !important;
             box-shadow: 0 0 8px rgba(26, 115, 232, 0.6);
         }
 
+        /* Tecla Backspace unificada al color y centrada */
+        .key.backspace-key {
+            flex: 1.5;
+            background-color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        /* Icono SVG de Backspace minimalista integrado */
+        .backspace-icon {
+            width: 24px;
+            height: 24px;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 2.2px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: block;
+        }
+
+        /* Tecla Enter rectangular especial */
+        .key.enter-rect {
+            flex: 2.2;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding-bottom: 6px;
+            padding-right: 8px;
+        }
+
+        /* Tecla Shift especial – un poco más ancha para desplazar las teclas
+           hasta que el margen izquierdo de Z quede exactamente bajo el punto medio de A */
+        .key.shift-key {
+            flex: 2.55;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding-top: 6px;
+            padding-right: 8px;
+        }
+
+        /* Flecha gruesa sin relleno solo borde apuntando hacia arriba */
+        .shift-arrow {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 10px solid #ffffff;
+            position: relative;
+        }
+        .shift-arrow::after {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 3px;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 7px solid #333333;
+        }
+
+        /* Flecha con forma de L para Enter */
+        .enter-l-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        /* Barra espaciadora: ocupa exactamente el ancho desde la C hasta la M */
         .key.space {
-            flex: 6;
+            flex: 5;
+        }
+
+        /* Teclas invisibles o de relleno del mismo color del fondo del contenedor (#e0e0e0) para ajustar espacios */
+        .key.spacer-key {
+            background-color: #e0e0e0;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        /* Pantalla de carga con rueda de colores estilo Linux */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .linux-spinner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #e20000;
+            border-right: 6px solid #fcd116;
+            border-bottom: 6px solid #00a4ef;
+            border-left: 6px solid #73d216;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
     <!-- Barra de navegación superior estilo Chrome -->
-    <header class="browser-bar">
+    <header class="browser-bar" id="browserBar">
         <div class="nav-buttons">
             <button class="nav-btn" disabled title="Atrás">&#10094;</button>
             <button class="nav-btn" disabled title="Adelante">&#10095;</button>
@@ -195,7 +316,7 @@
         <div class="address-bar-container">
             <div class="search-input-wrapper">
                 <div class="suggestion-layer" id="suggestionLayer"></div>
-                <input type="text" id="searchBar" autocomplete="off" spellcheck="false" autofocus placeholder="Buscar en Google o escribir una URL">
+                <input type="text" id="searchBar" autocomplete="off" spellcheck="false" autofocus placeholder="Dirección de la página de la música lux...">
             </div>
         </div>
     </header>
@@ -203,68 +324,111 @@
     <!-- Pantalla principal y Teclado -->
     <main id="mainContent">
         <div class="keyboard-container" id="keyboard">
-            <!-- Fila de Números (1 al 0) -->
+            <!-- Fila de Números superior -->
             <div class="keyboard-row">
-                <button class="key" data-key="1">1</button>
-                <button class="key" data-key="2">2</button>
-                <button class="key" data-key="3">3</button>
-                <button class="key" data-key="4">4</button>
-                <button class="key" data-key="5">5</button>
-                <button class="key" data-key="6">6</button>
-                <button class="key" data-key="7">7</button>
-                <button class="key" data-key="8">8</button>
-                <button class="key" data-key="9">9</button>
-                <button class="key" data-key="0">0</button>
+                <div class="key" data-key="º">º</div>
+                <div class="key" data-key="1">1</div>
+                <div class="key" data-key="2">2</div>
+                <div class="key" data-key="3">3</div>
+                <div class="key" data-key="4">4</div>
+                <div class="key" data-key="5">5</div>
+                <div class="key" data-key="6">6</div>
+                <div class="key" data-key="7">7</div>
+                <div class="key" data-key="8">8</div>
+                <div class="key" data-key="9">9</div>
+                <div class="key" data-key="0">0</div>
+                <div class="key" data-key="'">'</div>
+                <div class="key" data-key="¡">¡</div>
+                <!-- Tecla Backspace con icono SVG integrado -->
+                <div class="key backspace-key" data-key="backspace">
+                    <svg class="backspace-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 4H8L2 12L8 20H21V4Z" />
+                        <path d="M11 9L16 14" />
+                        <path d="M16 9L11 14" />
+                    </svg>
+                </div>
             </div>
-            <!-- Fila 1 -->
+
+            <!-- Primera fila: QWERTYUIOP`+ç (+ y ç 10% más angostas) -->
             <div class="keyboard-row">
-                <button class="key" data-key="q">Q</button>
-                <button class="key" data-key="w">W</button>
-                <button class="key" data-key="e">E</button>
-                <button class="key" data-key="r">R</button>
-                <button class="key" data-key="t">T</button>
-                <button class="key" data-key="y">Y</button>
-                <button class="key" data-key="u">U</button>
-                <button class="key" data-key="i">I</button>
-                <button class="key" data-key="o">O</button>
-                <button class="key" data-key="p">P</button>
+                <div class="key" data-key="q">Q</div>
+                <div class="key" data-key="w">W</div>
+                <div class="key" data-key="e">E</div>
+                <div class="key" data-key="r">R</div>
+                <div class="key" data-key="t">T</div>
+                <div class="key" data-key="y">Y</div>
+                <div class="key" data-key="u">U</div>
+                <div class="key" data-key="i">I</div>
+                <div class="key" data-key="o">O</div>
+                <div class="key" data-key="p">P</div>
+                <div class="key" data-key="`">`</div>
+                <div class="key narrow" data-key="+">+</div>
+                <div class="key narrow" data-key="ç">Ç</div>
             </div>
-            <!-- Fila 2 -->
+
+            <!-- Segunda fila: ASDFGHJKLÑ´ + Enter rectangular -->
             <div class="keyboard-row">
-                <button class="key" data-key="a">A</button>
-                <button class="key" data-key="s">S</button>
-                <button class="key" data-key="d">D</button>
-                <button class="key" data-key="f">F</button>
-                <button class="key" data-key="g">G</button>
-                <button class="key" data-key="h">H</button>
-                <button class="key" data-key="j">J</button>
-                <button class="key" data-key="k">K</button>
-                <button class="key" data-key="l">L</button>
-                <button class="key" data-key="ñ">Ñ</button>
+                <!-- Primera tecla desplazada un 50% de su ancho hacia la derecha respecto a Q -->
+                <div class="key" style="margin-left: calc((100% / 13) * 0.5);" data-key="a">A</div>
+                <div class="key" data-key="s">S</div>
+                <div class="key" data-key="d">D</div>
+                <div class="key" data-key="f">F</div>
+                <div class="key" data-key="g">G</div>
+                <div class="key" data-key="h">H</div>
+                <div class="key" data-key="j">J</div>
+                <div class="key" data-key="k">K</div>
+                <div class="key" data-key="l">L</div>
+                <div class="key narrow" data-key="ñ">Ñ</div>
+                <div class="key narrow" data-key="´">´</div>
+                <!-- Tecla Enter rectangular -->
+                <div class="key enter-rect" data-key="enter">
+                    <span class="enter-l-icon">↵</span>
+                </div>
             </div>
-            <!-- Fila 3 -->
+
+            <!-- Tercera fila: <ZXCVBNM,.- + Shift (Shift más ancha → Z queda bajo el punto medio de A) -->
             <div class="keyboard-row">
-                <button class="key" data-key="z">Z</button>
-                <button class="key" data-key="x">X</button>
-                <button class="key" data-key="c">C</button>
-                <button class="key" data-key="v">V</button>
-                <button class="key" data-key="b">B</button>
-                <button class="key" data-key="n">N</button>
-                <button class="key" data-key="m">M</button>
-                <button class="key" data-key=".">.</button>
+                <div class="key" data-key="<">&lt;</div>
+                <div class="key" data-key="z">Z</div>
+                <div class="key" data-key="x">X</div>
+                <div class="key" data-key="c">C</div>
+                <div class="key" data-key="v">V</div>
+                <div class="key" data-key="b">B</div>
+                <div class="key" data-key="n">N</div>
+                <div class="key" data-key="m">M</div>
+                <div class="key" data-key=",">,</div>
+                <div class="key" data-key=".">.</div>
+                <div class="key" data-key="-">-</div>
+                <!-- Tecla Shift con flecha gruesa sin relleno arriba a la derecha -->
+                <div class="key shift-key" data-key="shift">
+                    <div class="shift-arrow"></div>
+                </div>
             </div>
-            <!-- Fila 4 -->
+
+            <!-- Fila inferior con espacios invisibles y barra espaciadora centrada exactamente desde C hasta M -->
             <div class="keyboard-row">
-                <button class="key space" data-key=" "></button>
+                <!-- Espaciador izquierdo invisible para empujar el espacio hasta la C -->
+                <div class="key spacer-key" style="flex: 3;"></div>
+                <!-- Barra espaciadora -->
+                <div class="key space" data-key=" "></div>
+                <!-- Espaciador derecho invisible para completar la fila -->
+                <div class="key spacer-key" style="flex: 3.55;"></div>
             </div>
         </div>
     </main>
+
+    <!-- Pantalla de carga con rueda de colores Linux -->
+    <div id="loadingScreen">
+        <div class="linux-spinner"></div>
+    </div>
 
     <script>
         const targetDomain = "luxiodev93.github.io";
         const searchBar = document.getElementById('searchBar');
         const suggestionLayer = document.getElementById('suggestionLayer');
-        const mainContent = mainContentElement = document.getElementById('mainContent');
+        const mainContent = document.getElementById('mainContent');
+        const browserBar = document.getElementById('browserBar');
+        const loadingScreen = document.getElementById('loadingScreen');
         const keyboardKeys = document.querySelectorAll('.key');
         const keyboard = document.getElementById('keyboard');
 
@@ -275,11 +439,16 @@
 
             const val = searchBar.value;
 
-            if (val.length === 0 || !isCorrectSoFar) {
+            if (val.length === 0) {
+                isCorrectSoFar = true;
                 return;
             }
 
-            if (targetDomain.toLowerCase().startsWith(val.toLowerCase())) {
+            const lowerVal = val.toLowerCase();
+            const lowerTarget = targetDomain.toLowerCase();
+
+            if (lowerTarget.startsWith(lowerVal)) {
+                isCorrectSoFar = true;
                 const nextCharIndex = val.length;
                 if (nextCharIndex < targetDomain.length) {
                     const nextChar = targetDomain[nextCharIndex].toLowerCase();
@@ -289,14 +458,29 @@
                             key.classList.add('highlight-key');
                         }
                     });
+                } else if (val.toLowerCase() === targetDomain.toLowerCase()) {
+                    keyboardKeys.forEach(key => {
+                        if (key.getAttribute('data-key') === 'enter') {
+                            key.classList.add('highlight-key');
+                        }
+                    });
                 }
+            } else {
+                isCorrectSoFar = false;
+                keyboardKeys.forEach(key => {
+                    if (key.getAttribute('data-key') === 'backspace') {
+                        key.classList.add('highlight-key');
+                    }
+                });
             }
         }
 
         function updateSuggestion() {
             const val = searchBar.value;
+            const lowerVal = val.toLowerCase();
+            const lowerTarget = targetDomain.toLowerCase();
             
-            if (targetDomain.toLowerCase().startsWith(val.toLowerCase()) && val.length > 0 && isCorrectSoFar) {
+            if (lowerTarget.startsWith(lowerVal) && val.length > 0 && isCorrectSoFar) {
                 const typedPart = val;
                 const remainingPart = targetDomain.slice(val.length);
                 suggestionLayer.innerHTML = `<span style="color: transparent;">${typedPart}</span><span class="highlight">${remainingPart}</span>`;
@@ -305,19 +489,33 @@
             }
         }
 
-        searchBar.addEventListener('input', () => {
-            const val = searchBar.value;
+        function triggerSuccessSequence() {
+            browserBar.style.display = 'none';
+            mainContent.style.display = 'none';
+            loadingScreen.style.display = 'flex';
 
-            // Limpiar mensaje de error previo si el usuario borra o corrige para reintentar
+            const randomDuration = Math.random() * (4000 - 500) + 500;
+
+            setTimeout(() => {
+                window.location.href = "https://" + targetDomain;
+            }, randomDuration);
+        }
+
+        function handleSubmission() {
+            const val = searchBar.value.trim().toLowerCase();
+            
+            if (val === targetDomain.toLowerCase()) {
+                triggerSuccessSequence();
+            } else {
+                if (keyboard) keyboard.remove();
+                mainContent.innerHTML = `<div class="error-message">Error: 404</div>`;
+            }
+        }
+
+        searchBar.addEventListener('input', () => {
             if (mainContent.querySelector('.error-message')) {
                 mainContent.innerHTML = '';
                 mainContent.appendChild(keyboard);
-            }
-
-            if (targetDomain.toLowerCase().startsWith(val.toLowerCase())) {
-                isCorrectSoFar = true;
-            } else {
-                isCorrectSoFar = false; 
             }
 
             updateSuggestion();
@@ -326,15 +524,7 @@
 
         searchBar.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const val = searchBar.value.trim().toLowerCase();
-                
-                if (val === targetDomain.toLowerCase()) {
-                    window.location.href = "https://" + targetDomain;
-                } else {
-                    // Ocultar teclado y mostrar error 404
-                    keyboard.remove();
-                    mainContent.innerHTML = `<div class="error-message">Error: 404</div>`;
-                }
+                handleSubmission();
             }
         });
 
