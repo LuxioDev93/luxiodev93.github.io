@@ -105,9 +105,9 @@
             display: none;
             flex-direction: column;
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             min-height: 100vh;
-            padding: 16px;
+            padding: 12px;
             justify-content: space-between;
         }
 
@@ -120,6 +120,10 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 12px;
+            max-width: 900px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .btn-exit {
@@ -159,6 +163,9 @@
         .player-box {
             position: relative;
             width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
             aspect-ratio: 16 / 9;
             background: #000;
             border-radius: 12px;
@@ -216,18 +223,21 @@
             -webkit-text-stroke: 0px;
         }
 
-        /* --- TECLADO ILUSTRATIVO --- */
+        /* --- TECLADO ILUSTRATIVO RESPONSIVE 100% ANCHO / ALTO CONSTANTE --- */
         .keyboard-container {
             background-color: #e0e0e0;
-            padding: 12px;
+            padding: 8px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: flex;
             flex-direction: column;
             gap: 5px;
             width: 100%;
+            max-width: none; /* Eliminada cualquier restricción de ancho máximo */
+            height: 260px; /* Alto fijo y constante */
             user-select: none;
             pointer-events: none;
+            margin-top: auto;
         }
 
         .keyboard-row {
@@ -235,43 +245,55 @@
             justify-content: center;
             gap: 4px;
             width: 100%;
+            flex: 1; /* Distribuye equitativamente el alto constante entre las filas */
         }
 
         .key {
             background-color: #333333;
             color: #ffffff;
             border: none;
-            border-radius: 4px;
-            height: 40px;
+            border-radius: 5px;
+            height: 100%; /* Ocupa el 100% de la altura de la fila */
             flex: 1;
-            display: flex;
-            justify-content: flex-start;
-            align-items: flex-start;
-            padding-top: 5px;
-            padding-left: 6px;
-            font-size: 11px;
-            font-weight: 500;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
             transition: background-color 0.1s;
         }
 
+        /* Contenedor interno para asegurar letras mayúsculas ocupando el ~90% del alto de la tecla */
+        .key-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase; /* Fuerza visualmente las mayúsculas */
+            font-size: clamp(14px, 4.5vh, 42px); /* Vinculado al alto de la tecla para ocupar ~90% */
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        /* Modificadores de proporciones para teclas especiales */
         .key.narrow { flex: 0.9; }
-        .key.space { flex: 5; justify-content: center; align-items: center; padding: 0; }
-        .key.backspace-key { flex: 1.5; justify-content: center; align-items: center; padding: 0; }
-        .key.enter-rect { flex: 2.2; justify-content: flex-end; align-items: flex-end; padding-bottom: 5px; padding-right: 6px; }
-        .key.shift-key { flex: 2.55; justify-content: flex-end; align-items: flex-start; padding-top: 5px; padding-right: 6px; }
-        .key.spacer-key { background-color: #e0e0e0; box-shadow: none; }
+        .key.space { flex: 6; }
+        .key.backspace-key { flex: 1.5; }
+        .key.enter-rect { flex: 2.2; }
+        .key.shift-key { flex: 2.55; }
+        .key.spacer-key { background-color: transparent; box-shadow: none; border: none; }
 
         .key.highlight-key {
             background-color: #1a73e8 !important;
             color: #ffffff !important;
-            box-shadow: 0 0 8px rgba(26, 115, 232, 0.8);
+            box-shadow: 0 0 10px rgba(26, 115, 232, 0.9);
         }
 
         .key.error-highlight {
             background-color: #ea4335 !important;
             color: #ffffff !important;
-            box-shadow: 0 0 8px rgba(234, 67, 53, 0.8);
+            box-shadow: 0 0 10px rgba(234, 67, 53, 0.9);
         }
 
         /* Pantalla de Resultados */
@@ -328,19 +350,69 @@
 
         <div class="keyboard-container" id="keyboard">
             <div class="keyboard-row">
-                <div class="key" data-key="º">º</div><div class="key" data-key="1">1</div><div class="key" data-key="2">2</div><div class="key" data-key="3">3</div><div class="key" data-key="4">4</div><div class="key" data-key="5">5</div><div class="key" data-key="6">6</div><div class="key" data-key="7">7</div><div class="key" data-key="8">8</div><div class="key" data-key="9">9</div><div class="key" data-key="0">0</div><div class="key" data-key="'">'</div><div class="key" data-key="¡">¡</div><div class="key backspace-key" data-key="Backspace">←</div>
+                <div class="key" data-key="º"><div class="key-content">º</div></div>
+                <div class="key" data-key="1"><div class="key-content">1</div></div>
+                <div class="key" data-key="2"><div class="key-content">2</div></div>
+                <div class="key" data-key="3"><div class="key-content">3</div></div>
+                <div class="key" data-key="4"><div class="key-content">4</div></div>
+                <div class="key" data-key="5"><div class="key-content">5</div></div>
+                <div class="key" data-key="6"><div class="key-content">6</div></div>
+                <div class="key" data-key="7"><div class="key-content">7</div></div>
+                <div class="key" data-key="8"><div class="key-content">8</div></div>
+                <div class="key" data-key="9"><div class="key-content">9</div></div>
+                <div class="key" data-key="0"><div class="key-content">0</div></div>
+                <div class="key" data-key="'"><div class="key-content">'</div></div>
+                <div class="key" data-key="¡"><div class="key-content">¡</div></div>
+                <div class="key backspace-key" data-key="Backspace"><div class="key-content">←</div></div>
             </div>
             <div class="keyboard-row">
-                <div class="key narrow" data-key="q">q</div><div class="key narrow" data-key="w">w</div><div class="key narrow" data-key="e">e</div><div class="key narrow" data-key="r">r</div><div class="key narrow" data-key="t">t</div><div class="key narrow" data-key="y">y</div><div class="key narrow" data-key="u">u</div><div class="key narrow" data-key="i">i</div><div class="key narrow" data-key="o">o</div><div class="key narrow" data-key="p">p</div><div class="key" data-key="`">`</div><div class="key" data-key="+">+</div><div class="key enter-rect" data-key="Enter">↵</div>
+                <div class="key narrow" data-key="q"><div class="key-content">Q</div></div>
+                <div class="key narrow" data-key="w"><div class="key-content">W</div></div>
+                <div class="key narrow" data-key="e"><div class="key-content">E</div></div>
+                <div class="key narrow" data-key="r"><div class="key-content">R</div></div>
+                <div class="key narrow" data-key="t"><div class="key-content">T</div></div>
+                <div class="key narrow" data-key="y"><div class="key-content">Y</div></div>
+                <div class="key narrow" data-key="u"><div class="key-content">U</div></div>
+                <div class="key narrow" data-key="i"><div class="key-content">I</div></div>
+                <div class="key narrow" data-key="o"><div class="key-content">O</div></div>
+                <div class="key narrow" data-key="p"><div class="key-content">P</div></div>
+                <div class="key" data-key="`"><div class="key-content">`</div></div>
+                <div class="key" data-key="+"><div class="key-content">+</div></div>
+                <div class="key enter-rect" data-key="Enter"><div class="key-content">↵</div></div>
             </div>
             <div class="keyboard-row">
-                <div class="key spacer-key"></div><div class="key narrow" data-key="a">a</div><div class="key narrow" data-key="s">s</div><div class="key narrow" data-key="d">d</div><div class="key narrow" data-key="f">f</div><div class="key narrow" data-key="g">g</div><div class="key narrow" data-key="h">h</div><div class="key narrow" data-key="j">j</div><div class="key narrow" data-key="k">k</div><div class="key narrow" data-key="l">l</div><div class="key narrow" data-key="ñ">ñ</div><div class="key" data-key="{">{</div><div class="key" data-key="}">}</div><div class="key spacer-key"></div>
+                <div class="key spacer-key"></div>
+                <div class="key narrow" data-key="a"><div class="key-content">A</div></div>
+                <div class="key narrow" data-key="s"><div class="key-content">S</div></div>
+                <div class="key narrow" data-key="d"><div class="key-content">D</div></div>
+                <div class="key narrow" data-key="f"><div class="key-content">F</div></div>
+                <div class="key narrow" data-key="g"><div class="key-content">G</div></div>
+                <div class="key narrow" data-key="h"><div class="key-content">H</div></div>
+                <div class="key narrow" data-key="j"><div class="key-content">J</div></div>
+                <div class="key narrow" data-key="k"><div class="key-content">K</div></div>
+                <div class="key narrow" data-key="l"><div class="key-content">L</div></div>
+                <div class="key narrow" data-key="ñ"><div class="key-content">Ñ</div></div>
+                <div class="key" data-key="{"><div class="key-content">{</div></div>
+                <div class="key" data-key="}"><div class="key-content">}</div></div>
+                <div class="key spacer-key"></div>
             </div>
             <div class="keyboard-row">
-                <div class="key shift-key" data-key="Shift">⇧</div><div class="key narrow" data-key="<">&lt;</div><div class="key narrow" data-key="z">z</div><div class="key narrow" data-key="x">x</div><div class="key narrow" data-key="c">c</div><div class="key narrow" data-key="v">v</div><div class="key narrow" data-key="b">b</div><div class="key narrow" data-key="n">n</div><div class="key narrow" data-key="m">m</div><div class="key" data-key=",">,</div><div class="key" data-key=".">.</div><div class="key" data-key="-">-</div><div class="key shift-key" data-key="Shift">⇧</div>
+                <div class="key shift-key" data-key="Shift"><div class="key-content">⇧</div></div>
+                <div class="key narrow" data-key="<"><div class="key-content">&lt;</div></div>
+                <div class="key narrow" data-key="z"><div class="key-content">Z</div></div>
+                <div class="key narrow" data-key="x"><div class="key-content">X</div></div>
+                <div class="key narrow" data-key="c"><div class="key-content">C</div></div>
+                <div class="key narrow" data-key="v"><div class="key-content">V</div></div>
+                <div class="key narrow" data-key="b"><div class="key-content">B</div></div>
+                <div class="key narrow" data-key="n"><div class="key-content">N</div></div>
+                <div class="key narrow" data-key="m"><div class="key-content">M</div></div>
+                <div class="key" data-key=","><div class="key-content">,</div></div>
+                <div class="key" data-key="."><div class="key-content">.</div></div>
+                <div class="key" data-key="-"><div class="key-content">-</div></div>
+                <div class="key shift-key" data-key="Shift"><div class="key-content">⇧</div></div>
             </div>
             <div class="keyboard-row">
-                <div class="key space" data-key=" ">Espacio</div>
+                <div class="key space" data-key=" "><div class="key-content">ESPACIO</div></div>
             </div>
         </div>
     </div>
@@ -348,8 +420,14 @@
     <div id="result-screen">
         <h1 class="game-title">¡Juego Completado!</h1>
         <p id="final-stats" style="font-size: 1.4rem; margin-bottom: 20px;"></p>
-        <input type="text" id="player-name" placeholder="Tu nombre" style="padding: 10px; font-size: 1rem; width: 80%; max-width: 300px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 6px;">
-        <button class="btn-play" onclick="saveScore()">Guardar Puntuación</button>
+        <div id="ranking-input-container" style="display:none; width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <p style="color: #1a73e8; font-weight: bold; margin-bottom: 8px;">¡Has entrado en el Top 5!</p>
+            <input type="text" id="player-name" placeholder="Tu nombre (máx. 10 caracteres)" maxlength="10" style="padding: 10px; font-size: 1rem; width: 80%; max-width: 300px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+            <button class="btn-play" onclick="saveScore()">Guardar Puntuación</button>
+        </div>
+        <div id="ranking-skip-container" style="display:none;">
+            <button class="btn-play" onclick="location.reload()">Volver a Jugar</button>
+        </div>
     </div>
 
     <audio id="game-audio"></audio>
@@ -471,7 +549,7 @@
         let timerInterval = null;
         let isPausedForTyping = false;
         let errorCharsTyped = "";
-        let pendingDeadKey = false; // Control de tildes muertas en portátiles
+        let pendingDeadKey = false;
 
         window.addEventListener('DOMContentLoaded', () => {
             fetchLeaderboard();
@@ -785,7 +863,6 @@
 
             const targetObj = targetWords[currentWordTargetIndex];
 
-            // Detectar la tecla de tilde o diéresis muerta de Lenovo / distribución española
             if (e.key === 'Dead' || e.key === '´' || e.key === '`' || e.key === '¨') {
                 pendingDeadKey = true;
                 e.preventDefault();
@@ -807,7 +884,6 @@
             }
 
             let typedChar = e.key;
-            // Si el usuario tenía una tilde pendiente y ahora escribe una vocal, unimos ambos caracteres normalizándolos
             if (pendingDeadKey) {
                 typedChar = ('áéíóúÁÉÍÓÚ'[[ 'a','e','i','o','u','A','E','I','O','U' ].indexOf(e.key)] || e.key);
                 pendingDeadKey = false;
@@ -815,7 +891,6 @@
 
             const expectedChar = targetObj.word[targetObj.typedLength];
 
-            // Normalización NFD para comparar de forma segura caracteres con tilde (ej: 'ú')
             const normalizedTyped = typedChar.normalize("NFD").toLowerCase();
             const normalizedExpected = expectedChar.normalize("NFD").toLowerCase();
 
@@ -874,19 +949,58 @@
             });
         }
 
-        function endGame() {
+        async function endGame() {
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'flex';
 
             const totalMinutes = timerSeconds > 0 ? timerSeconds / 60 : 1/60;
             const tpm = Math.round(correctKeysCount / totalMinutes);
+            window.finalTPM = tpm;
 
             document.getElementById('final-stats').innerHTML = `¡Has completado las 5 palabras!<br>Tiempo de typing: ${timerSeconds}s<br><b>${tpm} Teclas por Minuto (TPM)</b>`;
-            window.finalTPM = tpm;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ranking')
+                    .select('tpm')
+                    .order('tpm', { ascending: false })
+                    .limit(5);
+
+                let qualifies = false;
+                if (!error) {
+                    if (!data || data.length < 5) {
+                        qualifies = true;
+                    } else {
+                        const fifthPlaceTpm = data[data.length - 1].tpm || 0;
+                        if (tpm > fifthPlaceTpm) {
+                            qualifies = true;
+                        }
+                    }
+                }
+
+                if (qualifies) {
+                    document.getElementById('ranking-input-container').style.display = 'flex';
+                    document.getElementById('ranking-skip-container').style.display = 'none';
+                } else {
+                    document.getElementById('ranking-input-container').style.display = 'none';
+                    document.getElementById('ranking-skip-container').style.display = 'block';
+                }
+            } catch (e) {
+                document.getElementById('ranking-input-container').style.display = 'flex';
+                document.getElementById('ranking-skip-container').style.display = 'none';
+            }
         }
 
         window.saveScore = async function() {
-            const name = document.getElementById('player-name').value.trim() || 'Anónimo';
+            const nameInput = document.getElementById('player-name');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                alert('Por favor, introduce un nombre obligatorio para guardar la puntuación.');
+                nameInput.focus();
+                return;
+            }
+
             const tpm = window.finalTPM || 0;
 
             try {
