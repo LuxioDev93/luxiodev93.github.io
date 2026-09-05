@@ -65,7 +65,8 @@ const manualDictionary = {
     "WEAR": "llevar puesto",
     "miss": "perder",
     "WORKING": "trabajando",
-    "fire": "fuego"
+    "fire": "fuego",
+    "d0": "hacer"
 };
 
 // Lista negra para excluir palabras no deseadas u onomatopeyas
@@ -76,7 +77,7 @@ const blacklistedWords = [
     "nah", "PARQUE", "sailor", "oreja", "MACARENA", "INSTITUTO", "Limewire",
     "Cuatro", "Caminos", "EGB", "crisis", "al", "salir", "de", "clase",
     "TIKTOK", "Tamagotchi", "msn", "hombres", "va", "los", "simpsons",
-    "MAMA'S", "HEY", "KAMEHAMEHA", "da"
+    "MAMA'S", "HEY", "into", "KAMEHAMEHA", "da" ,"instituto"
 ];
 
 let currentSong = null;
