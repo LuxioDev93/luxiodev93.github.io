@@ -19,6 +19,7 @@ const fakeMeanings = ["camino", "piedra", "puerta", "fuerza", "viento", "sombra"
 const manualDictionary = {
     "every": "cada",
     "melody": "melodía",
+	"load": "leer",
     "beats": "ritmos",
     "beat": "ritmo",
     "song": "canción",
