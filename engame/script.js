@@ -1,9 +1,8 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
-        const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
+const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Variables de sesión de juego actuales para guardar al terminar
 let sessionHits = 0;
@@ -23,13 +22,13 @@ const musicData = [
         audio: "https://files.catbox.moe/wsi3j6.mp3",
         lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
     },
-            {
-            title: "Garacias a Dios hay Chamba",
-            img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
-            author: "Dani Chalán",
-            audio: "https://files.catbox.moe/c8gzwv.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
-        }
+    {
+        title: "Garacias a Dios hay Chamba",
+        img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
+        author: "Dani Chalán",
+        audio: "https://files.catbox.moe/c8gzwv.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
+    }
 ];
 
 const fakeMeanings = ["camino", "piedra", "puerta", "fuerza", "viento", "sombra", "canción", "fuego", "estrella", "tiempo", "eterno", "salto"];
@@ -55,76 +54,29 @@ const manualDictionary = {
     "play": "jugar",
     "code": "código",
     "heart": "corazón",
-    "pocket":"bolsillo",
-    "Dial-up":"subir el dial",
-	"load": "leer",
+    "pocket": "bolsillo",
+    "Dial-up": "subir el dial",
+    "load": "leer",
     "build": "construir",
-"little": "pequeño",
-"STARTING": "empezando",
-"BETTER": "mejor",
-"get": "conseguir"
-"WEAR": "llevar puesto"
-"miss": "perder"
-"WORKING": "trabajando"
+    "little": "pequeño",
+    "STARTING": "empezando",
+    "BETTER": "mejor",
+    "get": "conseguir",
+    "WEAR": "llevar puesto",
+    "miss": "perder",
+    "WORKING": "trabajando",
     "fire": "fuego"
 };
 
 // Lista negra para excluir palabras no deseadas u onomatopeyas
 const blacklistedWords = [
-    "heyoh",
-    "oh",
-    "spinning",
-    "cenar",
-    "churros",
-    "had",
-"not",
-"im",
-"Cause",
-"THERES",
-"SAYING",
-"be",
-"thats",
-"MAY",
-    "Pokemon",
-    "hey",
-    "to",
-    "Goku",
-    "Madrid",
-    "calle",
-    "my",
-    "tv",
-	"caf",
-    "the",
-    "up",
-    "ah",
-    "yeah",
-    "la",
-    "nah",
-    "PARQUE",
-    "sailor",
-    "oreja",
-    "MACARENA",
-    "INSTITUTO",
-    "Limewire",
-    "Cuatro",
-    "Caminos",
-    "EGB",
-    "crisis",
-    "al",
-    "salir",
-    "de",
-    "clase",
-    "TIKTOK",
-    "Tamagotchi",
-    "msn",
-    "hombres",
-    "va",
-    "los",
-    "simpsons",
-    "MAMA'S",
-    "HEY",
-    "KAMEHAMEHA",
-    "da"
+    "heyoh", "oh", "spinning", "cenar", "churros", "had", "not", "im", "Cause",
+    "THERES", "SAYING", "be", "thats", "MAY", "Pokemon", "hey", "to", "Goku",
+    "Madrid", "calle", "my", "tv", "caf", "the", "up", "ah", "yeah", "la",
+    "nah", "PARQUE", "sailor", "oreja", "MACARENA", "INSTITUTO", "Limewire",
+    "Cuatro", "Caminos", "EGB", "crisis", "al", "salir", "de", "clase",
+    "TIKTOK", "Tamagotchi", "msn", "hombres", "va", "los", "simpsons",
+    "MAMA'S", "HEY", "KAMEHAMEHA", "da"
 ];
 
 let currentSong = null;
@@ -228,13 +180,13 @@ async function parseLRC(lrcUrl) {
 document.addEventListener('DOMContentLoaded', () => {
     injectDevScreens();
     setupDevTrigger();
-    loadGlobalStats(); // Cargar estadísticas de Supabase al iniciar
+    loadGlobalStats(); 
 });
 
 // --- FUNCIONES DE SUPABASE PARA ESTADÍSTICAS Y CORRECCIÓN ---
 async function loadGlobalStats() {
     try {
-        const { data, error } = await supabaseClient
+        const { data } = await supabaseClient
             .from('user_stats')
             .select('hits, errors')
             .single();
@@ -250,7 +202,7 @@ async function loadGlobalStats() {
     }
 }
 
-async function openCorrectionScreen() {
+window.openCorrectionScreen = async function() {
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('correction-screen').style.display = 'flex';
     
@@ -258,7 +210,7 @@ async function openCorrectionScreen() {
     container.innerHTML = `<p style="text-align:center; color:#b0bec5;">Cargando palabras falladas...</p>`;
 
     try {
-        const { data: failedWords, error } = await supabaseClient.from('failed_words').select('*');
+        const { data: failedWords } = await supabaseClient.from('failed_words').select('*');
 
         if (!failedWords || failedWords.length === 0) {
             container.innerHTML = `<p style="text-align:center; color:#4CAF50; font-size:1.2rem;">¡No tienes palabras pendientes de corrección! Buen trabajo.</p>`;
@@ -301,7 +253,6 @@ async function openCorrectionScreen() {
                     if (opt === item.translation) {
                         optBtn.style.background = "#4CAF50";
                         
-                        // Restar error, sumar acierto en Supabase
                         const { data: stats } = await supabaseClient.from('user_stats').select('hits, errors').single();
                         if (stats) {
                             await supabaseClient.from('user_stats').update({
@@ -310,11 +261,10 @@ async function openCorrectionScreen() {
                             }).eq('id', 1);
                         }
 
-                        // Eliminar de palabras falladas
                         await supabaseClient.from('failed_words').delete().eq('id', item.id);
 
                         setTimeout(() => {
-                            openCorrectionScreen();
+                            window.openCorrectionScreen();
                             loadGlobalStats();
                         }, 800);
                     } else {
@@ -333,13 +283,11 @@ async function openCorrectionScreen() {
     }
 }
 
-function closeCorrectionScreen() {
+window.closeCorrectionScreen = function() {
     document.getElementById('correction-screen').style.display = 'none';
     document.getElementById('home-screen').style.display = 'flex';
     loadGlobalStats();
 }
-
-// --- RESTO DE TUS IMPLEMENTACIONES ORIGINALES ---
 
 function injectDevScreens() {
     if (!document.getElementById('dev-menu-screen')) {
@@ -401,13 +349,8 @@ function injectDevScreens() {
         document.getElementById('dev-menu-screen').style.display = 'flex';
     };
 
-    document.getElementById('dev-next-word-btn').onclick = () => {
-        navigateDevWord(1);
-    };
-
-    document.getElementById('dev-prev-word-btn').onclick = () => {
-        navigateDevWord(-1);
-    };
+    document.getElementById('dev-next-word-btn').onclick = () => { navigateDevWord(1); };
+    document.getElementById('dev-prev-word-btn').onclick = () => { navigateDevWord(-1); };
 }
 
 function setupDevTrigger() {
@@ -425,9 +368,7 @@ function setupDevTrigger() {
             clickCount = 0;
             openDevMenu();
         } else {
-            clickTimer = setTimeout(() => {
-                clickCount = 0;
-            }, 1000);
+            clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
         }
     });
 }
@@ -443,15 +384,7 @@ function openDevMenu() {
     musicData.forEach((song) => {
         const btn = document.createElement('button');
         btn.textContent = `${song.title} - ${song.author}`;
-        btn.style.padding = "15px";
-        btn.style.background = "#222";
-        btn.style.color = "#fff";
-        btn.style.border = "1px solid #444";
-        btn.style.borderRadius = "8px";
-        btn.style.cursor = "pointer";
-        btn.style.fontSize = "16px";
-        btn.style.textAlign = "left";
-
+        btn.style.cssText = "padding: 15px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; font-size: 16px; text-align: left;";
         btn.onclick = () => loadSongIntoDev(song);
         listContainer.appendChild(btn);
     });
@@ -478,8 +411,7 @@ async function loadSongIntoDev(song) {
 
         lines.forEach((item) => {
             const lineDiv = document.createElement('div');
-            lineDiv.style.marginBottom = "8px";
-            lineDiv.style.lineHeight = "1.6";
+            lineDiv.style.cssText = "margin-bottom: 8px; line-height: 1.6;";
 
             const rawTokens = item.text.split(/(\s+)/);
 
@@ -494,23 +426,11 @@ async function loadSongIntoDev(song) {
 
                 const span = document.createElement('span');
                 span.textContent = token;
-                span.style.padding = "2px 5px";
-                span.style.borderRadius = "4px";
-                span.style.margin = "0 1px";
-                span.style.display = "inline-block";
-                span.style.fontSize = "15px";
+                span.style.cssText = "padding: 2px 5px; border-radius: 4px; margin: 0 1px; display: inline-block; font-size: 15px;";
 
                 if (isValid) {
-                    span.style.background = "rgba(46, 125, 50, 0.35)";
-                    span.style.border = "1px solid rgba(76, 175, 80, 0.6)";
-                    span.style.color = "#fff";
-                    span.style.cursor = "pointer";
-
-                    const wordEntry = {
-                        word: cleanW,
-                        element: span
-                    };
-                    devValidWordsList.push(wordEntry);
+                    span.style.cssText += " background: rgba(46, 125, 50, 0.35); border: 1px solid rgba(76, 175, 80, 0.6); color: #fff; cursor: pointer;";
+                    devValidWordsList.push({ word: cleanW, element: span });
                     const currentValidIndex = devValidWordsList.length - 1;
 
                     span.onclick = () => {
@@ -518,9 +438,7 @@ async function loadSongIntoDev(song) {
                         updateDevActiveSelection();
                     };
                 } else {
-                    span.style.background = "rgba(183, 28, 28, 0.25)";
-                    span.style.border = "1px solid rgba(244, 67, 54, 0.4)";
-                    span.style.color = "#aaa";
+                    span.style.cssText += " background: rgba(183, 28, 28, 0.25); border: 1px solid rgba(244, 67, 54, 0.4); color: #aaa;";
                 }
 
                 lineDiv.appendChild(span);
@@ -550,8 +468,7 @@ async function updateDevActiveSelection() {
             item.element.style.boxShadow = "0 0 8px rgba(76, 175, 80, 0.8)";
             item.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
-            const cleanW = item.word;
-            if (cleanW.length >= 2 && isEnglishWord(cleanW)) {
+            if (item.word.length >= 2 && isEnglishWord(item.word)) {
                 item.element.style.background = "rgba(46, 125, 50, 0.35)";
                 item.element.style.boxShadow = "none";
             }
@@ -563,7 +480,6 @@ async function updateDevActiveSelection() {
     document.getElementById('dev-translation-display').textContent = "Traduciendo...";
 
     const translation = await fetchTranslation(activeEntry.word);
-    
     if (devValidWordsList[devCurrentWordIndex] === activeEntry) {
         document.getElementById('dev-translation-display').textContent = translation;
     }
@@ -580,6 +496,7 @@ function navigateDevWord(direction) {
     updateDevActiveSelection();
 }
 
+// Vinculadas explícitamente a window para evitar errores de referencia en el HTML
 window.startGame = async function() {
     currentSong = musicData[Math.floor(Math.random() * musicData.length)];
     sessionHits = 0;
@@ -660,7 +577,6 @@ function processGameWords(startIndex = 0) {
     targetWords = [];
     let lineValidity = [];
 
-    // Precalcular qué líneas tienen palabras válidas
     lrcLines.forEach((item, idx) => {
         let hasValidWord = false;
         const words = item.text.split(/\s+/);
@@ -679,9 +595,8 @@ function processGameWords(startIndex = 0) {
 
     while (selected.length < 5 && currentIndex < lrcLines.length) {
         let targetLineIdx = -1;
-
-        // 1. Se elige una línea siguiendo las reglas (se verifica si tiene palabras válidas, si no, se prueba con la siguiente)
         let checkIdx = currentIndex;
+        
         while (checkIdx < lrcLines.length) {
             if (lineValidity[checkIdx]) {
                 targetLineIdx = checkIdx;
@@ -690,7 +605,6 @@ function processGameWords(startIndex = 0) {
             checkIdx++;
         }
 
-        // Si encontramos una línea con palabras válidas
         if (targetLineIdx !== -1) {
             let item = lrcLines[targetLineIdx];
             let words = item.text.split(/\s+/);
@@ -703,20 +617,16 @@ function processGameWords(startIndex = 0) {
                 }
             });
 
-            // 2. Si tiene palabras válidas, se toma una al azar
             if (validCandidatesInLine.length > 0) {
                 let chosenWord = validCandidatesInLine[Math.floor(Math.random() * validCandidatesInLine.length)];
                 selected.push(chosenWord);
                 
-                // 3. Elegir una línea aleatoria entre (posición actual + 2) y (posición actual + 4)
-                let randomJump = Math.floor(Math.random() * 3) + 2; // Genera 2, 3 o 4
+                let randomJump = Math.floor(Math.random() * 3) + 2; 
                 currentIndex = targetLineIdx + randomJump;
             } else {
-                // Si por alguna razón la línea marcada como válida no devolvió candidatos, avanzamos a la siguiente
                 currentIndex = targetLineIdx + 1;
             }
         } else {
-            // Si ya no quedan líneas válidas hacia adelante, rompemos el bucle
             break;
         }
     }
@@ -801,7 +711,7 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
     } else {
         selectedBtn.classList.add('incorrect');
         sessionErrors++;
-        // Guardar palabra fallada en Supabase
+        
         await supabaseClient.from('failed_words').insert([
             { word: targetWord.toLowerCase(), translation: correctMeaning }
         ]);
@@ -832,7 +742,6 @@ async function endGame() {
     document.getElementById('result-screen').style.display = 'flex';
     document.getElementById('final-stats').innerHTML = `¡Has completado todas las preguntas de la canción!<br><br>🟢 Aciertos en esta sesión: <b>${sessionHits}</b><br>🔴 Errores en esta sesión: <b style="color:#f44336;">${sessionErrors}</b>`;
 
-    // Sumar los acumulados de la sesión al total en Supabase
     try {
         const { data } = await supabaseClient.from('user_stats').select('hits, errors').single();
         const currentHits = data ? (data.hits || 0) : 0;
