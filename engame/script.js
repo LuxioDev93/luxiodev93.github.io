@@ -57,6 +57,7 @@ const manualDictionary = {
     "heart": "corazón",
     "pocket":"bolsillo",
     "Dial-up":"subir el dial",
+	"load": "leer",
     "build": "construir",
 "little": "pequeño",
 "STARTING": "empezando",
