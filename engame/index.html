@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende Inglés con Música</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div id="home-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; box-sizing: border-box; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <button onclick="openCorrectionScreen()" style="position: absolute; top: 20px; right: 20px; background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255,152,0,0.3);">Corregir Errores</button>
+
+        <div style="max-width: 500px; width: 100%; background: rgba(255, 255, 255, 0.05); padding: 40px 30px; border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <h1 style="font-size: 3rem; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px; color: #ffeb3b; text-shadow: 0 2px 10px rgba(255, 235, 59, 0.3);">
+                <span id="dev-trigger" style="cursor: pointer;">Key English</span>
+            </h1>
+            <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Aprende vocabulario mejorando con tus canciones favoritas</p>
+            
+            <div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem;">
+                <div>🟢 Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
+                <div>🔴 Errores: <span id="total-errors" style="font-weight:bold; color:#f44336;">0</span></div>
+            </div>
+
+            <button class="btn-play" onclick="startGame()" style="padding: 15px 40px; font-size: 1.2rem; font-weight: bold; background: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Jugar</button>
+        </div>
+    </div>
+
+    <div id="game-screen" style="display:none;">
+        <div class="game-header">
+            <button class="btn-exit" onclick="exitGame()">Salir</button>
+            <div id="game-status" style="font-weight: 600; color: #5f6368;">Escuchando canción...</div>
+        </div>
+
+        <div class="player-box">
+            <div class="player-bg" id="player-bg"></div>
+            <div class="lyrics-container">
+                <p id="lyric-text">Cargando canción...</p>
+            </div>
+        </div>
+
+        <div class="quiz-container" id="quiz-container">
+            <div class="quiz-title">¿Cuál es la traducción correcta al español?</div>
+            <div class="quiz-word" id="quiz-word-target">CARGANDO...</div>
+            <div class="quiz-options" id="quiz-options"></div>
+        </div>
+    </div>
+
+    <div id="result-screen" style="display:none;">
+        <h1 class="game-title">¡Juego Completado!</h1>
+        <p id="final-stats" style="font-size: 1.4rem; margin-bottom: 20px;"></p>
+        <button class="btn-play" onclick="location.reload()">Volver a Jugar</button>
+    </div>
+
+    <div id="correction-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#1a1a2e; color:#fff; z-index:9998; flex-direction:column; padding:20px; box-sizing:border-box; font-family:'Segoe UI', sans-serif; overflow-y:auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; width:100%; max-width:600px; margin-left:auto; margin-right:auto;">
+            <button onclick="closeCorrectionScreen()" style="padding:10px 20px; background:#e53935; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Volver atrás</button>
+            <h2 style="margin:0; font-size:24px; color:#ff9800;">Panel de Corrección</h2>
+        </div>
+        
+        <div id="correction-content" style="max-width:600px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:15px;">
+            <p style="text-align:center; color:#b0bec5;">Cargando palabras falladas...</p>
+        </div>
+    </div>
+
+    <audio id="game-audio"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
