@@ -1,0 +1,37 @@
+[
+    [
+        "SofiaBaila99",
+        "https://picsum.photos/seed/5385/200/200",
+        "¡La jirafa con pelo azul es lo más divertido del mundo!"
+    ],
+    [
+        "BarcelonaPedro12",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=space-347251",
+        "Esas cien gallinas me tienen riendo todo el día"
+    ],
+    [
+        "MinecraftGallinas",
+        "https://picsum.photos/seed/8890/200/200",
+        "Quiero construir la casa junto al girasol en mi mundo"
+    ],
+    [
+        "SpiderManAzul",
+        "https://api.dicebear.com/8.x/fun-emoji/svg?seed=astronaut-529387",
+        "Nadie alcanza a esa jirafa, ¡corre más que yo!"
+    ],
+    [
+        "TungTungJirafa",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=magic-293447",
+        "¡Wey qué bueno dice y se va volando a cien mil!"
+    ],
+    [
+        "NumberblockDiez",
+        "https://picsum.photos/seed/6173/200/200",
+        "Yo también tenía una amiga jirafa"
+    ],
+    [
+        "TerraGreenFanEC",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=castle-884736",
+        "Esta jirafa de Ecuador me recuerda a los animales que cuido, ¡qué genial con su pelo azul y las gallinas bailando!"
+    ]
+]
