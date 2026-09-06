@@ -1,0 +1,42 @@
+[
+    [
+        "DaniGamer_23",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=cat-413983",
+        "La parte de “una partida más” pega demasiado 😂"
+    ],
+    [
+        "MadridConLeo",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=animal-804713",
+        "Esta canción te recuerda que salir a jugar también cuenta como ganar."
+    ],
+    [
+        "RobloxitoPlay",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=hero-213361",
+        "El “Level 99” se me quedó en la cabeza 🔥"
+    ],
+    [
+        "SpiderManFan",
+        "https://picsum.photos/seed/2019/200/200",
+        "La serpiente gigante pero los abrazos ganan 😭❤️"
+    ],
+    [
+        "TralaleroLoco",
+        "https://api.dicebear.com/8.x/micah/svg?seed=pirate-587503",
+        "La corona dura un segundo pero la canción se queda 😂"
+    ],
+    [
+        "NumberblocksCinco",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=pirate-277861",
+        "Las bolitas de colores me encantaron 🟢🔴"
+    ],
+    [
+        "MartaSkate7",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=astronaut-756828",
+        "Ese final de “see you outside” tiene muchísimo sentido 👏"
+    ],
+    [
+        "TerraGreenAventura",
+        "https://picsum.photos/seed/2218/200/200",
+        "Me gusta que la canción convierta un juego de serpientes en una historia sobre no perderse las tardes con la familia; la letra deja un mensaje bonito sin dejar de sentirse como una canción gamer."
+    ]
+]
