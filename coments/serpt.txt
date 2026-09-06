@@ -1,0 +1,42 @@
+[
+    [
+        "LeoGaming27",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=superhero-377692",
+        "Esta serpiente crece y crece, se me quedó pegada en la cabeza 🐍🎮"
+    ],
+    [
+        "MadridLucía",
+        "https://api.dicebear.com/8.x/micah/svg?seed=dinosaurio-450409",
+        "La parte de llegar hasta 32 está buenísima 😄"
+    ],
+    [
+        "MarioKartKid",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=pirate-847785",
+        "El ritmo va perfecto con la serpiente corriendo por la pantalla 🐍🔥"
+    ],
+    [
+        "BallerinaCappuccina",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=castle-588191",
+        "Serpiente serpiente, mi mi mi, esta canción se me quedó 😂"
+    ],
+    [
+        "NumberblockSeis",
+        "https://api.dicebear.com/8.x/fun-emoji/svg?seed=space-286052",
+        "Me encanta cuando dice que quiere llegar hasta 32 🐍3️⃣2️⃣"
+    ],
+    [
+        "TerraGreenFan",
+        "https://api.dicebear.com/8.x/fun-emoji/svg?seed=superhero-179632",
+        "El sonido de las teclas y la serpiente gigante quedan genial juntos 🎮🐍"
+    ],
+    [
+        "AcuarioInfoFan",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=hero-340534",
+        "Esta tiene vibra de partida retro que quieres jugar otra vez 🕹️"
+    ],
+    [
+        "CarlosFutbol12",
+        "https://api.dicebear.com/8.x/micah/svg?seed=superhero-203430",
+        "La parte de “no debes chocar” me pone en modo concentración total 😆"
+    ]
+]
