@@ -1,0 +1,42 @@
+[
+    [
+        "TurboLuca7",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=alien-614978",
+        "El ritmo de “go faster” se pega muchísimo 🚀"
+    ],
+    [
+        "MadridMateo",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=monster-246336",
+        "Esta canción da ganas de subir el volumen al máximo 🔥"
+    ],
+    [
+        "RobloxRayo",
+        "https://api.dicebear.com/8.x/avataaars/svg?seed=dinosaurio-854202",
+        "El turbo boost del final es brutal 😂"
+    ],
+    [
+        "BuzzLightyearVuela",
+        "https://picsum.photos/seed/6115/200/200",
+        "Siento que esta canción va directa a la luna 🚀"
+    ],
+    [
+        "BombardiroTurbo",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=alien-129133",
+        "Tralalero turbo y a volarrr 😂"
+    ],
+    [
+        "NumberblockEight",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=bear-557722",
+        "Contar hasta diez con este ritmo es demasiado divertido"
+    ],
+    [
+        "TerraGreenAventuras",
+        "https://api.dicebear.com/8.x/avataaars/svg?seed=rocket-434673",
+        "La energía de esta canción combina genial con una aventura a toda velocidad"
+    ],
+    [
+        "AquaInfoFan",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=pirate-58587",
+        "El flow turbo está increíble, no puedo dejar de repetirlo"
+    ]
+]
