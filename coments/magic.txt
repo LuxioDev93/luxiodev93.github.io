@@ -1,0 +1,37 @@
+[
+    [
+        "LuciaGamer23",
+        "https://api.dicebear.com/8.x/fun-emoji/svg?seed=dinosaurio-469109",
+        "¡Esta canción me hace creer en la magia de verdad!"
+    ],
+    [
+        "MadridCarlos88",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=space-974613",
+        "El truco de la carta es lo mejor del tema"
+    ],
+    [
+        "AdoptMeKing",
+        "https://api.dicebear.com/8.x/lorelei/svg?seed=queen-677518",
+        "One two three y desaparece todo wow"
+    ],
+    [
+        "BlueyFanGirl",
+        "https://picsum.photos/seed/6284/200/200",
+        "Believe in the magic me tiene pegado todo el día"
+    ],
+    [
+        "TralaleroTralala",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=coche-684940",
+        "Nada es imposible si quieres creer jaja"
+    ],
+    [
+        "NumberFiveStar",
+        "https://api.dicebear.com/8.x/avataaars/svg?seed=trex-921715",
+        "La magia estaba aquí todo el tiempo, me voló la mente"
+    ],
+    [
+        "JuanFutbol99",
+        "https://api.dicebear.com/8.x/fun-emoji/svg?seed=princess-93968",
+        "¡Que tiemble el salón con este ritmo mágico!"
+    ]
+]
