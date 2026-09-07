@@ -29,14 +29,6 @@ const musicData = [
             lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt",
             coments: "https://badluchothree-glitch.github.io/coments/expexp.txt"
     },
-        
-	{
-            title: "Mi color es especial",
-            img: "https://cdn2.suno.ai/image_large_c441c1c6-b45f-404a-b7be-c2e0985fb131.jpeg",
-            author: "Cuco Club",
-            audio: "https://cdn1.suno.ai/c441c1c6-b45f-404a-b7be-c2e0985fb131.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/nicoLyrics.txt"
-        },
         {
             title: "Voy a cocinar una gallina",
             img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
@@ -47,7 +39,7 @@ const musicData = [
         {
             title: "The 93 Kid",
             img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
-            audio: "https://cdn1.suno.ai/9fdc4425-0553-43e7-9481-e8189e4746d3.mp3",
+            audio: "https://files.catbox.moe/ka6un5.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
         },
         {
@@ -116,7 +108,7 @@ const musicData = [
         {
             title: "Pásame la gallina",
             img: "https://cdn2.suno.ai/image_large_6ecfaf1f-d7a2-4e47-b473-e0884791717e.jpeg", 
-            audio: "https://cdn1.suno.ai/6ecfaf1f-d7a2-4e47-b473-e0884791717e.mp3",
+            audio: "https://files.catbox.moe/xvsa1r.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/gallinadrift.txt"
         },
         {
@@ -257,7 +249,7 @@ const musicData = [
             title: "Machala Low Life",
             img: "https://i.ibb.co/VWTW3qKX/25c84b74-45eb-4614-8b38-bb15405bfbff-75.jpg", 
             author: "Macha-K",
-            audio: "https://cdn1.suno.ai/fa738177-848f-4a5a-bae6-022feb63f6ac.mp3",
+            audio: "https://files.catbox.moe/us4gj3.mp3",
             rated: "on",
             lyrics: "https://luxiodev93.github.io/lyrics/MachalaLOWLIFE.txt"
         }
