@@ -1,7 +1,7 @@
 {
   "about": "acerca de",
   "achievement": "logro",
-  "across": "en",
+  "across": "al otro lado de",
   "adding": "añadiendo",
   "admit": "admisión hospitalaria",
   "adventures": "aventuras",
