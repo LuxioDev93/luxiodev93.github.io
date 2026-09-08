@@ -108,7 +108,6 @@
   "complicated": "complicado",
   "confidence": "confianza",
   "conquered": "conquistado",
-  "control": "control",
   "coop": "jaula",
   "core": "núcleo",
   "corrupted": "corrupto",
