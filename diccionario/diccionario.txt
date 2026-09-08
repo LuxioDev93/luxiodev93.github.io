@@ -176,7 +176,7 @@
   "eleven": "once",
   "emptiness": "vacío.",
   "empty": "vacío",
-  "end": "acabar",
+  "end": "fin",
   "endgame": "fin de juego",
   "endless": "interminable",
   "energy": "energía",
