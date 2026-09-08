@@ -1,0 +1,42 @@
+[
+    [
+        "LuisGamer_22",
+        "https://api.dicebear.com/8.x/micah/svg?seed=dog-49642",
+        "Esta canción duele porque subir de nivel no sirve de nada si pierdes a la persona que estaba contigo."
+    ],
+    [
+        "MadridDiego",
+        "https://picsum.photos/seed/1189/200/200",
+        "Ese “level 99 heartbreak” se queda en la cabeza."
+    ],
+    [
+        "MarioBrosRafa",
+        "https://api.dicebear.com/8.x/avataaars/svg?seed=hero-770007",
+        "El estribillo pega muchísimo con la historia del juego."
+    ],
+    [
+        "PeppaPigFan",
+        "https://api.dicebear.com/8.x/micah/svg?seed=queen-197712",
+        "Max stats y corazón en cero, qué frase tan buena."
+    ],
+    [
+        "TralaleroTralala",
+        "https://api.dicebear.com/8.x/bottts/svg?seed=princess-514216",
+        "Mamma mia, este heartbreak está en modo leggenda."
+    ],
+    [
+        "NumberblockMurciélago",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=alien-436278",
+        "¡El nivel 99 también tiene sentimientos! 😭"
+    ],
+    [
+        "TerraGreenExplora",
+        "https://api.dicebear.com/8.x/micah/svg?seed=castle-614203",
+        "La mezcla de gaming y tristeza está muy bien hecha."
+    ],
+    [
+        "AquariumInfo_Dani",
+        "https://api.dicebear.com/8.x/adventurer/svg?seed=queen-15485",
+        "Hasta los peces sentirían este vacío después de perder el dúo."
+    ]
+]
