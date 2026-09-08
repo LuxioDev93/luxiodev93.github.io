@@ -369,7 +369,7 @@
   "opportunity": "oportunidad",
   "out": "fuera",
   "outside": "afuera",
-  "over": "sobre",
+  "over": "perdido",
   "pass": "pasar",
   "past": "pasado",
   "path": "camino",
