@@ -26,7 +26,8 @@
   "flow": "flujo",
   "fly": "mosca",
   "four": "cuatro",
-  "game": "el juego",
+  "game": "juego",
+  "go": "ir",
   "good": "bueno",
   "head": "la cabeza",
   "here": "acá",
@@ -78,5 +79,6 @@
   "two": "dos",
   "unlock": "desbloquear",
   "volume": "volumen",
-  "want": "querer"
+  "want": "querer",
+  "we": "nosotros"
 }
