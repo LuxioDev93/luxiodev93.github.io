@@ -512,7 +512,7 @@
   "ten": "diez",
   "terrestrial": "terrestre",
   "than": "que",
-  "thank": "******",
+  "thank": "gracias",
   "thanks": "gracias",
   "that's": "eso es",
   "then": "luego",
