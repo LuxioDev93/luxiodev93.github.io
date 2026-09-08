@@ -15,14 +15,18 @@ body {
     overflow: hidden;
 }
 /* --- VISTA DE JUEGO --- */
-#game-screen {
-    display: none;
+/* Contenedor general de la pantalla de juego para que sea responsive */
+#game-screen, .game-container {
+    display: flex;
     flex-direction: column;
+    justify-content: space-evenly; /* Distribuye el espacio verticalmente sin desbordar */
+    align-items: center;
     width: 100%;
     height: 100vh;
-    padding: 8px;
-    justify-content: space-between;
-    overflow: hidden;
+    height: 100dvh; /* Solución para navegadores móviles modernos */
+    padding: 15px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Permite scroll seguro si la pantalla es extremadamente pequeña */
 }
 
 .game-header {
@@ -41,6 +45,26 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 2px;
+}
+/* Contenedor específico para las opciones (asegura que quepan las 3) */
+.options-container, .answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espacio uniforme entre opciones */
+    width: 100%;
+    max-width: 450px;
+    box-sizing: border-box;
+}
+
+/* Estilo adaptable para cada botón de opción */
+.options-container button, .answers-container button {
+    width: 100%;
+    min-height: 50px; /* Área táctil cómoda pero controlada */
+    padding: 10px 15px;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem); /* El texto se ajusta dinámicamente si es largo */
+    box-sizing: border-box;
+    white-space: normal; /* Evita que el texto se corte si ocupa varias líneas */
+    word-break: break-word;
 }
 
 .game-lives-badge {
