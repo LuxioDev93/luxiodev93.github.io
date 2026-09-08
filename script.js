@@ -227,8 +227,11 @@ const musicData = [
             title: "Level 99 Heartbreak",
             img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg", 
             audio: "https://files.catbox.moe/n81t5k.mp3",
+			audio_eng: "https://files.catbox.moe/s9455p.mp3",
             author: "No Respawn",
-            lyrics: "https://luxiodev93.github.io/lyrics/lvl99hrbk.txt"
+            lyrics: "https://luxiodev93.github.io/lyrics/lvl99hrbk.txt",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
+			coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
         },
         {
             title: "Por ustedes hijos míos",
