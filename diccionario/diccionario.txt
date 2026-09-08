@@ -274,7 +274,7 @@
   "heart": "corazón",
   "heartbreak": "corazón roto",
   "heat": "calor",
-  "hello": "testvalue",
+  "hello": "hola",
   "helmet": "casco",
   "help": "ayudar",
   "here": "aquí",
