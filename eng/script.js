@@ -4,9 +4,10 @@ const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Variables de sesión de juego actuales para guardar al terminar
+// Variables de sesión y diccionario remoto
 let sessionHits = 0;
 let sessionErrors = 0;
+let remoteDictionary = {};
 
 const musicData = [
     {
@@ -16,69 +17,68 @@ const musicData = [
         audio: "https://files.catbox.moe/c1zzpz.mp3",
         lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
     },
-    {
-        title: "The 93 Kid",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
-        audio: "https://files.catbox.moe/wsi3j6.mp3",
-        lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
-    },
-    {
-        title: "Garacias a Dios hay Chamba",
-        img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
-        author: "Dani Chalán",
-        audio: "https://files.catbox.moe/c8gzwv.mp3",
-        lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
-    }
+	{
+title: "This is my world",
+img: "https://i.pinimg.com/736x/68/b7/29/68b72937564071dbf236fddbf50f6eca.jpg", 
+audio: "https://files.catbox.moe/e3mvij.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
+},
+
+	{
+title: "Hello class",
+img: "https://img.magnific.com/free-photo/students-knowing-right-answer_329181-14271.jpg?semt=ais_hybrid&w=740&q=80", 
+audio: "https://files.catbox.moe/35wlts.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
+},
+
+{
+title: "The 93 Kid",
+img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
+audio: "https://files.catbox.moe/wsi3j6.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
+},
+{
+title: "Garacias a Dios hay Chamba",
+img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
+author: "Dani Chalán",
+audio: "https://files.catbox.moe/c8gzwv.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
+},
+{
+title: "Gallina Terrenal",
+img: "https://i.ibb.co/8LY8GCMM/gallina-terrenal.jpg",
+author: "Cuco Club",
+audio: "https://files.catbox.moe/dshlsc.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/galterr.txt",
+coments: "https://badluchothree-glitch.github.io/coments/galterr.txt"
+},
+{
+title: "Serpiente Serpiente",
+img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", 
+author: "Cuco Club",
+audio: "https://files.catbox.moe/trc9s0.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/serpt.txt",
+coments: "https://luxiodev93.github.io/coments/serpt.txt"
+},
+{
+title: "Level 99 Slitherbreak",
+img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
+author: "Cuco Club",
+audio: "https://files.catbox.moe/yumn7z.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/Slitherbrk.txt",
+coments: "https://luxiodev93.github.io/coments/Slitherbrk.txt"
+},
+{
+title: "Level 99 Heartbreak",
+img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg", 
+author: "No Respawn",
+audio: "https://files.catbox.moe/s9455p.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
+coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
+}
 ];
 
 const fakeMeanings = ["camino", "piedra", "puerta", "fuerza", "viento", "sombra", "canción", "fuego", "estrella", "tiempo", "eterno", "salto"];
-
-const manualDictionary = {
-    "every": "cada",
-    "melody": "melodía",
-    "beats": "ritmos",
-    "beat": "ritmo",
-    "song": "canción",
-    "songs": "canciones",
-    "night": "noche",
-    "nights": "noches",
-    "day": "día",
-    "Spanish": "español",
-    "days": "días",
-    "time": "tiempo",
-    "times": "veces",
-    "world": "mundo",
-    "super": "súper",
-    "more": "más",
-    "life": "vida",
-    "play": "jugar",
-    "code": "código",
-    "heart": "corazón",
-    "pocket": "bolsillo",
-    "Dial-up": "subir el dial",
-    "load": "leer",
-    "build": "construir",
-    "little": "pequeño",
-    "STARTING": "empezando",
-    "BETTER": "mejor",
-    "get": "conseguir",
-    "WEAR": "llevar puesto",
-    "miss": "perder",
-    "WORKING": "trabajando",
-    "fire": "fuego",
-    "d0": "hacer"
-};
-
-// Lista negra para excluir palabras no deseadas u onomatopeyas
-const blacklistedWords = [
-    "heyoh", "oh", "spinning", "cenar", "churros", "had", "not", "im", "Cause",
-    "THERES", "SAYING", "be", "thats", "MAY", "Pokemon", "hey", "to", "Goku",
-    "Madrid", "calle", "my", "tv", "caf", "the", "up", "ah", "yeah", "la",
-    "nah", "PARQUE", "sailor", "oreja", "MACARENA", "INSTITUTO", "Limewire",
-    "Cuatro", "Caminos", "EGB", "crisis", "al", "salir", "de", "clase",
-    "TIKTOK", "Tamagotchi", "msn", "hombres", "va", "los", "simpsons",
-    "MAMA'S", "HEY", "into", "KAMEHAMEHA", "da" ,"instituto"
-];
 
 let currentSong = null;
 let lrcLines = []; 
@@ -86,58 +86,29 @@ let targetWords = [];
 let currentWordTargetIndex = 0;
 let isPausedForQuiz = false;
 
-// Variables para el modo desarrollador
 let devSelectedSong = null;
 let devValidWordsList = [];
 let devCurrentWordIndex = 0;
 
+async function loadRemoteDictionary() {
+    try {
+        const response = await fetch('https://luxiodev93.github.io/diccionario/diccionario.txt');
+        if (response.ok) {
+            remoteDictionary = await response.json();
+        }
+    } catch (e) {
+        console.error("Error al cargar el diccionario remoto:", e);
+    }
+}
+
 function isEnglishWord(word) {
     const cleanW = word.toLowerCase().trim();
-    if (blacklistedWords.includes(cleanW)) {
-        return false;
-    }
-    
-    // Rechazar automáticamente cualquier palabra que contenga tildes o la letra 'ñ'
-    const hasAccentsOrÑ = /[áéíóúñÁÉÍÓÚÑ]/.test(word);
-    if (hasAccentsOrÑ) {
-        return false;
-    }
-
-    const englishRegex = /^[a-zA-Z']+$/;
-    return englishRegex.test(word);
+    return remoteDictionary.hasOwnProperty(cleanW);
 }
 
 async function fetchTranslation(word) {
-    let cleanWord = word.toLowerCase().trim();
-    
-    if (manualDictionary[cleanWord]) {
-        return manualDictionary[cleanWord];
-    }
-
-    try {
-        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanWord)}&langpair=en|es`);
-        const data = await response.json();
-        
-        if (data && data.responseData && data.responseData.translatedText) {
-            let translation = data.responseData.translatedText.toLowerCase().trim();
-            
-            if (translation === cleanWord) {
-                if (cleanWord.endsWith('s') && manualDictionary[cleanWord.slice(0, -1)]) {
-                    return manualDictionary[cleanWord.slice(0, -1)];
-                }
-            }
-
-            if (cleanWord.endsWith('er') && !translation.startsWith('más ') && !translation.startsWith('menos ')) {
-                if (translation === "rapido" || translation === "rápido") translation = "más rápido";
-            }
-            
-            return translation;
-        }
-    } catch (e) {
-        console.error("Error al conectar con la API de traducción:", e);
-    }
-    
-    return word;
+    const cleanWord = word.toLowerCase().trim();
+    return remoteDictionary[cleanWord] || word;
 }
 
 async function parseLRC(lrcUrl) {
@@ -178,18 +149,63 @@ async function parseLRC(lrcUrl) {
     return parsed;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRemoteDictionary();
     injectDevScreens();
     setupDevTrigger();
     loadGlobalStats(); 
+    await checkAndSyncDailyLives();
 });
 
-// --- FUNCIONES DE SUPABASE PARA ESTADÍSTICAS Y CORRECCIÓN ---
+// --- SISTEMA DE VIDAS Y SINCRONIZACIÓN DIARIA ---
+async function checkAndSyncDailyLives() {
+    try {
+        const todayObj = new Date();
+        const year = todayObj.getFullYear();
+        const month = String(todayObj.getMonth() + 1).padStart(2, '0');
+        const day = String(todayObj.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`; // Formato YYYY-MM-DD para comparar ordenadamente
+
+        const { data, error } = await supabaseClient
+            .from('user_stats')
+            .select('lives, last_login_date')
+            .single();
+
+        if (data) {
+            let lastDate = data.last_login_date;
+            let currentLives = data.lives !== undefined && data.lives !== null ? data.lives : 5;
+
+            // Si es un día posterior al registrado previamente
+            if (!lastDate || todayString > lastDate) {
+                if (currentLives < 5) {
+                    currentLives = 5;
+                }
+                // Actualizar en Supabase la nueva fecha y las vidas si correspondía
+                await supabaseClient.from('user_stats').update({
+                    lives: currentLives,
+                    last_login_date: todayString
+                }).eq('id', 1);
+            }
+            updateLivesDisplay(currentLives);
+        }
+    } catch (e) {
+        console.error("Error al sincronizar las vidas diarias:", e);
+    }
+}
+
+function updateLivesDisplay(lives) {
+    const livesEl = document.getElementById('total-lives');
+    if (livesEl) livesEl.textContent = lives;
+
+    const gameLivesEl = document.getElementById('game-lives-count');
+    if (gameLivesEl) gameLivesEl.textContent = lives;
+}
+
 async function loadGlobalStats() {
     try {
         const { data } = await supabaseClient
             .from('user_stats')
-            .select('hits, errors')
+            .select('hits, errors, lives')
             .single();
 
         if (data) {
@@ -197,6 +213,7 @@ async function loadGlobalStats() {
             const errorsEl = document.getElementById('total-errors');
             if (hitsEl) hitsEl.textContent = data.hits || 0;
             if (errorsEl) errorsEl.textContent = data.errors || 0;
+            updateLivesDisplay(data.lives !== undefined ? data.lives : 5);
         }
     } catch (e) {
         console.error("Error al cargar estadísticas de Supabase:", e);
@@ -254,10 +271,10 @@ window.openCorrectionScreen = async function() {
                     if (opt === item.translation) {
                         optBtn.style.background = "#4CAF50";
                         
-                        const { data: stats } = await supabaseClient.from('user_stats').select('hits, errors').single();
+                        // CORRECCIÓN: Al acertar en modo corregir errores, solo resta errores y NO suma hits
+                        const { data: stats } = await supabaseClient.from('user_stats').select('errors').single();
                         if (stats) {
                             await supabaseClient.from('user_stats').update({
-                                hits: (stats.hits || 0) + 1,
                                 errors: Math.max(0, (stats.errors || 0) - 1)
                             }).eq('id', 1);
                         }
@@ -423,7 +440,7 @@ async function loadSongIntoDev(song) {
                 }
 
                 let cleanW = token.replace(/[^a-zA-Z']/g, '');
-                const isValid = cleanW.length >= 2 && isEnglishWord(cleanW);
+                const isValid = isEnglishWord(cleanW);
 
                 const span = document.createElement('span');
                 span.textContent = token;
@@ -469,7 +486,7 @@ async function updateDevActiveSelection() {
             item.element.style.boxShadow = "0 0 8px rgba(76, 175, 80, 0.8)";
             item.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
-            if (item.word.length >= 2 && isEnglishWord(item.word)) {
+            if (isEnglishWord(item.word)) {
                 item.element.style.background = "rgba(46, 125, 50, 0.35)";
                 item.element.style.boxShadow = "none";
             }
@@ -497,8 +514,20 @@ function navigateDevWord(direction) {
     updateDevActiveSelection();
 }
 
-// Vinculadas explícitamente a window para evitar errores de referencia en el HTML
 window.startGame = async function() {
+    // Comprobar si el usuario tiene vidas antes de iniciar
+    try {
+        const { data } = await supabaseClient.from('user_stats').select('lives').single();
+        const currentLives = data && data.lives !== undefined ? data.lives : 5;
+
+        if (currentLives <= 0) {
+            alert("No te quedan vidas, intentalo mañana");
+            return;
+        }
+    } catch (e) {
+        console.error("Error al verificar vidas antes de jugar:", e);
+    }
+
     currentSong = musicData[Math.floor(Math.random() * musicData.length)];
     sessionHits = 0;
     sessionErrors = 0;
@@ -583,7 +612,7 @@ function processGameWords(startIndex = 0) {
         const words = item.text.split(/\s+/);
         for (let w of words) {
             let cleanW = w.replace(/[^a-zA-Z']/g, '');
-            if (cleanW.length >= 2 && isEnglishWord(cleanW)) {
+            if (isEnglishWord(cleanW)) {
                 hasValidWord = true;
                 break;
             }
@@ -613,7 +642,7 @@ function processGameWords(startIndex = 0) {
             
             words.forEach((w, wIdx) => {
                 let cleanW = w.replace(/[^a-zA-Z']/g, '');
-                if (cleanW.length >= 2 && isEnglishWord(cleanW)) {
+                if (isEnglishWord(cleanW)) {
                     validCandidatesInLine.push({ lrcIdx: targetLineIdx, wordIdx: wIdx, word: cleanW, time: item.time });
                 }
             });
@@ -701,10 +730,78 @@ async function pauseForQuiz(targetObj) {
 
     quizContainer.style.display = 'flex';
 }
+// --- SISTEMA DE TIENDA ---
+window.openShopScreen = function() {
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('shop-screen').style.display = 'flex';
+    if (typeof loadGlobalStats === 'function') loadGlobalStats();
+};
+
+window.closeShopScreen = function() {
+    document.getElementById('shop-screen').style.display = 'none';
+    document.getElementById('home-screen').style.display = 'flex';
+    if (typeof loadGlobalStats === 'function') loadGlobalStats();
+};
+
+window.buyLife = async function() {
+    if (!confirm("¿Deseas confirmar la compra de +1 vida por 50 aciertos?")) {
+        return;
+    }
+
+    try {
+        // Asegúrate de que supabaseClient esté inicializado en tu proyecto
+        const { data: stats, error } = await supabaseClient
+            .from('user_stats')
+            .select('*')
+            .limit(1)
+            .single();
+
+        if (error || !stats) {
+            console.error("Error al obtener stats:", error);
+            alert("Error al obtener los datos de la cuenta.");
+            return;
+        }
+
+        const currentHits = stats.hits || 0;
+        const currentLives = stats.lives !== undefined ? stats.lives : 5;
+
+        if (currentHits < 50) {
+            alert("No tienes suficientes aciertos (necesitas 50).");
+            return;
+        }
+
+        const newHits = currentHits - 50;
+        const newLives = currentLives + 1;
+
+        // Si tu tabla usa 'id' como identificador numérico principal (ej. 1)
+        const queryId = stats.id !== undefined ? stats.id : 1;
+
+        const { error: updateError } = await supabaseClient
+            .from('user_stats')
+            .update({ hits: newHits, lives: newLives })
+            .eq('id', queryId);
+
+        if (updateError) {
+            console.error("Error al actualizar:", updateError);
+            alert("Error al procesar la compra en la base de datos.");
+            return;
+        }
+
+        alert("¡Compra realizada con éxito! Has sumado 1 vida.");
+        if (typeof loadGlobalStats === 'function') loadGlobalStats();
+        
+    } catch (e) {
+        console.error("Error en la compra:", e);
+        alert("Hubo un error al conectar con Supabase.");
+    }
+};
+
 
 async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, targetWord) {
     const buttons = container.querySelectorAll('.btn-option');
     buttons.forEach(b => b.disabled = true);
+
+    let livesReachedZero = false;
 
     if (isCorrect) {
         selectedBtn.classList.add('correct');
@@ -713,9 +810,26 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
         selectedBtn.classList.add('incorrect');
         sessionErrors++;
         
+        // Registrar palabra fallada
         await supabaseClient.from('failed_words').insert([
             { word: targetWord.toLowerCase(), translation: correctMeaning }
         ]);
+
+        // Restar una vida en la base de datos al fallar (modo juego principal)
+        try {
+            const { data: stats } = await supabaseClient.from('user_stats').select('lives').single();
+            if (stats) {
+                let newLives = Math.max(0, (stats.lives !== undefined ? stats.lives : 5) - 1);
+                await supabaseClient.from('user_stats').update({ lives: newLives }).eq('id', 1);
+                updateLivesDisplay(newLives);
+
+                if (newLives === 0) {
+                    livesReachedZero = true;
+                }
+            }
+        } catch (e) {
+            console.error("Error al restar vida:", e);
+        }
 
         buttons.forEach(b => {
             if (b.textContent === correctMeaning) {
@@ -729,7 +843,8 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
         isPausedForQuiz = false;
         currentWordTargetIndex++;
 
-        if (currentWordTargetIndex >= targetWords.length) {
+        // Si las vidas llegaron a 0, termina el juego de inmediato sin importar las palabras que queden
+        if (livesReachedZero || currentWordTargetIndex >= targetWords.length) {
             endGame();
         } else {
             document.getElementById('game-status').textContent = "Escuchando canción...";
@@ -739,9 +854,13 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
 }
 
 async function endGame() {
+    const audio = document.getElementById('game-audio');
+    audio.pause();
+    audio.currentTime = 0;
+
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'flex';
-    document.getElementById('final-stats').innerHTML = `¡Has completado todas las preguntas de la canción!<br><br>🟢 Aciertos en esta sesión: <b>${sessionHits}</b><br>🔴 Errores en esta sesión: <b style="color:#f44336;">${sessionErrors}</b>`;
+    document.getElementById('final-stats').innerHTML = `¡Juego finalizado!<br><br>🟢 Aciertos en esta sesión: <b>${sessionHits}</b><br>🔴 Errores en esta sesión: <b style="color:#f44336;">${sessionErrors}</b>`;
 
     try {
         const { data } = await supabaseClient.from('user_stats').select('hits, errors').single();
