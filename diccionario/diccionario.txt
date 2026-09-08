@@ -267,8 +267,6 @@
   "hugs": "abrazos",
   "hunger": "hambre",
   "hyper": "hiper",
-  "i'd": "drenaje de la incisión",
-  "i'm": "estoy",
   "innocent": "inocente",
   "internet": "internet",
   "inventory": "inventario",
