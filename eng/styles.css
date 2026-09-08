@@ -14,6 +14,14 @@ body {
     align-items: center;
     overflow: hidden;
 }
+
+#home-screen {
+    position: relative; /* Vital para que el botón absoluto no flote fuera de esta pantalla */
+    width: 100%;
+    height: 100vh;
+    /* ... tus otros estilos actuales para el home ... */
+}
+
 /* --- VISTA DE JUEGO --- */
 /* Contenedor general de la pantalla de juego para que sea responsive */
 #game-screen, .game-container {
