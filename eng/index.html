@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprende Ingl茅s con M煤sica</title>
+    <title>Aprende Inglés con Música</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -19,9 +19,9 @@
             <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Aprende vocabulario mejorando con tus canciones favoritas</p>
             
 <div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem; flex-wrap: wrap; gap: 10px;">
-                <div>馃煝 Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
-                <div>馃敶 Errores: <span id="total-errors" style="font-weight:bold; color:#f44336;">0</span></div>
-                <div>鉂わ笍 Vidas: <span id="total-lives" style="font-weight:bold; color:#ffeb3b;">5</span></div>
+                <div>✅ Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
+                <div>❌ Errores: <span id="total-errors" style="font-weight:bold; color:#f44336;">0</span></div>
+                <div>❤ Vidas: <span id="total-lives" style="font-weight:bold; color:#ffeb3b;">5</span></div>
             </div>
 
             <button class="btn-play" onclick="startGame()" style="padding: 15px 40px; font-size: 1.2rem; font-weight: bold; background: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Jugar</button>
@@ -41,19 +41,19 @@
         <div class="player-box">
             <div class="player-bg" id="player-bg"></div>
             <div class="lyrics-container">
-                <p id="lyric-text">Cargando canci贸n...</p>
+                <p id="lyric-text">Cargando canción...</p>
             </div>
         </div>
 
         <div class="quiz-container" id="quiz-container">
-            <div class="quiz-title">驴Cu谩l es la traducci贸n correcta al espa帽ol?</div>
+            <div class="quiz-title">¿Cuál es la traducción correcta al español?</div>
             <div class="quiz-word" id="quiz-word-target">CARGANDO...</div>
             <div class="quiz-options" id="quiz-options"></div>
         </div>
     </div>
 
     <div id="result-screen" style="display:none;">
-        <h1 class="game-title">隆Juego Completado!</h1>
+        <h1 class="game-title">!Juego Completado!</h1>
         <p id="final-stats" style="font-size: 1.4rem; margin-bottom: 20px;"></p>
         <button class="btn-play" onclick="location.reload()">Volver a Jugar</button>
     </div>
