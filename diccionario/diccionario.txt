@@ -598,7 +598,7 @@
   "worker": "trabajador",
   "working": "trabajando",
   "world": "mundo",
-  "worth": "haworth",
+  "worth it": "vale la pena",
   "would": "haría",
   "yelling": "gritando",
   "yesterday": "ayer",
