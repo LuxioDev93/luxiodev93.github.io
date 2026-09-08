@@ -16,12 +16,12 @@
             <h1 style="font-size: 3rem; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px; color: #ffeb3b; text-shadow: 0 2px 10px rgba(255, 235, 59, 0.3);">
                 <span id="dev-trigger" style="cursor: pointer;">Key English</span>
             </h1>
-            <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Aprende vocabulario mejorando con tus canciones favoritas💙</p>
-            
-<div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem; flex-wrap: wrap; gap: 10px;">
+            <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Aprende vocabulario mejorando con tus canciones favoritas</p>
+            <div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem; flex-wrap: wrap; gap: 10px;">
                 <div>✅ Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
                 <div>❌ Errores: <span id="total-errors" style="font-weight:bold; color:#f44336;">0</span></div>
                 <div>❤ Vidas: <span id="total-lives" style="font-weight:bold; color:#ffeb3b;">5</span></div>
+				<button onclick="openShopScreen()" class="shop-btn" style="position: absolute; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 1.8rem; padding: 12px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 10;" title="Tienda"></button>
             </div>
 
             <button class="btn-play" onclick="startGame()" style="padding: 15px 40px; font-size: 1.2rem; font-weight: bold; background: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Jugar</button>
@@ -72,8 +72,6 @@
     <audio id="game-audio"></audio>
     <script src="script.js"></script>
 	
-	<!-- Botón de Tienda abajo a la derecha -->
-       <button onclick="openShopScreen()" class="shop-btn" style="position: absolute; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 1.8rem; padding: 12px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.2s;" title="Tienda"></button>
 
     <!-- Pantalla de Tienda -->
     <div id="shop-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#1a1a2e; color:#fff; z-index:9998; flex-direction:column; padding:20px; box-sizing:border-box; font-family:'Segoe UI', sans-serif; overflow-y:auto;">
