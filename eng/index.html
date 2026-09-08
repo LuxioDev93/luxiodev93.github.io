@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprende Inglés con Música</title>
+    <title>Aprende Ingl茅s con M煤sica</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -18,45 +18,50 @@
             </h1>
             <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Aprende vocabulario mejorando con tus canciones favoritas</p>
             
-            <div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem;">
-                <div>🟢 Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
-                <div>🔴 Errores: <span id="total-errors" style="font-weight:bold; color:#f44336;">0</span></div>
+<div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem; flex-wrap: wrap; gap: 10px;">
+                <div>馃煝 Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
+                <div>馃敶 Errores: <span id="total-errors" style="font-weight:bold; color:#f44336;">0</span></div>
+                <div>鉂わ笍 Vidas: <span id="total-lives" style="font-weight:bold; color:#ffeb3b;">5</span></div>
             </div>
 
             <button class="btn-play" onclick="startGame()" style="padding: 15px 40px; font-size: 1.2rem; font-weight: bold; background: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Jugar</button>
         </div>
     </div>
 
-    <div id="game-screen" style="display:none;">
+<div id="game-screen" style="display:none;">
         <div class="game-header">
             <button class="btn-exit" onclick="exitGame()">Salir</button>
-            <div id="game-status" style="font-weight: 600; color: #5f6368;">Escuchando canción...</div>
+            <div class="game-top-center">
+                <div id="game-status" style="font-weight: 600; color: #5f6368;">Escuchando canci贸n...</div>
+                <div class="game-lives-badge">鉂わ笍 Vidas: <span id="game-lives-count" style="font-weight:bold; color:#e53935;">5</span></div>
+            </div>
+            <div style="width: 60px;"></div> <!-- Elemento fantasma para equilibrar el espacio del bot贸n salir a la izquierda -->
         </div>
 
         <div class="player-box">
             <div class="player-bg" id="player-bg"></div>
             <div class="lyrics-container">
-                <p id="lyric-text">Cargando canción...</p>
+                <p id="lyric-text">Cargando canci贸n...</p>
             </div>
         </div>
 
         <div class="quiz-container" id="quiz-container">
-            <div class="quiz-title">¿Cuál es la traducción correcta al español?</div>
+            <div class="quiz-title">驴Cu谩l es la traducci贸n correcta al espa帽ol?</div>
             <div class="quiz-word" id="quiz-word-target">CARGANDO...</div>
             <div class="quiz-options" id="quiz-options"></div>
         </div>
     </div>
 
     <div id="result-screen" style="display:none;">
-        <h1 class="game-title">¡Juego Completado!</h1>
+        <h1 class="game-title">隆Juego Completado!</h1>
         <p id="final-stats" style="font-size: 1.4rem; margin-bottom: 20px;"></p>
         <button class="btn-play" onclick="location.reload()">Volver a Jugar</button>
     </div>
 
     <div id="correction-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#1a1a2e; color:#fff; z-index:9998; flex-direction:column; padding:20px; box-sizing:border-box; font-family:'Segoe UI', sans-serif; overflow-y:auto;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; width:100%; max-width:600px; margin-left:auto; margin-right:auto;">
-            <button onclick="closeCorrectionScreen()" style="padding:10px 20px; background:#e53935; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Volver atrás</button>
-            <h2 style="margin:0; font-size:24px; color:#ff9800;">Panel de Corrección</h2>
+            <button onclick="closeCorrectionScreen()" style="padding:10px 20px; background:#e53935; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Volver atr谩s</button>
+            <h2 style="margin:0; font-size:24px; color:#ff9800;">Panel de Correcci贸n</h2>
         </div>
         
         <div id="correction-content" style="max-width:600px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:15px;">
@@ -66,5 +71,34 @@
 
     <audio id="game-audio"></audio>
     <script src="script.js"></script>
+	
+	<!-- Botón de Tienda abajo a la derecha -->
+        <button onclick="openShopScreen()" class="shop-btn" style="position: absolute; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 1.8rem; padding: 12px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.2s;" title="Tienda"></button>
+
+
+    <!-- Pantalla de Tienda -->
+    <div id="shop-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#1a1a2e; color:#fff; z-index:9998; flex-direction:column; padding:20px; box-sizing:border-box; font-family:'Segoe UI', sans-serif; overflow-y:auto;">
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; width:100%; max-width:600px; margin-left:auto; margin-right:auto;">
+    <button onclick="closeShopScreen()" style="padding:10px 20px; background:#e53935; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Volver</button>
+    <h2 class="shop-btn" style="margin:0; font-size:26px; color:#ffeb3b;"> Tienda</h2>
+    <div style="width: 80px;"></div>
+</div>
+
+<div style="max-width:600px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:15px;">
+    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span class="life-icon" style="font-size: 2.5rem;"></span>
+            <div>
+                <h3 style="margin: 0; font-size: 1.3rem; color: #fff;">+1 Vida</h3>
+                <p style="margin: 5px 0 0 0; color: #b0bec5; font-size: 0.95rem;">Recupera una vida para seguir jugando</p>
+            </div>
+        </div>
+        <button onclick="buyLife()" style="background: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s;">
+            Comprar (<span style="color: #4CAF50; font-weight: bold;">50</span> aciertos)
+        </button>
+    </div>
+</div>
+        </div>
+    </div>
 </body>
 </html>
