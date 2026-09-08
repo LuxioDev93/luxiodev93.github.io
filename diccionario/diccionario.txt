@@ -7,7 +7,7 @@
   "adventures": "aventuras",
   "after": "tras",
   "afternoon": "tarde",
-  "again": "nuevamente",
+  "again": "otra vez",
   "ahead": "adelante",
   "air": "aire",
   "alarm": "alarma",
