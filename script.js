@@ -122,8 +122,10 @@ const musicData = [
             title: "Mi amiga jirafa",
             img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
             author: "Cuco Club",
+			audio_eng: "https://files.catbox.moe/12cey1.mp3",
             audio: "https://files.catbox.moe/z25a46.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/amjirf.txt",
+			lirics_eng: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt",
 			coments: "https://luxiodev93.github.io/coments/amjirf.txt"
         },
         {
