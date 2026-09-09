@@ -37,6 +37,14 @@ img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphV
 audio: "https://files.catbox.moe/wsi3j6.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
 },
+	        {
+            title: "Mi amiga jirafa",
+            img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
+            author: "Cuco Club",
+			audio: "https://files.catbox.moe/12cey1.mp3",
+			lirics: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt",
+			coments: "https://luxiodev93.github.io/coments/amjirf.txt"
+        },
 {
 title: "Garacias a Dios hay Chamba",
 img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
