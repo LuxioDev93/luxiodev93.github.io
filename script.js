@@ -29,6 +29,7 @@ const musicData = [
             lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt",
             coments: "https://badluchothree-glitch.github.io/coments/expexp.txt"
     },
+	
         {
             title: "Voy a cocinar una gallina",
             img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
@@ -235,6 +236,13 @@ const musicData = [
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
 			coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
         },
+	        {
+            title: "Hope is Written in My Name",
+            img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/wzimix.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics_eng/iwin.txt"
+        },
         {
             title: "Por ustedes hijos míos",
             img: "https://cdn2.suno.ai/image_large_74737745-03b8-4b54-9412-249f6b2123e9.jpeg", 
@@ -250,6 +258,7 @@ const musicData = [
             rated: "on",
             lyrics: ""
         },
+	
         {
             title: "Machala Low Life",
             img: "https://i.ibb.co/VWTW3qKX/25c84b74-45eb-4614-8b38-bb15405bfbff-75.jpg", 
