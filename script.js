@@ -125,7 +125,7 @@ const musicData = [
 			audio_eng: "https://files.catbox.moe/12cey1.mp3",
             audio: "https://files.catbox.moe/z25a46.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/amjirf.txt",
-			lirics_eng: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt",
 			coments: "https://luxiodev93.github.io/coments/amjirf.txt"
         },
         {
