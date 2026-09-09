@@ -238,7 +238,7 @@ const musicData = [
         },
 	        {
             title: "Hope is Written in My Name",
-            img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
+            img: "https://images.stockcake.com/public/9/4/8/948c6280-4825-40a8-966e-c7d8b62b347b_large/productive-evening-study-stockcake.jpg",
             author: "Cuco Club",
             audio: "https://files.catbox.moe/wzimix.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics_eng/iwin.txt"
