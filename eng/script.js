@@ -18,6 +18,43 @@ const musicData = [
         lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
     },
 	{
+  title: "Days We'll Not Forget",
+  img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
+  audio: "https://url-de-audio.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/dynf.txt",
+},
+	{
+  title: "Large Old Town",
+  img: "https://img.goodfon.com/wallpaper/big/5/68/velikobritaniya-shotlandiya-1728.webp",
+  audio: "https://files.catbox.moe/1xiz4s.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/lotwn.txt",
+},
+	{
+  title: "Life is Wonderful",
+  img: "https://img.magnific.com/free-photo/world-smile-day-emojis-arrangement_23-2149024492.jpg?semt=ais_hybrid&w=740&q=80",
+  audio: "https://files.catbox.moe/t8xn28.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/lifewnr.txt",
+},
+	{
+  title: "Music and Nature",
+  img: "https://static.vecteezy.com/system/resources/thumbnails/069/717/060/small/guitar-resting-porch-step-surrounded-by-vibrant-sunflowers-and-scenic-countryside-view-evokes-free-photo.jpeg",
+  audio: "https://files.catbox.moe/klu9f0.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/MandN.txt",
+},
+	{
+  title: "a great day",
+  img: "https://media.istockphoto.com/id/2165330008/photo/white-fluffy-clouds.jpg?s=612x612&w=0&k=20&c=IRYIsGm1waLJi_HZfI2aQy4blBvgSzmtteQ_00hzXNA=",
+  audio: "https://files.catbox.moe/y4441b.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/agreatday.txt",
+},
+
+	{
+  title: "Choose my way",
+  img: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500",
+  audio: "https://files.catbox.moe/od97w2.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/chosmw.txt",
+},
+	{
 title: "This is my world",
 img: "https://i.pinimg.com/736x/68/b7/29/68b72937564071dbf236fddbf50f6eca.jpg", 
 audio: "https://files.catbox.moe/e3mvij.mp3",
