@@ -131,10 +131,6 @@ let targetWords = [];
 let currentWordTargetIndex = 0;
 let isPausedForQuiz = false;
 
-let devSelectedSong = null;
-let devValidWordsList = [];
-let devCurrentWordIndex = 0;
-
 async function loadRemoteDictionary() {
     try {
         const response = await fetch('https://luxiodev93.github.io/diccionario/diccionario.txt');
@@ -200,7 +196,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupDevTrigger();
     loadGlobalStats(); 
     await checkAndSyncDailyLives();
+    await checkWeeklyRewardsStatus();
 });
+
+// Función matemática en JS para calcular la semana ISO actual del año
+function getCurrentWeekNumber() {
+    const d = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+}
+
+// --- SISTEMA DE RECOMPENSAS SEMANALES ---
+async function checkWeeklyRewardsStatus() {
+    try {
+        const currentWeek = getCurrentWeekNumber();
+        const { data: stats, error } = await supabaseClient
+            .from('user_stats')
+            .select('id, week_number, tablet_redeemed, tablet_released, video_redeemed, video_released')
+            .single();
+
+        if (error || !stats) return;
+
+        let dbWeek = stats.week_number || 0;
+
+        // Si ha comenzado una nueva semana, reiniciamos los estados semanales
+        if (dbWeek !== currentWeek) {
+            await supabaseClient.from('user_stats').update({
+                week_number: currentWeek,
+                tablet_redeemed: false,
+                tablet_released: false,
+                video_redeemed: false,
+                video_released: false
+            }).eq('id', stats.id);
+        }
+    } catch (e) {
+        console.error("Error al verificar estado semanal de recompensas:", e);
+    }
+}
 
 // --- SISTEMA DE VIDAS Y SINCRONIZACIÓN DIARIA ---
 async function checkAndSyncDailyLives() {
@@ -209,9 +243,9 @@ async function checkAndSyncDailyLives() {
         const year = todayObj.getFullYear();
         const month = String(todayObj.getMonth() + 1).padStart(2, '0');
         const day = String(todayObj.getDate()).padStart(2, '0');
-        const todayString = `${year}-${month}-${day}`; // Formato YYYY-MM-DD para comparar ordenadamente
+        const todayString = `${year}-${month}-${day}`;
 
-        const { data, error } = await supabaseClient
+        const { data } = await supabaseClient
             .from('user_stats')
             .select('lives, last_login_date')
             .single();
@@ -220,12 +254,10 @@ async function checkAndSyncDailyLives() {
             let lastDate = data.last_login_date;
             let currentLives = data.lives !== undefined && data.lives !== null ? data.lives : 5;
 
-            // Si es un día posterior al registrado previamente
             if (!lastDate || todayString > lastDate) {
                 if (currentLives < 5) {
                     currentLives = 5;
                 }
-                // Actualizar en Supabase la nueva fecha y las vidas si correspondía
                 await supabaseClient.from('user_stats').update({
                     lives: currentLives,
                     last_login_date: todayString
@@ -265,6 +297,255 @@ async function loadGlobalStats() {
     }
 }
 
+// --- SISTEMA DE TIENDA Y COMPRA ---
+window.openShopScreen = async function() {
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('shop-screen').style.display = 'flex';
+    
+    const currentHitsVal = document.getElementById('total-hits').textContent;
+    const shopHitsEl = document.getElementById('shop-available-hits');
+    if (shopHitsEl) {
+        shopHitsEl.textContent = currentHitsVal;
+    }
+
+    if (typeof loadGlobalStats === 'function') {
+        await loadGlobalStats();
+    }
+    await updateShopUIStates();
+};
+
+window.closeShopScreen = function() {
+    document.getElementById('shop-screen').style.display = 'none';
+    document.getElementById('home-screen').style.display = 'flex';
+    if (typeof loadGlobalStats === 'function') loadGlobalStats();
+};
+
+window.buyLife = async function() {
+    if (!confirm("¿Deseas confirmar la compra de +1 vida por 50 aciertos?")) {
+        return;
+    }
+
+    try {
+        const { data: stats, error } = await supabaseClient
+            .from('user_stats')
+            .select('*')
+            .limit(1)
+            .single();
+
+        if (error || !stats) {
+            alert("Error al obtener los datos de la cuenta.");
+            return;
+        }
+
+        const currentHits = stats.hits || 0;
+        const currentLives = stats.lives !== undefined ? stats.lives : 5;
+
+        if (currentHits < 50) {
+            alert("No tienes suficientes aciertos (necesitas 50).");
+            return;
+        }
+
+        const newHits = currentHits - 50;
+        const newLives = currentLives + 1;
+        const queryId = stats.id !== undefined ? stats.id : 1;
+
+        const { error: updateError } = await supabaseClient
+            .from('user_stats')
+            .update({ hits: newHits, lives: newLives })
+            .eq('id', queryId);
+
+        if (updateError) {
+            alert("Error al procesar la compra en la base de datos.");
+            return;
+        }
+
+        alert("¡Compra realizada con éxito! Has sumado 1 vida.");
+        if (typeof loadGlobalStats === 'function') loadGlobalStats();
+        await updateShopUIStates();
+        
+    } catch (e) {
+        console.error("Error en la compra:", e);
+        alert("Hubo un error al conectar con Supabase.");
+    }
+};
+
+async function buyReward(type, cost) {
+    const rewardName = type === 'tablet' ? '+10 min extra de tablet' : 'Ver 1 video de YouTube';
+    
+    if (!confirm(`¿Estás seguro de que deseas comprar "${rewardName}" por ${cost} aciertos?`)) {
+        return;
+    }
+
+    try {
+        const { data: stats, error: fetchError } = await supabaseClient
+            .from('user_stats')
+            .select('id, hits, tablet_redeemed, video_redeemed')
+            .single();
+
+        if (fetchError || !stats) {
+            alert("No se pudieron verificar tus datos en la base de datos.");
+            return;
+        }
+
+        if (stats.hits < cost) {
+            alert("❌ No tienes suficientes aciertos acumulados para realizar esta compra.");
+            return;
+        }
+
+        const alreadyRedeemed = type === 'tablet' ? stats.tablet_redeemed : stats.video_redeemed;
+        if (alreadyRedeemed) {
+            alert("⚠️ Esta recompensa ya ha sido canjeada para esta semana.");
+            return;
+        }
+
+        const newHits = stats.hits - cost;
+        const updateData = { hits: newHits };
+        updateData[`${type}_redeemed`] = true;
+
+        const { error: updateError } = await supabaseClient
+            .from('user_stats')
+            .update(updateData)
+            .eq('id', stats.id);
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        alert("¡Compra realizada con éxito! 🎉 La recompensa ha quedado en estado canjeado.");
+        await updateShopUIStates();
+
+    } catch (e) {
+        console.error("Error al procesar la compra:", e);
+        alert("Hubo un error al procesar la compra. Inténtalo de nuevo.");
+    }
+}
+
+async function releaseReward(type) {
+    const rewardName = type === 'tablet' ? 'Tablet (+10 min)' : 'Video de YouTube';
+    
+    if (!confirm(`¿Estás seguro de liberar la recompensa "${rewardName}"?`)) {
+        return;
+    }
+
+    try {
+        const { data: stats, error: fetchError } = await supabaseClient
+            .from('user_stats')
+            .select('id, tablet_redeemed, tablet_released, video_redeemed, video_released')
+            .single();
+
+        if (fetchError || !stats) {
+            alert("No se pudieron verificar los datos en la base de datos.");
+            return;
+        }
+
+        const isRedeemed = type === 'tablet' ? stats.tablet_redeemed : stats.video_redeemed;
+        const isReleased = type === 'tablet' ? stats.tablet_released : stats.video_released;
+
+        if (!isRedeemed) {
+            alert("⚠️ Esta recompensa aún no ha sido canjeada.");
+            return;
+        }
+
+        if (isReleased) {
+            alert("⚠️ Esta recompensa ya fue liberada anteriormente.");
+            return;
+        }
+
+        const updateData = {};
+        updateData[`${type}_released`] = true;
+
+        const { error: updateError } = await supabaseClient
+            .from('user_stats')
+            .update(updateData)
+            .eq('id', stats.id);
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        alert(`¡Recompensa "${rewardName}" liberada con éxito! 🚀`);
+        await updateShopUIStates();
+
+    } catch (e) {
+        console.error("Error al liberar la recompensa:", e);
+        alert("Hubo un error al procesar la liberación. Inténtalo de nuevo.");
+    }
+}
+
+async function updateShopUIStates() {
+    try {
+        const { data: stats } = await supabaseClient
+            .from('user_stats')
+            .select('hits, tablet_redeemed, tablet_released, video_redeemed, video_released')
+            .single();
+
+        if (!stats) return;
+
+        const totalHits = stats.hits || 0;
+
+        const hitsEl = document.getElementById('total-hits');
+        if (hitsEl) hitsEl.textContent = totalHits;
+
+        const shopHitsEl = document.getElementById('shop-available-hits');
+        if (shopHitsEl) {
+            shopHitsEl.textContent = totalHits;
+        }
+
+        applyRewardUIState('tablet', stats.tablet_redeemed, stats.tablet_released, 100);
+        applyRewardUIState('video', stats.video_redeemed, stats.video_released, 75);
+
+    } catch (e) {
+        console.error("Error al actualizar UI de la tienda:", e);
+    }
+}
+
+function applyRewardUIState(type, redeemed, released, cost) {
+    const container = document.getElementById(`shop-${type}-container`);
+    const btn = document.getElementById(`shop-${type}-btn`);
+    const devBtn = document.getElementById(`dev-release-${type}`);
+
+    if (!container || !btn) return;
+
+    if (devBtn) {
+        if (redeemed && !released) {
+            devBtn.style.background = "#4CAF50";
+            devBtn.style.color = "#fff";
+            devBtn.style.cursor = "pointer";
+            devBtn.disabled = false;
+        } else {
+            devBtn.style.background = "#444";
+            devBtn.style.color = "#777";
+            devBtn.style.cursor = "not-allowed";
+            devBtn.disabled = true;
+        }
+    }
+
+    if (redeemed && released) {
+        container.style.background = "rgba(100, 100, 100, 0.15)";
+        btn.style.background = "#555";
+        btn.style.color = "#ccc";
+        btn.textContent = "Agotado";
+        btn.onclick = () => {
+            alert("Vuelve la semana que viene");
+        };
+    } else if (redeemed && !released) {
+        container.style.background = "rgba(50, 50, 50, 0.2)";
+        btn.style.background = "#37474F";
+        btn.style.color = "#90CAF9";
+        btn.textContent = "Canjeado";
+        btn.onclick = () => {
+            alert("Esta recompensa ya ha sido canjeada.");
+        };
+    } else {
+        container.style.background = "rgba(255, 255, 255, 0.05)";
+        btn.style.background = "#2196F3";
+        btn.style.color = "white";
+        btn.innerHTML = `Comprar (<span style="color: #4CAF50; font-weight: bold;">${cost}</span> aciertos)`;
+        btn.onclick = () => buyReward(type, cost);
+    }
+}
+
+// --- PANTALLA DE CORRECCIÓN DE ERRORES ---
 window.openCorrectionScreen = async function() {
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('correction-screen').style.display = 'flex';
@@ -316,7 +597,6 @@ window.openCorrectionScreen = async function() {
                     if (opt === item.translation) {
                         optBtn.style.background = "#4CAF50";
                         
-                        // CORRECCIÓN: Al acertar en modo corregir errores, solo resta errores y NO suma hits
                         const { data: stats } = await supabaseClient.from('user_stats').select('errors').single();
                         if (stats) {
                             await supabaseClient.from('user_stats').update({
@@ -352,68 +632,40 @@ window.closeCorrectionScreen = function() {
     loadGlobalStats();
 }
 
+// --- MODO DESARROLLADOR ---
 function injectDevScreens() {
     if (!document.getElementById('dev-menu-screen')) {
         const devMenuHTML = `
-            <div id="dev-menu-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111; color:#fff; z-index:9999; flex-direction:column; padding:20px; box-sizing:border-box; font-family:sans-serif;">
+            <div id="dev-menu-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111; color:#fff; z-index:9999; flex-direction:column; padding:20px; box-sizing:border-box; font-family:sans-serif; overflow-y:auto;">
                 <div style="display:flex; align-items:center; margin-bottom:20px;">
                     <button id="dev-back-home" style="padding:10px 15px; background:#333; color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">← Volver</button>
-                    <h2 style="margin:0 auto; font-size:20px;">Modo Desarrollador - Selector de Canciones</h2>
+                    <h2 style="margin:0 auto; font-size:20px;">Modo Desarrollador</h2>
                 </div>
-                <div id="dev-songs-list" style="display:flex; flex-direction:column; gap:10px; max-width:400px; margin:0 auto; width:100%;"></div>
+                
+                <div style="max-width:500px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:20px;">
+                    <div style="background:#222; padding:15px; border-radius:8px; border:1px solid #444;">
+                        <h3 style="margin-top:0; color:#ffeb3b; font-size:16px;">Recompensas Canjeadas</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:6px;">
+                                <span>📱 Tablet (+10 min)</span>
+                                <button id="dev-release-tablet" onclick="releaseReward('tablet')" style="padding:6px 12px; background:#444; color:#777; border:none; border-radius:4px; cursor:not-allowed; font-weight:bold;" disabled>Liberar</button>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:6px;">
+                                <span>🎞 Video YouTube</span>
+                                <button id="dev-release-video" onclick="releaseReward('video')" style="padding:6px 12px; background:#444; color:#777; border:none; border-radius:4px; cursor:not-allowed; font-weight:bold;" disabled>Liberar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', devMenuHTML);
-    }
-
-    if (!document.getElementById('dev-word-screen')) {
-        const devWordHTML = `
-            <div id="dev-word-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111; color:#fff; z-index:9999; flex-direction:column; justify-content:space-between; padding:15px; box-sizing:border-box; font-family:sans-serif;">
-                <div>
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
-                        <button id="dev-back-menu" style="padding:8px 12px; background:#333; color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">← Menú</button>
-                        <h3 id="dev-song-title-display" style="margin:0; font-size:16px; color:#aaa; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:40%;"></h3>
-                        <div style="display:flex; gap:5px;">
-                            <button id="dev-prev-word-btn" style="padding:8px 12px; background:#444; color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">←</button>
-                            <button id="dev-next-word-btn" style="padding:8px 12px; background:#4CAF50; color:#fff; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">→</button>
-                        </div>
-                    </div>
-                    
-                    <div id="dev-lyrics-container" style="max-height: 38vh; overflow-y: auto; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column; gap: 12px;">
-                        <p style="text-align:center; color:#778;">Cargando letra...</p>
-                    </div>
-                </div>
-
-                <div style="text-align:center; background:#222; padding:12px; border-radius:10px; border:1px solid #444;">
-                    <div style="display:flex; justify-content:space-around; align-items:center;">
-                        <div>
-                            <span style="font-size:12px; color:#aaa;">Palabra:</span>
-                            <h2 id="dev-word-display" style="margin:2px 0 0 0; font-size:24px; color:#ffeb3b; text-transform:uppercase;">---</h2>
-                        </div>
-                        <div style="border-left: 1px solid #444; height: 35px;"></div>
-                        <div>
-                            <span style="font-size:12px; color:#aaa;">Traducción:</span>
-                            <h2 id="dev-translation-display" style="margin:2px 0 0 0; font-size:24px; color:#4CAF50;">---</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', devWordHTML);
     }
 
     document.getElementById('dev-back-home').onclick = () => {
         document.getElementById('dev-menu-screen').style.display = 'none';
         document.getElementById('home-screen').style.display = 'flex';
     };
-
-    document.getElementById('dev-back-menu').onclick = () => {
-        document.getElementById('dev-word-screen').style.display = 'none';
-        document.getElementById('dev-menu-screen').style.display = 'flex';
-    };
-
-    document.getElementById('dev-next-word-btn').onclick = () => { navigateDevWord(1); };
-    document.getElementById('dev-prev-word-btn').onclick = () => { navigateDevWord(-1); };
 }
 
 function setupDevTrigger() {
@@ -436,131 +688,17 @@ function setupDevTrigger() {
     });
 }
 
-function openDevMenu() {
+async function openDevMenu() {
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     
-    const listContainer = document.getElementById('dev-songs-list');
-    listContainer.innerHTML = "";
-
-    musicData.forEach((song) => {
-        const btn = document.createElement('button');
-        btn.textContent = `${song.title} - ${song.author}`;
-        btn.style.cssText = "padding: 15px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; font-size: 16px; text-align: left;";
-        btn.onclick = () => loadSongIntoDev(song);
-        listContainer.appendChild(btn);
-    });
-
     document.getElementById('dev-menu-screen').style.display = 'flex';
+    await updateShopUIStates();
 }
 
-async function loadSongIntoDev(song) {
-    devSelectedSong = song;
-    document.getElementById('dev-menu-screen').style.display = 'none';
-    document.getElementById('dev-word-screen').style.display = 'flex';
-    document.getElementById('dev-song-title-display').textContent = song.title;
-    
-    const lyricsContainer = document.getElementById('dev-lyrics-container');
-    lyricsContainer.innerHTML = `<p style="text-align:center; color:#778;">Procesando letra...</p>`;
-    
-    document.getElementById('dev-word-display').textContent = "...";
-    document.getElementById('dev-translation-display').textContent = "...";
-
-    try {
-        const lines = await parseLRC(song.lyrics);
-        devValidWordsList = [];
-        lyricsContainer.innerHTML = "";
-
-        lines.forEach((item) => {
-            const lineDiv = document.createElement('div');
-            lineDiv.style.cssText = "margin-bottom: 8px; line-height: 1.6;";
-
-            const rawTokens = item.text.split(/(\s+)/);
-
-            rawTokens.forEach(token => {
-                if (/^\s+$/.test(token)) {
-                    lineDiv.appendChild(document.createTextNode(token));
-                    return;
-                }
-
-                let cleanW = token.replace(/[^a-zA-Z']/g, '');
-                const isValid = isEnglishWord(cleanW);
-
-                const span = document.createElement('span');
-                span.textContent = token;
-                span.style.cssText = "padding: 2px 5px; border-radius: 4px; margin: 0 1px; display: inline-block; font-size: 15px;";
-
-                if (isValid) {
-                    span.style.cssText += " background: rgba(46, 125, 50, 0.35); border: 1px solid rgba(76, 175, 80, 0.6); color: #fff; cursor: pointer;";
-                    devValidWordsList.push({ word: cleanW, element: span });
-                    const currentValidIndex = devValidWordsList.length - 1;
-
-                    span.onclick = () => {
-                        devCurrentWordIndex = currentValidIndex;
-                        updateDevActiveSelection();
-                    };
-                } else {
-                    span.style.cssText += " background: rgba(183, 28, 28, 0.25); border: 1px solid rgba(244, 67, 54, 0.4); color: #aaa;";
-                }
-
-                lineDiv.appendChild(span);
-            });
-
-            lyricsContainer.appendChild(lineDiv);
-        });
-
-        devCurrentWordIndex = 0;
-        if (devValidWordsList.length > 0) {
-            updateDevActiveSelection();
-        } else {
-            document.getElementById('dev-word-display').textContent = "N/A";
-            document.getElementById('dev-translation-display').textContent = "Ninguna palabra válida";
-        }
-    } catch (e) {
-        lyricsContainer.innerHTML = `<p style="text-align:center; color:#f44336;">Error al cargar la letra.</p>`;
-    }
-}
-
-async function updateDevActiveSelection() {
-    if (devValidWordsList.length === 0) return;
-
-    devValidWordsList.forEach((item, idx) => {
-        if (idx === devCurrentWordIndex) {
-            item.element.style.background = "rgba(76, 175, 80, 0.8)";
-            item.element.style.boxShadow = "0 0 8px rgba(76, 175, 80, 0.8)";
-            item.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else {
-            if (isEnglishWord(item.word)) {
-                item.element.style.background = "rgba(46, 125, 50, 0.35)";
-                item.element.style.boxShadow = "none";
-            }
-        }
-    });
-
-    const activeEntry = devValidWordsList[devCurrentWordIndex];
-    document.getElementById('dev-word-display').textContent = activeEntry.word.toUpperCase();
-    document.getElementById('dev-translation-display').textContent = "Traduciendo...";
-
-    const translation = await fetchTranslation(activeEntry.word);
-    if (devValidWordsList[devCurrentWordIndex] === activeEntry) {
-        document.getElementById('dev-translation-display').textContent = translation;
-    }
-}
-
-function navigateDevWord(direction) {
-    if (devValidWordsList.length === 0) return;
-    devCurrentWordIndex += direction;
-    if (devCurrentWordIndex >= devValidWordsList.length) {
-        devCurrentWordIndex = 0;
-    } else if (devCurrentWordIndex < 0) {
-        devCurrentWordIndex = devValidWordsList.length - 1;
-    }
-    updateDevActiveSelection();
-}
-
+// --- MECÁNICAS DE JUEGO PRINCIPAL ---
 window.startGame = async function() {
-    // Comprobar si el usuario tiene vidas antes de iniciar
     try {
         const { data } = await supabaseClient.from('user_stats').select('lives').single();
         const currentLives = data && data.lives !== undefined ? data.lives : 5;
@@ -775,72 +913,6 @@ async function pauseForQuiz(targetObj) {
 
     quizContainer.style.display = 'flex';
 }
-// --- SISTEMA DE TIENDA ---
-window.openShopScreen = function() {
-    document.getElementById('home-screen').style.display = 'none';
-    document.getElementById('shop-screen').style.display = 'flex';
-    if (typeof loadGlobalStats === 'function') loadGlobalStats();
-};
-
-window.closeShopScreen = function() {
-    document.getElementById('shop-screen').style.display = 'none';
-    document.getElementById('home-screen').style.display = 'flex';
-    if (typeof loadGlobalStats === 'function') loadGlobalStats();
-};
-
-window.buyLife = async function() {
-    if (!confirm("¿Deseas confirmar la compra de +1 vida por 50 aciertos?")) {
-        return;
-    }
-
-    try {
-        // Asegúrate de que supabaseClient esté inicializado en tu proyecto
-        const { data: stats, error } = await supabaseClient
-            .from('user_stats')
-            .select('*')
-            .limit(1)
-            .single();
-
-        if (error || !stats) {
-            console.error("Error al obtener stats:", error);
-            alert("Error al obtener los datos de la cuenta.");
-            return;
-        }
-
-        const currentHits = stats.hits || 0;
-        const currentLives = stats.lives !== undefined ? stats.lives : 5;
-
-        if (currentHits < 50) {
-            alert("No tienes suficientes aciertos (necesitas 50).");
-            return;
-        }
-
-        const newHits = currentHits - 50;
-        const newLives = currentLives + 1;
-
-        // Si tu tabla usa 'id' como identificador numérico principal (ej. 1)
-        const queryId = stats.id !== undefined ? stats.id : 1;
-
-        const { error: updateError } = await supabaseClient
-            .from('user_stats')
-            .update({ hits: newHits, lives: newLives })
-            .eq('id', queryId);
-
-        if (updateError) {
-            console.error("Error al actualizar:", updateError);
-            alert("Error al procesar la compra en la base de datos.");
-            return;
-        }
-
-        alert("¡Compra realizada con éxito! Has sumado 1 vida.");
-        if (typeof loadGlobalStats === 'function') loadGlobalStats();
-        
-    } catch (e) {
-        console.error("Error en la compra:", e);
-        alert("Hubo un error al conectar con Supabase.");
-    }
-};
-
 
 async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, targetWord) {
     const buttons = container.querySelectorAll('.btn-option');
@@ -855,12 +927,10 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
         selectedBtn.classList.add('incorrect');
         sessionErrors++;
         
-        // Registrar palabra fallada
         await supabaseClient.from('failed_words').insert([
             { word: targetWord.toLowerCase(), translation: correctMeaning }
         ]);
 
-        // Restar una vida en la base de datos al fallar (modo juego principal)
         try {
             const { data: stats } = await supabaseClient.from('user_stats').select('lives').single();
             if (stats) {
@@ -888,7 +958,6 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
         isPausedForQuiz = false;
         currentWordTargetIndex++;
 
-        // Si las vidas llegaron a 0, termina el juego de inmediato sin importar las palabras que queden
         if (livesReachedZero || currentWordTargetIndex >= targetWords.length) {
             endGame();
         } else {
