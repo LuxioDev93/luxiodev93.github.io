@@ -20,7 +20,7 @@ const musicData = [
 	{
   title: "Days We'll Not Forget",
   img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
-  audio: "https://url-de-audio.mp3",
+  audio: "https://files.catbox.moe/tvxyos.mp3",
   lyrics: "https://luxiodev93.github.io/lyrics_eng/dynf.txt",
 },
 	{
@@ -773,18 +773,64 @@ window.startGame = async function() {
     }
 }
 
-window.exitGame = function() {
+window.exitGame = async function() {
+    // 1. Mostrar el cuadro de diálogo de confirmación solicitado
+    const confirmExit = confirm("salir del juego te costará una vida , ¿Estás seguro que quieres salir y perder de 1 vida?");
+    
+    // Si el usuario cancela, no hacemos nada y el juego continúa
+    if (!confirmExit) {
+        return;
+    }
+
+    // 2. Restar 1 vida en Supabase
+    try {
+        const { data: stats, error: fetchError } = await supabaseClient
+            .from('user_stats')
+            .select('lives')
+            .single();
+
+        if (!fetchError && stats) {
+            // Se resta una vida asegurando que no quede por debajo de 0
+            const currentLives = stats.lives !== undefined ? stats.lives : 5;
+            const newLives = Math.max(0, currentLives - 1);
+
+            const { error: updateError } = await supabaseClient
+                .from('user_stats')
+                .update({ lives: newLives })
+                .eq('id', 1);
+
+            if (updateError) {
+                console.error("Error al actualizar la vida en Supabase:", updateError);
+            } else {
+                // Actualizar la interfaz global con la nueva cantidad de vidas
+                updateLivesDisplay(newLives);
+            }
+        }
+    } catch (e) {
+        console.error("Error en la conexión con Supabase al intentar salir:", e);
+    }
+
+    // 3. Pausar audio y limpiar la sesión del juego
     const audio = document.getElementById('game-audio');
-    audio.pause();
-    audio.currentTime = 0;
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+    
     isPausedForQuiz = false;
     sessionHits = 0;
     sessionErrors = 0;
 
+    // 4. Regresar a la pantalla principal
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('result-screen').style.display = 'none';
     document.getElementById('home-screen').style.display = 'flex';
-}
+
+    // Refrescar las estadísticas globales visibles en el inicio
+    if (typeof loadGlobalStats === 'function') {
+        loadGlobalStats();
+    }
+};
 
 function processGameWords(startIndex = 0) {
     targetWords = [];
