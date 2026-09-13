@@ -17,6 +17,13 @@ const musicData = [
         audio: "https://files.catbox.moe/kyen8z.mp3",
         lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
     },
+	        {
+            title: "BELIEVE IN THE MAGIC!",
+            img: "https://static.que.es/wp-content/uploads/2021/02/Que-es-la-magia.jpg",
+            author: "Cuco Club",
+			audio: "https://files.catbox.moe/8dz3ix.mp3", //newcatbox
+			lyrics: "https://luxiodev93.github.io/lyrics_eng/magic.txt"
+        },
 	{
   title: "Days We'll Not Forget",
   img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
