@@ -62,7 +62,7 @@ const musicData = [
             title: "A máxima velocidad",
             img: "https://previews.123rf.com/images/twinsterphoto/twinsterphoto1612/twinsterphoto161200036/66805425-father-and-son-running-and-chasing-each-other-in-green-park.jpg",
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/52b74q.mp3",
+            audio: "https://files.catbox.moe/bdq62w.mp3",//newcatbox
             lyrics: "https://luxiodev93.github.io/lyrics/vlcnic.txt"
         },
         {
@@ -75,7 +75,7 @@ const musicData = [
             title: "Hey hermanito!",
             img: "https://cdn2.suno.ai/image_large_cd7f792d-8b1e-4cab-86aa-bc3e4bb50f33.jpeg", 
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/lx6eoz.mp3",
+            audio: "https://files.catbox.moe/teecuq.mp3",//new catbox
             lyrics: "https://luxiodev93.github.io/lyrics/hermanito.txt"
         },
         {
