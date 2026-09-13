@@ -146,8 +146,10 @@ const musicData = [
             title: "BELIEVE IN THE MAGIC!",
             img: "https://static.que.es/wp-content/uploads/2021/02/Que-es-la-magia.jpg",
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/7tub00.mp3",
+            audio: "https://files.catbox.moe/2h6juj.mp3",//newcatbox
+			audio_eng: "https://files.catbox.moe/8dz3ix.mp3", //newcatbox
             lyrics: "https://luxiodev93.github.io/lyrics/magic.txt",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/magic.txt",
 			coments: "https://luxiodev93.github.io/coments/magic.txt"
         },
         {
