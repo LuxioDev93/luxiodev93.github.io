@@ -14,7 +14,7 @@ const musicData = [
         title: "Go Faster",
         img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
         author: "Cuco Club",
-        audio: "https://files.catbox.moe/c1zzpz.mp3",
+        audio: "https://files.catbox.moe/kyen8z.mp3",
         lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
     },
 	{
@@ -26,59 +26,59 @@ const musicData = [
 	{
   title: "Large Old Town",
   img: "https://img.goodfon.com/wallpaper/big/5/68/velikobritaniya-shotlandiya-1728.webp",
-  audio: "https://files.catbox.moe/1xiz4s.mp3",
+  audio: "https://files.catbox.moe/nnhppj.mp3",
   lyrics: "https://luxiodev93.github.io/lyrics_eng/lotwn.txt",
 },
 	{
   title: "Life is Wonderful",
   img: "https://img.magnific.com/free-photo/world-smile-day-emojis-arrangement_23-2149024492.jpg?semt=ais_hybrid&w=740&q=80",
-  audio: "https://files.catbox.moe/t8xn28.mp3",
+  audio: "https://files.catbox.moe/pw0gq6.mp3",
   lyrics: "https://luxiodev93.github.io/lyrics_eng/lifewnr.txt",
 },
 	{
   title: "Music and Nature",
   img: "https://static.vecteezy.com/system/resources/thumbnails/069/717/060/small/guitar-resting-porch-step-surrounded-by-vibrant-sunflowers-and-scenic-countryside-view-evokes-free-photo.jpeg",
-  audio: "https://files.catbox.moe/klu9f0.mp3",
+  audio: "https://files.catbox.moe/eb9igt.mp3",
   lyrics: "https://luxiodev93.github.io/lyrics_eng/MandN.txt",
 },
 	{
   title: "a great day",
   img: "https://media.istockphoto.com/id/2165330008/photo/white-fluffy-clouds.jpg?s=612x612&w=0&k=20&c=IRYIsGm1waLJi_HZfI2aQy4blBvgSzmtteQ_00hzXNA=",
-  audio: "https://files.catbox.moe/y4441b.mp3",
+  audio: "https://files.catbox.moe/ojn23v.mp3",
   lyrics: "https://luxiodev93.github.io/lyrics_eng/agreatday.txt",
 },
 
 	{
   title: "Choose my way",
   img: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500",
-  audio: "https://files.catbox.moe/od97w2.mp3",
+  audio: "https://files.catbox.moe/amurs0.mp3",
   lyrics: "https://luxiodev93.github.io/lyrics_eng/chosmw.txt",
 },
 	{
 title: "This is my world",
 img: "https://i.pinimg.com/736x/68/b7/29/68b72937564071dbf236fddbf50f6eca.jpg", 
-audio: "https://files.catbox.moe/e3mvij.mp3",
+audio: "https://files.catbox.moe/i4u5iu.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
 },
 
 	{
 title: "Hello class",
 img: "https://img.magnific.com/free-photo/students-knowing-right-answer_329181-14271.jpg?semt=ais_hybrid&w=740&q=80", 
-audio: "https://files.catbox.moe/35wlts.mp3",
+audio: "https://files.catbox.moe/iecdhf.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
 },
 
 {
 title: "The 93 Kid",
 img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
-audio: "https://files.catbox.moe/wsi3j6.mp3",
+audio: "https://files.catbox.moe/yrnorm.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
 },
 	        {
             title: "Mi amiga jirafa",
             img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
             author: "Cuco Club",
-			audio: "https://files.catbox.moe/12cey1.mp3",
+			audio: "https://files.catbox.moe/8cm9dd.mp3",
 			lyrics: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt",
 			coments: "https://luxiodev93.github.io/coments/amjirf.txt"
         },
@@ -86,14 +86,14 @@ lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
 title: "Garacias a Dios hay Chamba",
 img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
 author: "Dani Chalán",
-audio: "https://files.catbox.moe/c8gzwv.mp3",
+audio: "https://files.catbox.moe/i4mtqh.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
 },
 {
 title: "Gallina Terrenal",
 img: "https://i.ibb.co/8LY8GCMM/gallina-terrenal.jpg",
 author: "Cuco Club",
-audio: "https://files.catbox.moe/dshlsc.mp3",
+audio: "https://files.catbox.moe/l7o8cu.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/galterr.txt",
 coments: "https://badluchothree-glitch.github.io/coments/galterr.txt"
 },
@@ -101,7 +101,7 @@ coments: "https://badluchothree-glitch.github.io/coments/galterr.txt"
 title: "Serpiente Serpiente",
 img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", 
 author: "Cuco Club",
-audio: "https://files.catbox.moe/trc9s0.mp3",
+audio: "https://files.catbox.moe/4ot9dj.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/serpt.txt",
 coments: "https://luxiodev93.github.io/coments/serpt.txt"
 },
@@ -109,7 +109,7 @@ coments: "https://luxiodev93.github.io/coments/serpt.txt"
 title: "Level 99 Slitherbreak",
 img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
 author: "Cuco Club",
-audio: "https://files.catbox.moe/yumn7z.mp3",
+audio: "https://files.catbox.moe/wfhk28.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/Slitherbrk.txt",
 coments: "https://luxiodev93.github.io/coments/Slitherbrk.txt"
 },
@@ -117,7 +117,7 @@ coments: "https://luxiodev93.github.io/coments/Slitherbrk.txt"
 title: "Level 99 Heartbreak",
 img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg", 
 author: "No Respawn",
-audio: "https://files.catbox.moe/s9455p.mp3",
+audio: "https://files.catbox.moe/kcr9qz.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
 coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
 }
