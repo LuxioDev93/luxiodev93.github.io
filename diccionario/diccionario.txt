@@ -475,7 +475,6 @@
   "help": "ayudar",
   "here": "aquí",
   "hers": "suyo",
-  "hey": "hmm",
   "hidden": "oculto",
   "hide": "esconder",
   "hiding": "ocultación",
