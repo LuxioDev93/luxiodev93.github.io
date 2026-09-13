@@ -142,6 +142,33 @@ async function loadRemoteDictionary() {
     }
 }
 
+function getRandomFakeMeanings(correctMeaning, count = 2) {
+    const allMeanings = Object.values(remoteDictionary);
+    const fakes = new Set();
+
+    // Respaldo de seguridad por si el diccionario no ha cargado
+    if (allMeanings.length < count + 1) {
+        const fallback = ["camino", "piedra", "puerta", "fuerza", "viento", "sombra"];
+        while (fakes.size < count) {
+            let random = fallback[Math.floor(Math.random() * fallback.length)];
+            if (random !== correctMeaning) fakes.add(random);
+        }
+        return Array.from(fakes);
+    }
+
+    // Extraer significados aleatorios del diccionario que no sean iguales a la respuesta correcta
+    while (fakes.size < count) {
+        const randomIndex = Math.floor(Math.random() * allMeanings.length);
+        const randomMeaning = allMeanings[randomIndex];
+
+        if (randomMeaning && randomMeaning.toLowerCase() !== correctMeaning.toLowerCase()) {
+            fakes.add(randomMeaning);
+        }
+    }
+
+    return Array.from(fakes);
+}
+
 function isEnglishWord(word) {
     const cleanW = word.toLowerCase().trim();
     return remoteDictionary.hasOwnProperty(cleanW);
@@ -580,13 +607,9 @@ window.openCorrectionScreen = async function() {
             const optionsContainer = document.createElement('div');
             optionsContainer.style.cssText = "display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;";
 
-            let options = [item.translation];
-            while (options.length < 3) {
-                let randomFake = fakeMeanings[Math.floor(Math.random() * fakeMeanings.length)];
-                if (!options.includes(randomFake) && randomFake !== item.translation) {
-                    options.push(randomFake);
-                }
-            }
+            // Generar 2 traducciones falsas dinámicas desde el diccionario remoto
+            const fakeOptions = getRandomFakeMeanings(item.translation, 2);
+            let options = [item.translation, ...fakeOptions];
             options.sort(() => Math.random() - 0.5);
 
             options.forEach(opt => {
@@ -939,14 +962,11 @@ async function pauseForQuiz(targetObj) {
     const optionsContainer = document.getElementById('quiz-options');
     optionsContainer.innerHTML = "";
 
-    let options = [correctMeaning];
-    while (options.length < 3) {
-        let randomFake = fakeMeanings[Math.floor(Math.random() * fakeMeanings.length)];
-        if (!options.includes(randomFake) && randomFake !== correctMeaning) {
-            options.push(randomFake);
-        }
-    }
+    // Obtener 2 opciones incorrectas aleatorias directamente del diccionario
+    const fakeOptions = getRandomFakeMeanings(correctMeaning, 2);
 
+    // Combinar la correcta con las falsas y mezclar el orden
+    let options = [correctMeaning, ...fakeOptions];
     options.sort(() => Math.random() - 0.5);
 
     options.forEach(opt => {
