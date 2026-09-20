@@ -29,6 +29,14 @@ const musicData = [
             lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt",
             coments: "https://badluchothree-glitch.github.io/coments/expexp.txt"
     },
+		
+        {
+            title: "Hermano mío",
+            img: "https://i.ibb.co/bgWypLkN/hermanito.jpg",
+            author: "Cuco Club",
+            audio: "https://files.catbox.moe/uqn9vh.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/6añosghrm.txt"
+        },
 	
         {
             title: "Voy a cocinar una gallina",
