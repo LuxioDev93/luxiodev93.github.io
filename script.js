@@ -263,7 +263,7 @@ const musicData = [
         {
             title: "Que le den al algoritmo",
             img: "https://cdn2.suno.ai/image_large_2bd8299d-de12-4b3c-b7e9-cff0294a912d.jpeg", 
-            audio: "https://files.catbox.moe/i0ujzh.mp3",
+            audio: "https://files.catbox.moe/11jiqi.mp3",
             author: "El Luchi",
             rated: "on",
             lyrics: ""
