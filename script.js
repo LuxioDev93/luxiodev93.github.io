@@ -247,11 +247,11 @@ const musicData = [
 			coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
         },
 	        {
-            title: "Hope is Written in My Name",
-            img: "https://images.stockcake.com/public/9/4/8/948c6280-4825-40a8-966e-c7d8b62b347b_large/productive-evening-study-stockcake.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/wzimix.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics_eng/iwin.txt"
+            title: "Don't Delete the Save",
+            img: "https://i.ibb.co/3Y98r03r/2-Gemini-Generated-Image-r496hwr496hwr496.jpg",
+            author: "No Respawn",
+            audio: "https://files.catbox.moe/pkhw45.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/dds.txt"
         },
         {
             title: "Por ustedes hijos míos",
