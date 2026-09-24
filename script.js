@@ -34,7 +34,9 @@ const musicData = [
             title: "Hermano mío",
             img: "https://i.ibb.co/bgWypLkN/hermanito.jpg",
             author: "Cuco Club",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/6añosghrm.txt",
             audio: "https://files.catbox.moe/uqn9vh.mp3",
+			audio_eng: "https://files.catbox.moe/vugvmm.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/6añosghrm.txt"
         },
 	
@@ -191,7 +193,9 @@ const musicData = [
             title: "Gallinita Espacial",
             img: "https://i.ibb.co/d0Cqj92f/image-jpg-75.jpg",
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/2o58j3.mp3",
+            audio: "https://files.catbox.moe/ezhzi2.mp3", //nuevo enlace
+			audio_eng: "https://files.catbox.moe/v0xogs.mp3",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/espagal.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/espagal.txt"
         },
         {
