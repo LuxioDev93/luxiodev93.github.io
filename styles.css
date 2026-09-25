@@ -598,7 +598,23 @@ body {
 }
 
 .input-container {
+    position: relative;
     flex: 1;
+}
+
+.char-counter {
+    position: absolute;
+    right: 0;
+    bottom: -18px;
+    font-size: 0.7rem;
+    color: var(--yt-text-secondary);
+    transition: color 0.2s ease;
+}
+
+/* Cambia a rojo cuando se acerca al límite */
+.char-counter.limit-near {
+    color: var(--yt-red);
+    font-weight: bold;
 }
 
 #comment-input {
