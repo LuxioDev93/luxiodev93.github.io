@@ -57,7 +57,7 @@ const musicData = [
             audio: "https://files.catbox.moe/wd8w2a.mp3",
             author: "No Respawn",
             lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt",
-            coments: "https://badluchothree-glitch.github.io/coments/expexp.txt"
+            coments: "https://luxiodev93.github.io/coments/expexp.txt"
     },
 		
         {
@@ -67,7 +67,8 @@ const musicData = [
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/6añosghrm.txt",
             audio: "https://files.catbox.moe/uqn9vh.mp3",
 			audio_eng: "https://files.catbox.moe/vugvmm.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/6añosghrm.txt"
+            lyrics: "https://luxiodev93.github.io/lyrics/6añosghrm.txt",
+            coments: "https://badluchothree-glitch.github.io/coments/6añosghrm.txt"
         },
 	
         {
