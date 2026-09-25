@@ -603,6 +603,7 @@ async function getSongComments() {
         }
     }
 
+    // Convertir comentarios estáticos al formato estándar
     let combinedComments = staticCommentsRaw.map((c, index) => {
         if (Array.isArray(c)) {
             return {
@@ -617,10 +618,10 @@ async function getSongComments() {
         return { ...c, is_static: true };
     });
 
-    // Resetear el estado del comentario del usuario
+    // Resetear el ID del usuario para esta canción
     userCommentState.existingCommentId = null;
 
-    // 2. Cargar desde Supabase
+    // 2. Cargar comentarios de Supabase (si está disponible)
     if (typeof supabaseClient !== 'undefined' && supabaseClient) {
         try {
             const songSlug = slugify(song.title);
@@ -630,9 +631,8 @@ async function getSongComments() {
                 .eq('song_slug', songSlug)
                 .order('created_at', { ascending: false });
 
-            if (!error && data) {
+            if (!error && data && data.length > 0) {
                 const dbComments = data.map(item => {
-                    // Si el usuario actual ya tiene un comentario en Supabase, guardamos su ID
                     if (currentUserName && item.author_name.toLowerCase() === currentUserName.toLowerCase()) {
                         userCommentState.existingCommentId = item.id;
                     }
@@ -646,6 +646,7 @@ async function getSongComments() {
                         is_static: false
                     };
                 });
+                // Unir comentarios de Supabase al principio
                 combinedComments = [...dbComments, ...combinedComments];
             }
         } catch (dbErr) {
@@ -653,16 +654,17 @@ async function getSongComments() {
         }
     }
 
-    // Ocultar o mostrar la barra de comentar según si ya existe un comentario
+    // 3. Controlar visibilidad del formulario según si el usuario ya comentó en Supabase
     const formWrapper = document.getElementById('comment-form-wrapper');
     if (formWrapper && currentUserName) {
         if (userCommentState.existingCommentId && !userCommentState.isEditing) {
-            formWrapper.style.display = 'none'; // Se oculta porque ya comentó
+            formWrapper.style.display = 'none';
         } else {
-            formWrapper.style.display = 'block'; // Se muestra para escribir o editar
+            formWrapper.style.display = 'block';
         }
     }
 
+    // 4. Renderizar siempre con lo que tengamos (estáticos + BD)
     renderComments(combinedComments);
 }
 
