@@ -587,13 +587,14 @@ function checkUserAccess() {
 }
 
 /* --- PANEL DE COMENTARIOS CON SUPABASE --- */
+/* --- PANEL DE COMENTARIOS CON SUPABASE --- */
 async function getSongComments() {
     const song = musicData[currentIndex];
     if (!song) return;
 
     let staticCommentsRaw = [];
 
-    // 1. Cargar comentarios estáticos de GitHub
+    // 1. Cargar comentarios estáticos de GitHub (SIEMPRE SE CARGAN)
     if (song.coments) {
         try {
             staticCommentsRaw = await parseComments(song.coments);
@@ -617,10 +618,10 @@ async function getSongComments() {
         return { ...c, is_static: true };
     });
 
-    // Resetear el estado del comentario del usuario
+    // Resetear el estado del comentario del usuario para esta canción
     userCommentState.existingCommentId = null;
 
-    // 2. Cargar desde Supabase
+    // 2. Cargar comentarios de Supabase
     if (typeof supabaseClient !== 'undefined' && supabaseClient) {
         try {
             const songSlug = slugify(song.title);
@@ -630,9 +631,9 @@ async function getSongComments() {
                 .eq('song_slug', songSlug)
                 .order('created_at', { ascending: false });
 
-            if (!error && data) {
+            if (!error && data && data.length > 0) {
                 const dbComments = data.map(item => {
-                    // Si el usuario actual ya tiene un comentario en Supabase, guardamos su ID
+                    // Verificar si el usuario logueado ya comentó esta canción
                     if (currentUserName && item.author_name.toLowerCase() === currentUserName.toLowerCase()) {
                         userCommentState.existingCommentId = item.id;
                     }
@@ -646,6 +647,7 @@ async function getSongComments() {
                         is_static: false
                     };
                 });
+                // Colocar los comentarios de Supabase al inicio
                 combinedComments = [...dbComments, ...combinedComments];
             }
         } catch (dbErr) {
@@ -653,16 +655,28 @@ async function getSongComments() {
         }
     }
 
-    // Ocultar o mostrar la barra de comentar según si ya existe un comentario
+    // 3. Controlar la visibilidad de la caja de comentarios (comment-input-row)
+    const inputRow = document.querySelector('.comment-input-row');
     const formWrapper = document.getElementById('comment-form-wrapper');
-    if (formWrapper && currentUserName) {
-        if (userCommentState.existingCommentId && !userCommentState.isEditing) {
-            formWrapper.style.display = 'none'; // Se oculta porque ya comentó
+
+    if (formWrapper) {
+        if (currentUserName) {
+            formWrapper.style.display = 'block'; // El usuario tiene sesión activa por URL
+            
+            if (inputRow) {
+                // Si ya comentó en esta canción y NO está editando, se oculta la barra de escribir
+                if (userCommentState.existingCommentId && !userCommentState.isEditing) {
+                    inputRow.style.display = 'none';
+                } else {
+                    inputRow.style.display = 'flex';
+                }
+            }
         } else {
-            formWrapper.style.display = 'block'; // Se muestra para escribir o editar
+            formWrapper.style.display = 'none'; // Si no hay usuario en URL, se oculta la barra
         }
     }
 
+    // 4. Renderizar la lista combinada (GitHub + Supabase)
     renderComments(combinedComments);
 }
 
@@ -685,7 +699,6 @@ function renderComments(commentsList) {
         const avatar = comment.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
         const text = escapeHTML(comment.comment_text || '');
 
-        // Comprobar si el comentario pertenece al usuario logueado en la URL
         const isOwner = currentUserName && 
                         !comment.is_static && 
                         (comment.author_name.toLowerCase() === currentUserName.toLowerCase());
@@ -735,13 +748,11 @@ async function handleCommentSubmit() {
     };
 
     if (userCommentState.existingCommentId) {
-        // Actualizar comentario existente
         await supabaseClient
             .from('comments')
             .update({ comment_text: text })
             .eq('id', userCommentState.existingCommentId);
     } else {
-        // Insertar nuevo comentario
         await supabaseClient
             .from('comments')
             .insert([{
@@ -753,7 +764,6 @@ async function handleCommentSubmit() {
             }]);
     }
 
-    // Resetear input y volver a estado normal
     input.value = "";
     input.style.height = 'auto';
     
@@ -767,15 +777,15 @@ async function handleCommentSubmit() {
     if (submitBtn) submitBtn.innerText = "Comentar";
 
     userCommentState.isEditing = false;
-    getSongComments(); // Recargar para actualizar la interfaz y ocultar la barra
+    getSongComments();
 }
 
 function prepareEditComment(id, text) {
     userCommentState.isEditing = true;
     userCommentState.existingCommentId = id;
 
-    const formWrapper = document.getElementById('comment-form-wrapper');
-    if (formWrapper) formWrapper.style.display = 'block';
+    const inputRow = document.querySelector('.comment-input-row');
+    if (inputRow) inputRow.style.display = 'flex';
 
     const input = document.getElementById('comment-input');
     input.value = text;
@@ -816,11 +826,14 @@ async function deleteComment(id) {
         getSongComments();
     }
 }
+
 async function openCommentsPanel() {
     isCommentsOpen = true;
     document.getElementById('comments-panel').classList.add('open');
     document.getElementById('btn-comments').classList.add('active');
-    await renderComments();
+    
+    // 🟢 OBLIGATORIO: Llama a getSongComments para consultar la BD y GitHub al abrir
+    await getSongComments();
 }
 
 function closeCommentsPanel() {
