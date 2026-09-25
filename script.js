@@ -68,7 +68,7 @@ const musicData = [
             audio: "https://files.catbox.moe/uqn9vh.mp3",
 			audio_eng: "https://files.catbox.moe/vugvmm.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/6añosghrm.txt",
-            coments: "https://badluchothree-glitch.github.io/coments/6añosghrm.txt"
+            coments: "https://luxiodev93.github.io/coments/6añosghrm.txt"
         },
 	
         {
