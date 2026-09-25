@@ -158,7 +158,7 @@
             width: 100%;
         }
 
-        /* Teclas en tono gris oscuro, letra blanca, alineada arriba a la izquierda con margen y fuente al 28% del alto */
+        /* Teclas en tono gris oscuro, letra blanca */
         .key {
             background-color: #333333;
             color: #ffffff;
@@ -171,26 +171,23 @@
             align-items: flex-start;
             padding-top: 6px;
             padding-left: 8px;
-            font-size: 12.88px; /* 28% de 46px */
+            font-size: 12.88px;
             font-weight: 500;
             box-shadow: 0 1px 2px rgba(0,0,0,0.2);
             cursor: default;
             position: relative;
         }
 
-        /* Teclas un 10% más angostas */
         .key.narrow {
             flex: 0.9;
         }
 
-        /* Resaltado con el mismo azul de la barra de búsqueda (#1a73e8) */
         .key.highlight-key {
             background-color: #1a73e8 !important;
             color: #ffffff !important;
             box-shadow: 0 0 8px rgba(26, 115, 232, 0.6);
         }
 
-        /* Tecla Backspace unificada al color y centrada */
         .key.backspace-key {
             flex: 1.5;
             background-color: #333333;
@@ -200,7 +197,6 @@
             padding: 0;
         }
 
-        /* Icono SVG de Backspace minimalista integrado */
         .backspace-icon {
             width: 24px;
             height: 24px;
@@ -212,7 +208,6 @@
             display: block;
         }
 
-        /* Tecla Enter rectangular especial */
         .key.enter-rect {
             flex: 2.2;
             display: flex;
@@ -222,8 +217,6 @@
             padding-right: 8px;
         }
 
-        /* Tecla Shift especial – un poco más ancha para desplazar las teclas
-           hasta que el margen izquierdo de Z quede exactamente bajo el punto medio de A */
         .key.shift-key {
             flex: 2.55;
             display: flex;
@@ -233,7 +226,6 @@
             padding-right: 8px;
         }
 
-        /* Flecha gruesa sin relleno solo borde apuntando hacia arriba */
         .shift-arrow {
             width: 0;
             height: 0;
@@ -242,6 +234,7 @@
             border-bottom: 10px solid #ffffff;
             position: relative;
         }
+
         .shift-arrow::after {
             content: '';
             position: absolute;
@@ -254,25 +247,22 @@
             border-bottom: 7px solid #333333;
         }
 
-        /* Flecha con forma de L para Enter */
         .enter-l-icon {
             font-size: 16px;
             line-height: 1;
         }
 
-        /* Barra espaciadora: ocupa exactamente el ancho desde la C hasta la M */
         .key.space {
             flex: 5;
         }
 
-        /* Teclas invisibles o de relleno del mismo color del fondo del contenedor (#e0e0e0) para ajustar espacios */
         .key.spacer-key {
             background-color: #e0e0e0;
             box-shadow: none;
             pointer-events: none;
         }
 
-        /* Pantalla de carga con rueda de colores estilo Linux */
+        /* Pantalla de carga */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -306,7 +296,7 @@
 </head>
 <body>
 
-    <!-- Barra de navegación superior estilo Chrome -->
+    <!-- Barra de navegación superior -->
     <header class="browser-bar" id="browserBar">
         <div class="nav-buttons">
             <button class="nav-btn" disabled title="Atrás">&#10094;</button>
@@ -339,7 +329,6 @@
                 <div class="key" data-key="0">0</div>
                 <div class="key" data-key="'">'</div>
                 <div class="key" data-key="¡">¡</div>
-                <!-- Tecla Backspace con icono SVG integrado -->
                 <div class="key backspace-key" data-key="backspace">
                     <svg class="backspace-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M21 4H8L2 12L8 20H21V4Z" />
@@ -349,7 +338,7 @@
                 </div>
             </div>
 
-            <!-- Primera fila: QWERTYUIOP`+ç (+ y ç 10% más angostas) -->
+            <!-- Primera fila: QWERTYUIOP`+ç -->
             <div class="keyboard-row">
                 <div class="key" data-key="q">Q</div>
                 <div class="key" data-key="w">W</div>
@@ -366,9 +355,8 @@
                 <div class="key narrow" data-key="ç">Ç</div>
             </div>
 
-            <!-- Segunda fila: ASDFGHJKLÑ´ + Enter rectangular -->
+            <!-- Segunda fila: ASDFGHJKLÑ´ + Enter -->
             <div class="keyboard-row">
-                <!-- Primera tecla desplazada un 50% de su ancho hacia la derecha respecto a Q -->
                 <div class="key" style="margin-left: calc((100% / 13) * 0.5);" data-key="a">A</div>
                 <div class="key" data-key="s">S</div>
                 <div class="key" data-key="d">D</div>
@@ -380,13 +368,12 @@
                 <div class="key" data-key="l">L</div>
                 <div class="key narrow" data-key="ñ">Ñ</div>
                 <div class="key narrow" data-key="´">´</div>
-                <!-- Tecla Enter rectangular -->
                 <div class="key enter-rect" data-key="enter">
                     <span class="enter-l-icon">↵</span>
                 </div>
             </div>
 
-            <!-- Tercera fila: <ZXCVBNM,.- + Shift (Shift más ancha → Z queda bajo el punto medio de A) -->
+            <!-- Tercera fila: <ZXCVBNM,.- + Shift -->
             <div class="keyboard-row">
                 <div class="key" data-key="<">&lt;</div>
                 <div class="key" data-key="z">Z</div>
@@ -399,31 +386,32 @@
                 <div class="key" data-key=",">,</div>
                 <div class="key" data-key=".">.</div>
                 <div class="key" data-key="-">-</div>
-                <!-- Tecla Shift con flecha gruesa sin relleno arriba a la derecha -->
                 <div class="key shift-key" data-key="shift">
                     <div class="shift-arrow"></div>
                 </div>
             </div>
 
-            <!-- Fila inferior con espacios invisibles y barra espaciadora centrada exactamente desde C hasta M -->
+            <!-- Fila inferior -->
             <div class="keyboard-row">
-                <!-- Espaciador izquierdo invisible para empujar el espacio hasta la C -->
                 <div class="key spacer-key" style="flex: 3;"></div>
-                <!-- Barra espaciadora -->
                 <div class="key space" data-key=" "></div>
-                <!-- Espaciador derecho invisible para completar la fila -->
                 <div class="key spacer-key" style="flex: 3.55;"></div>
             </div>
         </div>
     </main>
 
-    <!-- Pantalla de carga con rueda de colores Linux -->
+    <!-- Pantalla de carga -->
     <div id="loadingScreen">
         <div class="linux-spinner"></div>
     </div>
 
     <script>
-        const targetDomain = "luxiodev93.github.io";
+        // Texto que se debe escribir/sugerir en la barra de búsqueda
+        const DISPLAY_TEXT = "luxiodev93.github.io";
+        
+        // URL real a la que redirecciona tras pulsar Intro
+        const REDIRECT_URL = "https://luxiodev93.github.io/?nombre=cuco";
+
         const searchBar = document.getElementById('searchBar');
         const suggestionLayer = document.getElementById('suggestionLayer');
         const mainContent = document.getElementById('mainContent');
@@ -445,20 +433,20 @@
             }
 
             const lowerVal = val.toLowerCase();
-            const lowerTarget = targetDomain.toLowerCase();
+            const lowerTarget = DISPLAY_TEXT.toLowerCase();
 
             if (lowerTarget.startsWith(lowerVal)) {
                 isCorrectSoFar = true;
                 const nextCharIndex = val.length;
-                if (nextCharIndex < targetDomain.length) {
-                    const nextChar = targetDomain[nextCharIndex].toLowerCase();
+                if (nextCharIndex < DISPLAY_TEXT.length) {
+                    const nextChar = DISPLAY_TEXT[nextCharIndex].toLowerCase();
                     
                     keyboardKeys.forEach(key => {
                         if (key.getAttribute('data-key') === nextChar) {
                             key.classList.add('highlight-key');
                         }
                     });
-                } else if (val.toLowerCase() === targetDomain.toLowerCase()) {
+                } else if (val.toLowerCase() === DISPLAY_TEXT.toLowerCase()) {
                     keyboardKeys.forEach(key => {
                         if (key.getAttribute('data-key') === 'enter') {
                             key.classList.add('highlight-key');
@@ -478,11 +466,11 @@
         function updateSuggestion() {
             const val = searchBar.value;
             const lowerVal = val.toLowerCase();
-            const lowerTarget = targetDomain.toLowerCase();
+            const lowerTarget = DISPLAY_TEXT.toLowerCase();
             
             if (lowerTarget.startsWith(lowerVal) && val.length > 0 && isCorrectSoFar) {
                 const typedPart = val;
-                const remainingPart = targetDomain.slice(val.length);
+                const remainingPart = DISPLAY_TEXT.slice(val.length);
                 suggestionLayer.innerHTML = `<span style="color: transparent;">${typedPart}</span><span class="highlight">${remainingPart}</span>`;
             } else {
                 suggestionLayer.innerHTML = '';
@@ -497,14 +485,14 @@
             const randomDuration = Math.random() * (4000 - 500) + 500;
 
             setTimeout(() => {
-                window.location.href = "https://" + targetDomain;
+                window.location.href = REDIRECT_URL;
             }, randomDuration);
         }
 
         function handleSubmission() {
             const val = searchBar.value.trim().toLowerCase();
             
-            if (val === targetDomain.toLowerCase()) {
+            if (val === DISPLAY_TEXT.toLowerCase()) {
                 triggerSuccessSequence();
             } else {
                 if (keyboard) keyboard.remove();
