@@ -584,6 +584,93 @@ body {
     opacity: 0.6;
     transition: color 0.2s ease, opacity 0.2s ease, filter 0.2s ease, transform 0.1s;
 }
+/* --- FORMULARIO DE COMENTARIOS --- */
+#comment-form-wrapper {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--yt-border);
+}
+
+.comment-input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.input-container {
+    flex: 1;
+}
+
+#comment-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--yt-border);
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: var(--yt-text-primary);
+    resize: none;
+    padding: 4px 0;
+    line-height: 1.4;
+    transition: border-color 0.2s ease;
+}
+
+#comment-input::placeholder {
+    color: #888888;
+}
+
+#comment-input:focus {
+    border-bottom: 2px solid var(--yt-text-primary);
+}
+
+.btn-send-comment {
+    background: var(--yt-red);
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    align-self: flex-end;
+}
+
+.btn-send-comment:hover {
+    background: #cc0000;
+}
+
+/* Acciones en comentarios propio (Editar / Eliminar) */
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-comment-action {
+    background: none;
+    border: none;
+    color: var(--yt-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+
+.btn-comment-action:hover {
+    color: var(--yt-text-primary);
+    text-decoration: underline;
+}
+
+.btn-comment-action.delete:hover {
+    color: var(--yt-red);
+}
 
 #btn-english.active {
     color: #ffffff;
