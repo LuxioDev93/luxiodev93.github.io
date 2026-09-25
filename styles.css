@@ -19,17 +19,17 @@ body {
     font-family: "Roboto", "Segoe UI", Arial, sans-serif;
     background-color: var(--yt-bg);
     color: var(--yt-text-primary);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    /* ELIMINADO: display: flex y align-items: center del body para no romper el flujo del scroll */
 }
 
 /* --- CONTENEDOR FIJO SUPERIOR --- */
 #top-sticky-wrapper {
+    position: -webkit-sticky; /* Soporte para motores WebKit antiguos/TVs */
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
     width: 100%;
+    align-self: flex-start; /* CLAVE: Impide que flexbox colapse la propiedad sticky */
     background: #ffffff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
@@ -43,6 +43,8 @@ body {
     max-width: 800px;
     min-height: 100vh;
     margin: 0 auto;
+    /* AGREGADO: Permite que el sticky reconozca el alto total del layout */
+    overflow: visible; 
 }
 
 /* --- PARTE SUPERIOR: REPRODUCTOR FIJO --- */
