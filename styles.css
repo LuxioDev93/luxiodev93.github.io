@@ -666,6 +666,12 @@ body {
     align-items: center;
 }
 
+.comment-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .comment-actions {
     display: flex;
     gap: 8px;
@@ -674,20 +680,19 @@ body {
 .btn-comment-action {
     background: none;
     border: none;
-    color: var(--yt-text-secondary);
-    font-size: 0.75rem;
-    font-weight: 600;
+    color: var(--yt-text-secondary, #aaa);
+    font-size: 12px;
     cursor: pointer;
     padding: 2px 4px;
 }
 
 .btn-comment-action:hover {
-    color: var(--yt-text-primary);
+    color: #fff;
     text-decoration: underline;
 }
 
-.btn-comment-action.delete:hover {
-    color: var(--yt-red);
+.btn-comment-action.btn-delete:hover {
+    color: #ff4d4d;
 }
 
 #btn-english.active {
