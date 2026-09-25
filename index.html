@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-<!DOCTYPE html>
-<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lux.io Music</title>
     <link rel="stylesheet" href="styles.css">
+	    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -101,12 +100,13 @@
 
             <!-- PANEL DE COMENTARIOS (Dentro del contenedor fijo superior) -->
 <!-- PANEL DE COMENTARIOS -->
+<!-- PANEL DE COMENTARIOS -->
 <div id="comments-panel">
     <!-- Formulario para publicar/editar (Solo visible si accede con ?nombre=...) -->
     <div id="comment-form-wrapper" style="display: none;">
         <div class="comment-input-row">
             <img id="user-avatar" class="comment-avatar" src="" alt="Avatar">
-            <div class="input-container">
+<div class="input-container">
     <textarea id="comment-input" rows="1" maxlength="100" placeholder="Escribe un comentario..."></textarea>
     <span id="char-counter" class="char-counter">0/100</span>
 </div>
@@ -134,8 +134,7 @@
 
         <div id="dev-unlock-trigger" onclick="handleDevTap()">Cargando...</div>
     </div>
-    <!-- En la sección <head> o antes de script.js, añade la CDN de Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- En la sección <head> o antes de script.js, añade la CDN de Supabase -->
     <script src="script.js"></script>
 </body>
 </html>
