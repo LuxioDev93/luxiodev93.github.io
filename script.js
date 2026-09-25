@@ -666,13 +666,32 @@ async function renderComments() {
 
 async function handleCommentSubmit() {
     const input = document.getElementById('comment-input');
-    const text = input.value.trim();
-    if (!text || !currentUserName || !supabase) return;
+    const submitBtn = document.getElementById('btn-submit-comment');
+    const text = input ? input.value.trim() : '';
+    
+    if (!text) {
+        showToast("⚠️ Escribe un comentario primero");
+        return;
+    }
+
+    if (!currentUserName) {
+        showToast("⚠️ Usuario no identificado (?nombre=...)");
+        return;
+    }
+
+    if (!supabase) {
+        console.error("Supabase no está inicializado correctamente.");
+        showToast("❌ Error de conexión con la base de datos");
+        return;
+    }
 
     if (text.length > 100) {
         alert("El comentario no puede superar los 100 caracteres.");
         return;
     }
+
+    // Feedback visual en el botón durante el envío
+    if (submitBtn) submitBtn.disabled = true;
 
     const song = musicData[currentIndex];
     const songSlug = slugify(song.title);
@@ -681,34 +700,51 @@ async function handleCommentSubmit() {
         avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUserName}`
     };
 
-    if (userCommentState.existingCommentId) {
-        await supabase
-            .from('comments')
-            .update({ comment_text: text })
-            .eq('id', userCommentState.existingCommentId);
-    } else {
-        await supabase
-            .from('comments')
-            .insert([{
-                song_slug: songSlug,
-                author_name: currentUserName,
-                username: profile.nickname,
-                avatar_url: profile.avatar,
-                comment_text: text
-            }]);
-    }
+    try {
+        if (userCommentState.existingCommentId) {
+            // Actualizar comentario existente
+            const { error } = await supabase
+                .from('comments')
+                .update({ comment_text: text })
+                .eq('id', userCommentState.existingCommentId);
 
-    input.value = "";
-    input.style.height = 'auto';
-    
-    const charCounter = document.getElementById('char-counter');
-    if (charCounter) {
-        charCounter.innerText = "0/100";
-        charCounter.classList.remove('limit-near');
-    }
+            if (error) throw error;
+            showToast("✏️ Comentario actualizado");
+        } else {
+            // Insertar nuevo comentario
+            const { error } = await supabase
+                .from('comments')
+                .insert([{
+                    song_slug: songSlug,
+                    author_name: currentUserName,
+                    username: profile.nickname,
+                    avatar_url: profile.avatar,
+                    comment_text: text
+                }]);
 
-    userCommentState.isEditing = false;
-    renderComments();
+            if (error) throw error;
+            showToast("💬 Comentario publicado");
+        }
+
+        // Limpieza tras envío exitoso
+        input.value = "";
+        input.style.height = 'auto';
+        
+        const charCounter = document.getElementById('char-counter');
+        if (charCounter) {
+            charCounter.innerText = "0/100";
+            charCounter.classList.remove('limit-near');
+        }
+
+        userCommentState.isEditing = false;
+        await renderComments();
+
+    } catch (err) {
+        console.error("Error en Supabase:", err);
+        showToast("❌ No se pudo guardar el comentario");
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
 }
 
 function prepareEditComment(id, text) {
