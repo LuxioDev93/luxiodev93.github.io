@@ -98,10 +98,21 @@
             </div>
 
             <!-- PANEL DE COMENTARIOS (Dentro del contenedor fijo superior) -->
-            <div id="comments-panel">
-                <div id="comments-list"></div>
+<!-- PANEL DE COMENTARIOS -->
+<div id="comments-panel">
+    <!-- Formulario para publicar/editar (Solo visible si accede con ?nombre=...) -->
+    <div id="comment-form-wrapper" style="display: none;">
+        <div class="comment-input-row">
+            <img id="user-avatar" class="comment-avatar" src="" alt="Avatar">
+            <div class="input-container">
+                <textarea id="comment-input" rows="1" placeholder="Escribe un comentario..."></textarea>
             </div>
+            <button id="btn-submit-comment" class="btn-send-comment">Comentar</button>
         </div>
+    </div>
+
+    <div id="comments-list"></div>
+</div>
         <!-- Fin del contenedor fijo superior -->
 
         <div id="playlist-container">
