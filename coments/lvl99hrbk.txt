@@ -1,5 +1,5 @@
 [
-["LuxioDEV93", "https://ibb.co/1t8JZHWR", "Venga Nico , vamos al parque a jugar"],
+["LuxioDEV93", "https://ibb.co/1t8JZHWR", "Vpor eso hay que jugar pero no dejar de lado a los amigos ni a la familia ;)"],
     [
         "LuisGamer_22",
         "https://api.dicebear.com/8.x/micah/svg?seed=dog-49642",
