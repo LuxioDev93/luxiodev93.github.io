@@ -593,7 +593,7 @@ async function getSongComments() {
 
     let staticCommentsRaw = [];
 
-    // 1. Cargar comentarios estáticos de GitHub
+    // 1. Cargar comentarios simulados de GitHub
     if (song.coments) {
         try {
             staticCommentsRaw = await parseComments(song.coments);
@@ -603,7 +603,7 @@ async function getSongComments() {
         }
     }
 
-    // Convertir comentarios estáticos al formato estándar
+    // Formatear comentarios simulados
     let combinedComments = staticCommentsRaw.map((c, index) => {
         if (Array.isArray(c)) {
             return {
@@ -618,10 +618,7 @@ async function getSongComments() {
         return { ...c, is_static: true };
     });
 
-    // Resetear el ID del usuario para esta canción
-    userCommentState.existingCommentId = null;
-
-    // 2. Cargar comentarios de Supabase (si está disponible)
+    // 2. Cargar comentarios en tiempo real desde Supabase
     if (typeof supabaseClient !== 'undefined' && supabaseClient) {
         try {
             const songSlug = slugify(song.title);
@@ -631,22 +628,15 @@ async function getSongComments() {
                 .eq('song_slug', songSlug)
                 .order('created_at', { ascending: false });
 
-            if (!error && data && data.length > 0) {
-                const dbComments = data.map(item => {
-                    if (currentUserName && item.author_name.toLowerCase() === currentUserName.toLowerCase()) {
-                        userCommentState.existingCommentId = item.id;
-                    }
-
-                    return {
-                        id: item.id,
-                        username: item.username,
-                        avatar_url: item.avatar_url,
-                        comment_text: item.comment_text,
-                        author_name: item.author_name,
-                        is_static: false
-                    };
-                });
-                // Unir comentarios de Supabase al principio
+            if (!error && data) {
+                const dbComments = data.map(item => ({
+                    id: item.id,
+                    username: item.username,
+                    avatar_url: item.avatar_url,
+                    comment_text: item.comment_text,
+                    author_name: item.author_name,
+                    is_static: false
+                }));
                 combinedComments = [...dbComments, ...combinedComments];
             }
         } catch (dbErr) {
@@ -654,21 +644,17 @@ async function getSongComments() {
         }
     }
 
-    // 3. Controlar visibilidad del formulario según si el usuario ya comentó en Supabase
-    const formWrapper = document.getElementById('comment-form-wrapper');
-    if (formWrapper && currentUserName) {
-        if (userCommentState.existingCommentId && !userCommentState.isEditing) {
-            formWrapper.style.display = 'none';
-        } else {
-            formWrapper.style.display = 'block';
-        }
-    }
-
-    // 4. Renderizar siempre con lo que tengamos (estáticos + BD)
+    // 3. Renderizar enviando explícitamente el array
     renderComments(combinedComments);
 }
 
 function renderComments(commentsList) {
+    if (!commentsList) {
+        getSongComments();
+        return;
+    }
+
+    // Seleccionamos SOLO el contenedor de la lista, NO todo el panel
     const container = document.getElementById('comments-list');
     if (!container) return;
 
@@ -685,22 +671,7 @@ function renderComments(commentsList) {
         
         const name = comment.username || comment.author_name || 'Anónimo';
         const avatar = comment.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
-        const text = escapeHTML(comment.comment_text || '');
-
-        // Comprobar si el comentario pertenece al usuario logueado en la URL
-        const isOwner = currentUserName && 
-                        !comment.is_static && 
-                        (comment.author_name.toLowerCase() === currentUserName.toLowerCase());
-
-        let actionsHTML = '';
-        if (isOwner) {
-            actionsHTML = `
-                <div class="comment-actions">
-                    <button class="btn-comment-action" onclick="prepareEditComment('${comment.id}', '${text.replace(/'/g, "\\'")}')">Editar</button>
-                    <button class="btn-comment-action btn-delete" onclick="deleteComment('${comment.id}')">Eliminar</button>
-                </div>
-            `;
-        }
+        const text = comment.comment_text || '';
 
         commentEl.innerHTML = `
             <img src="${avatar}" 
@@ -708,10 +679,7 @@ function renderComments(commentsList) {
                  class="comment-avatar" 
                  onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}';">
             <div class="comment-content">
-                <div class="comment-header-row">
-                    <span class="comment-author">${name}</span>
-                    ${actionsHTML}
-                </div>
+                <span class="comment-author">${name}</span>
                 <p class="comment-text">${text}</p>
             </div>
         `;
@@ -722,7 +690,7 @@ function renderComments(commentsList) {
 async function handleCommentSubmit() {
     const input = document.getElementById('comment-input');
     const text = input.value.trim();
-    if (!text || !currentUserName || !supabaseClient) return;
+    if (!text || !currentUserName || !supabase) return;
 
     if (text.length > 100) {
         alert("El comentario no puede superar los 100 caracteres.");
@@ -737,14 +705,12 @@ async function handleCommentSubmit() {
     };
 
     if (userCommentState.existingCommentId) {
-        // Actualizar comentario existente
-        await supabaseClient
+        await supabase
             .from('comments')
             .update({ comment_text: text })
             .eq('id', userCommentState.existingCommentId);
     } else {
-        // Insertar nuevo comentario
-        await supabaseClient
+        await supabase
             .from('comments')
             .insert([{
                 song_slug: songSlug,
@@ -755,7 +721,6 @@ async function handleCommentSubmit() {
             }]);
     }
 
-    // Resetear input y volver a estado normal
     input.value = "";
     input.style.height = 'auto';
     
@@ -765,26 +730,20 @@ async function handleCommentSubmit() {
         charCounter.classList.remove('limit-near');
     }
 
-    const submitBtn = document.getElementById('btn-submit-comment');
-    if (submitBtn) submitBtn.innerText = "Comentar";
-
     userCommentState.isEditing = false;
-    getSongComments(); // Recargar para actualizar la interfaz y ocultar la barra
+    renderComments();
 }
 
 function prepareEditComment(id, text) {
-    userCommentState.isEditing = true;
-    userCommentState.existingCommentId = id;
-
-    const formWrapper = document.getElementById('comment-form-wrapper');
-    if (formWrapper) formWrapper.style.display = 'block';
-
     const input = document.getElementById('comment-input');
     input.value = text;
     input.focus();
     input.style.height = 'auto';
     input.style.height = (input.scrollHeight) + 'px';
 
+    userCommentState.isEditing = true;
+    userCommentState.existingCommentId = id;
+    
     const charCounter = document.getElementById('char-counter');
     if (charCounter) {
         charCounter.innerText = `${text.length}/100`;
@@ -797,11 +756,10 @@ function prepareEditComment(id, text) {
 async function deleteComment(id) {
     if (!confirm("¿Deseas eliminar tu comentario?")) return;
     
-    if (supabaseClient) {
-        await supabaseClient.from('comments').delete().eq('id', id);
-        
+    if (supabase) {
+        await supabase.from('comments').delete().eq('id', id);
         const input = document.getElementById('comment-input');
-        if (input) input.value = "";
+        input.value = "";
         
         const charCounter = document.getElementById('char-counter');
         if (charCounter) {
@@ -810,12 +768,7 @@ async function deleteComment(id) {
         }
 
         userCommentState.existingCommentId = null;
-        userCommentState.isEditing = false;
-        
-        const submitBtn = document.getElementById('btn-submit-comment');
-        if (submitBtn) submitBtn.innerText = "Comentar";
-
-        getSongComments();
+        renderComments();
     }
 }
 
