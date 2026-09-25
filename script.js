@@ -1,3 +1,23 @@
+// --- CONFIGURACIÓN DE SUPABASE ---
+const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+// DATOS DE USUARIO FIJOS SEGÚN LA MUESTRA / URL
+let currentUserName = null; // Se llena si entra con ?nombre=
+let userCommentState = {
+    existingCommentId: null, // Guarda el ID si el usuario ya comentó esta canción
+    isEditing: false
+};
+
+// Mapa de avatares/usuarios fijos
+const USER_PROFILES = {
+    "cuco": {
+        nickname: "Nicolás_Numberblock",
+        avatar: "https://i.ibb.co/RTZVDY9h/nicoavatar.jpg"
+    }
+};
+
 const DEFAULT_AUTHOR = "Lux.io Music";
 
 const musicData = [
