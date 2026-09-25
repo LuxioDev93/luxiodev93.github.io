@@ -690,7 +690,8 @@ function renderComments(commentsList) {
 async function handleCommentSubmit() {
     const input = document.getElementById('comment-input');
     const text = input.value.trim();
-    if (!text || !currentUserName || !supabase) return;
+    // CAMBIO 1: Usar supabaseClient en lugar de supabase
+    if (!text || !currentUserName || !supabaseClient) return;
 
     if (text.length > 100) {
         alert("El comentario no puede superar los 100 caracteres.");
@@ -705,12 +706,14 @@ async function handleCommentSubmit() {
     };
 
     if (userCommentState.existingCommentId) {
-        await supabase
+        // CAMBIO 2: Usar supabaseClient
+        await supabaseClient
             .from('comments')
             .update({ comment_text: text })
             .eq('id', userCommentState.existingCommentId);
     } else {
-        await supabase
+        // CAMBIO 3: Usar supabaseClient
+        await supabaseClient
             .from('comments')
             .insert([{
                 song_slug: songSlug,
@@ -731,7 +734,7 @@ async function handleCommentSubmit() {
     }
 
     userCommentState.isEditing = false;
-    renderComments();
+    getSongComments(); // Carga la lista actualizada desde la base de datos
 }
 
 function prepareEditComment(id, text) {
@@ -756,8 +759,8 @@ function prepareEditComment(id, text) {
 async function deleteComment(id) {
     if (!confirm("¿Deseas eliminar tu comentario?")) return;
     
-    if (supabase) {
-        await supabase.from('comments').delete().eq('id', id);
+    if (supabaseClient) { // 👈 Cambiado aquí también
+        await supabaseClient.from('comments').delete().eq('id', id);
         const input = document.getElementById('comment-input');
         input.value = "";
         
@@ -768,7 +771,7 @@ async function deleteComment(id) {
         }
 
         userCommentState.existingCommentId = null;
-        renderComments();
+        getSongComments();
     }
 }
 
