@@ -105,8 +105,9 @@
         <div class="comment-input-row">
             <img id="user-avatar" class="comment-avatar" src="" alt="Avatar">
             <div class="input-container">
-                <textarea id="comment-input" rows="1" placeholder="Escribe un comentario..."></textarea>
-            </div>
+    <textarea id="comment-input" rows="1" maxlength="100" placeholder="Escribe un comentario..."></textarea>
+    <span id="char-counter" class="char-counter">0/100</span>
+</div>
             <button id="btn-submit-comment" class="btn-send-comment">Comentar</button>
         </div>
     </div>
