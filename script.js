@@ -687,10 +687,11 @@ async function handleCommentSubmit() {
         return;
     }
 
-    if (!supabase) {
-        console.error("Supabase no está inicializado correctamente.");
-        showToast("❌ Error de conexión con la base de datos");
-        return;
+if (!supabaseClient) {
+    console.error("Supabase no está inicializado correctamente.");
+    showToast("❌ Error de conexión con la base de datos");
+    return;
+}
     }
 
     if (text.length > 100) {
@@ -709,12 +710,22 @@ async function handleCommentSubmit() {
     };
 
     try {
-        if (userCommentState.existingCommentId) {
-            // Actualizar comentario existente
-            const { error } = await supabase
-                .from('comments')
-                .update({ comment_text: text })
-                .eq('id', userCommentState.existingCommentId);
+      if (userCommentState.existingCommentId) {
+    const { error } = await supabaseClient
+        .from('comments')
+        .update({ comment_text: text })
+        .eq('id', userCommentState.existingCommentId);
+} else {
+    const { error } = await supabaseClient
+        .from('comments')
+        .insert([{
+            song_slug: songSlug,
+            author_name: currentUserName,
+            username: profile.nickname,
+            avatar_url: profile.avatar,
+            comment_text: text
+        }]);
+}
 
             if (error) throw error;
             showToast("✏️ Comentario actualizado");
