@@ -1,7 +1,16 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
+// --- CONFIGURACIÓN DE SUPABASE ---
 const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+// Inicialización limpia en una sola variable
+const supabase = (typeof window.supabase !== 'undefined' && window.supabase.createClient) 
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+    : null;
+
+if (!supabase) {
+    console.error("No se pudo cargar la librería de Supabase desde el CDN.");
+}
 
 // DATOS DE USUARIO FIJOS SEGÚN LA MUESTRA / URL
 let currentUserName = null; // Se llena si entra con ?nombre=
