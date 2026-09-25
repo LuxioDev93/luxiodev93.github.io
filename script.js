@@ -17,7 +17,6 @@ const USER_PROFILES = {
         avatar: "https://i.ibb.co/RTZVDY9h/nicoavatar.jpg"
     }
 };
-
 const DEFAULT_AUTHOR = "Lux.io Music";
 
 const musicData = [
@@ -27,7 +26,7 @@ const musicData = [
         author: "Dani Chalán",
         audio: "https://files.catbox.moe/530yy1.mp3",
         lyrics: "https://luxiodev93.github.io/lyrics/haychamba.txt",
-		audio_eng: "https://files.catbox.moe/c8gzwv.mp3",
+        audio_eng: "https://files.catbox.moe/c8gzwv.mp3",
         lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt",
         coments: "https://badluchothree-glitch.github.io/coments/haychamba.txt"
     },
@@ -370,6 +369,12 @@ function slugify(text) {
         .replace(/\-\-+/g, '-');
 }
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+}
+
 async function parseLRC(lrcUrl) {
     if(!lrcUrl) return [];
     
@@ -447,26 +452,26 @@ function getActivePlaylist() {
 }
 
 function renderCardHTML(item, index, isActive = false) {
-        const authorClickAttr = (!isSingleSongMode) ? `onclick="event.stopPropagation(); filterByAuthor('${item.author}')"` : '';
-        const authorClass = (!isSingleSongMode) ? 'clickable-author' : '';
+    const authorClickAttr = (!isSingleSongMode) ? `onclick="event.stopPropagation(); filterByAuthor('${item.author}')"` : '';
+    const authorClass = (!isSingleSongMode) ? 'clickable-author' : '';
 
-        return `
-            <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" onclick="playTrack(${index})">
-                <div class="yt-thumb-container">
-                    <img class="yt-thumb" src="${item.img}" alt="${item.title}" loading="lazy">
-                    <span class="playing-badge">Sonando</span>
-                </div>
-                <div class="yt-info">
-                    <h3 class="yt-title">${item.title}</h3>
-                    <p class="yt-author ${authorClass}" ${authorClickAttr}>${item.author}</p>
-                    <p class="yt-meta">
-                        <span class="yt-meta-play-icon"></span>${item.views}
-                        <span class="yt-dot-separator">•</span>
-                        <span>${item.timeAgo}</span>
-                    </p>
-                </div>
+    return `
+        <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" onclick="playTrack(${index})">
+            <div class="yt-thumb-container">
+                <img class="yt-thumb" src="${item.img}" alt="${item.title}" loading="lazy">
+                <span class="playing-badge">Sonando</span>
             </div>
-        `;
+            <div class="yt-info">
+                <h3 class="yt-title">${item.title}</h3>
+                <p class="yt-author ${authorClass}" ${authorClickAttr}>${item.author}</p>
+                <p class="yt-meta">
+                    <span class="yt-meta-play-icon"></span>${item.views}
+                    <span class="yt-dot-separator">•</span>
+                    <span>${item.timeAgo}</span>
+                </p>
+            </div>
+        </div>
+    `;
 }
 
 function updateTrackUI(song) {
@@ -548,29 +553,200 @@ function shareAuthorList() {
     });
 }
 
-/* --- PANEL DE COMENTARIOS --- */
-function renderComments() {
+/* --- CONTROL DE ACCESO POR URL --- */
+function checkUserAccess() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const nombreParam = urlParams.get('nombre');
+
+    if (nombreParam) {
+        currentUserName = nombreParam.toLowerCase();
+        const profile = USER_PROFILES[currentUserName] || {
+            nickname: nombreParam,
+            avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${nombreParam}`
+        };
+
+        const formWrapper = document.getElementById('comment-form-wrapper');
+        const userAvatarEl = document.getElementById('user-avatar');
+        
+        if (formWrapper && userAvatarEl) {
+            formWrapper.style.display = 'block';
+            userAvatarEl.src = profile.avatar;
+        }
+    }
+}
+
+/* --- PANEL DE COMENTARIOS CON SUPABASE --- */
+async function getSongComments(song) {
+    let combinedComments = [];
+
+    // 1. Obtener comentarios guardados local/txt
+    try {
+        const fileComments = await parseComments(song.coments);
+        combinedComments = fileComments.map(c => ({
+            id: null,
+            username: c[0],
+            avatar_url: c[1],
+            comment_text: c[2],
+            is_static: true
+        }));
+    } catch(e) {
+        console.warn("No se pudieron cargar comentarios estáticos:", e);
+    }
+
+    // 2. Obtener comentarios en tiempo real desde Supabase
+    if (supabase) {
+        const songSlug = slugify(song.title);
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('song_slug', songSlug)
+            .order('created_at', { ascending: false });
+
+        if (!error && data) {
+            const dbComments = data.map(item => ({
+                id: item.id,
+                username: item.username,
+                avatar_url: item.avatar_url,
+                comment_text: item.comment_text,
+                author_name: item.author_name,
+                is_static: false
+            }));
+            combinedComments = [...dbComments, ...combinedComments];
+        }
+    }
+
+    return combinedComments;
+}
+
+async function renderComments() {
     const list = document.getElementById('comments-list');
     const song = musicData[currentIndex];
-    const comments = Array.isArray(song.loadedComments) ? song.loadedComments : (Array.isArray(song.coments) ? song.coments : []);
+
+    list.innerHTML = `<div class="no-comments">Cargando comentarios...</div>`;
+    
+    const comments = await getSongComments(song);
+    userCommentState.existingCommentId = null;
 
     if (comments.length === 0) {
-        list.innerHTML = `<div class="no-comments">No comments</div>`;
+        list.innerHTML = `<div class="no-comments">No hay comentarios aún</div>`;
         return;
     }
 
     list.innerHTML = comments.map(c => {
-        const [username, imgUrl, text] = c;
+        const isOwner = currentUserName && c.author_name === currentUserName && !c.is_static;
+        
+        if (isOwner) {
+            userCommentState.existingCommentId = c.id;
+        }
+
         return `
-            <div class="comment-item">
-                <img class="comment-avatar" src="${imgUrl}" alt="${username}" loading="lazy" onerror="this.src='https://i.pravatar.cc/150?u=fallback'">
+            <div class="comment-item" id="comment-${c.id}">
+                <img class="comment-avatar" src="${c.avatar_url}" alt="${c.username}" loading="lazy" onerror="this.src='https://i.pravatar.cc/150?u=fallback'">
                 <div class="comment-body">
-                    <p class="comment-username">${username}</p>
-                    <p class="comment-text">${text}</p>
+                    <div class="comment-header">
+                        <p class="comment-username">${escapeHTML(c.username)}</p>
+                        ${isOwner ? `
+                            <div class="comment-actions">
+                                <button class="btn-comment-action" onclick="prepareEditComment('${c.id}', \`${escapeHTML(c.comment_text)}\`)">Editar</button>
+                                <button class="btn-comment-action delete" onclick="deleteComment('${c.id}')">Eliminar</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <p class="comment-text">${escapeHTML(c.comment_text)}</p>
                 </div>
             </div>
         `;
     }).join('');
+
+    const submitBtn = document.getElementById('btn-submit-comment');
+    if (submitBtn) {
+        submitBtn.innerText = userCommentState.existingCommentId ? "Actualizar" : "Comentar";
+    }
+}
+
+async function handleCommentSubmit() {
+    const input = document.getElementById('comment-input');
+    const text = input.value.trim();
+    if (!text || !currentUserName || !supabase) return;
+
+    if (text.length > 100) {
+        alert("El comentario no puede superar los 100 caracteres.");
+        return;
+    }
+
+    const song = musicData[currentIndex];
+    const songSlug = slugify(song.title);
+    const profile = USER_PROFILES[currentUserName] || {
+        nickname: currentUserName,
+        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUserName}`
+    };
+
+    if (userCommentState.existingCommentId) {
+        await supabase
+            .from('comments')
+            .update({ comment_text: text })
+            .eq('id', userCommentState.existingCommentId);
+    } else {
+        await supabase
+            .from('comments')
+            .insert([{
+                song_slug: songSlug,
+                author_name: currentUserName,
+                username: profile.nickname,
+                avatar_url: profile.avatar,
+                comment_text: text
+            }]);
+    }
+
+    input.value = "";
+    input.style.height = 'auto';
+    
+    const charCounter = document.getElementById('char-counter');
+    if (charCounter) {
+        charCounter.innerText = "0/100";
+        charCounter.classList.remove('limit-near');
+    }
+
+    userCommentState.isEditing = false;
+    renderComments();
+}
+
+function prepareEditComment(id, text) {
+    const input = document.getElementById('comment-input');
+    input.value = text;
+    input.focus();
+    input.style.height = 'auto';
+    input.style.height = (input.scrollHeight) + 'px';
+
+    userCommentState.isEditing = true;
+    userCommentState.existingCommentId = id;
+    
+    const charCounter = document.getElementById('char-counter');
+    if (charCounter) {
+        charCounter.innerText = `${text.length}/100`;
+    }
+
+    const submitBtn = document.getElementById('btn-submit-comment');
+    if (submitBtn) submitBtn.innerText = "Guardar";
+}
+
+async function deleteComment(id) {
+    if (!confirm("¿Deseas eliminar tu comentario?")) return;
+    
+    if (supabase) {
+        await supabase.from('comments').delete().eq('id', id);
+        const input = document.getElementById('comment-input');
+        input.value = "";
+        
+        const charCounter = document.getElementById('char-counter');
+        if (charCounter) {
+            charCounter.innerText = "0/100";
+            charCounter.classList.remove('limit-near');
+        }
+
+        userCommentState.existingCommentId = null;
+        renderComments();
+    }
 }
 
 function openCommentsPanel() {
@@ -610,7 +786,6 @@ async function playTrack(index) {
 
     updateTrackUI(song);
 
-    // Comprobar si la canción tiene versión en inglés disponible
     const hasEnglish = song.audio_eng || song.lyrics_eng;
     const btnEnglish = document.getElementById('btn-english');
     
@@ -618,11 +793,10 @@ async function playTrack(index) {
         btnEnglish.style.display = 'flex';
     } else {
         btnEnglish.style.display = 'none';
-        isEnglishVersion = false; // Resetear si no tiene
+        isEnglishVersion = false;
     }
     updateEnglishButtonUI();
 
-    // Seleccionar audio y letra según el modo activo (Español / Inglés)
     const activeAudio = (isEnglishVersion && song.audio_eng) ? song.audio_eng : song.audio;
     const activeLyrics = (isEnglishVersion && song.lyrics_eng) ? song.lyrics_eng : song.lyrics;
 
@@ -630,7 +804,6 @@ async function playTrack(index) {
     currentAudio.load();
     
     parsedLyrics = [];
-    song.loadedComments = [];
     document.getElementById('lyric-text').innerText = "Cargando letra...";
     document.getElementById('player-bg').style.backgroundImage = `url('${song.img}')`;
 
@@ -643,12 +816,6 @@ async function playTrack(index) {
         }
     } catch (e) {
         document.getElementById('lyric-text').innerText = "🎵 Disfruta la música";
-    }
-
-    try {
-        song.loadedComments = await parseComments(song.coments);
-    } catch (e) {
-        song.loadedComments = [];
     }
 
     if (isCommentsOpen) {
@@ -677,7 +844,6 @@ function toggleEnglishVersion() {
         showToast("🇪🇸 Versión original activada");
     }
 
-    // Volver a reproducir la pista actual aplicando el cambio de idioma
     playTrack(currentIndex);
 }
 
@@ -849,14 +1015,34 @@ function handleDevTap() {
 }
 
 /* --- EVENT LISTENERS --- */
-document.getElementById('btn-play-pause').addEventListener('click', togglePlayPause);
-document.getElementById('btn-english').addEventListener('click', toggleEnglishVersion);
-document.getElementById('btn-prev').addEventListener('click', playPrevTrack);
-document.getElementById('btn-next').addEventListener('click', playNextTrack);
-document.getElementById('btn-repeat').addEventListener('click', toggleRepeat);
-document.getElementById('btn-share').addEventListener('click', shareCurrentSong);
-document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
-document.getElementById('btn-comments').addEventListener('click', toggleCommentsPanel);
+document.getElementById('btn-play-pause')?.addEventListener('click', togglePlayPause);
+document.getElementById('btn-english')?.addEventListener('click', toggleEnglishVersion);
+document.getElementById('btn-prev')?.addEventListener('click', playPrevTrack);
+document.getElementById('btn-next')?.addEventListener('click', playNextTrack);
+document.getElementById('btn-repeat')?.addEventListener('click', toggleRepeat);
+document.getElementById('btn-share')?.addEventListener('click', shareCurrentSong);
+document.getElementById('btn-fullscreen')?.addEventListener('click', toggleFullscreen);
+document.getElementById('btn-comments')?.addEventListener('click', toggleCommentsPanel);
+document.getElementById('btn-submit-comment')?.addEventListener('click', handleCommentSubmit);
+
+// Listener para el contador de caracteres y auto-expandir textarea
+const commentInput = document.getElementById('comment-input');
+const charCounter = document.getElementById('char-counter');
+
+commentInput?.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+
+    const length = this.value.length;
+    if (charCounter) {
+        charCounter.innerText = `${length}/100`;
+        if (length >= 90) {
+            charCounter.classList.add('limit-near');
+        } else {
+            charCounter.classList.remove('limit-near');
+        }
+    }
+});
 
 currentAudio.addEventListener('timeupdate', () => {
     const current = currentAudio.currentTime;
@@ -883,7 +1069,7 @@ currentAudio.addEventListener('ended', () => {
     }
 });
 
-document.getElementById('time-bar').addEventListener('click', (e) => {
+document.getElementById('time-bar')?.addEventListener('click', (e) => {
     const bar = e.currentTarget;
     const rect = bar.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -895,6 +1081,8 @@ document.getElementById('time-bar').addEventListener('click', (e) => {
 
 /* --- INICIALIZACIÓN --- */
 window.addEventListener('DOMContentLoaded', () => {
+    checkUserAccess();
+
     const urlParams = new URLSearchParams(window.location.search);
     const songParam = urlParams.get('song');
     const authorParam = urlParams.get('author');
