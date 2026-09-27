@@ -260,7 +260,7 @@ const musicData = [
             title: "Fénix",
             img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
             author: "Metal Insano",
-            audio: "https://files.catbox.moe/fany52.mp3",
+            audio: "https://files.catbox.moe/1d74mx.mp3",//nuevo enlace
             lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt",
 			audio_eng: "https://files.catbox.moe/44zvrf.mp3",
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/fenixx.txt",
