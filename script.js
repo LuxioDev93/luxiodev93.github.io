@@ -57,7 +57,7 @@ const musicData = [
             audio: "https://files.catbox.moe/wd8w2a.mp3",
             author: "No Respawn",
             lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt",
-            coments: "https://luxiodev93.github.io/coments/expexp.txt"
+            coments: "https://badluchothree-glitch.github.io/coments/expexp.txt"
     },
 		
         {
