@@ -262,7 +262,7 @@ const musicData = [
             author: "Metal Insano",
             audio: "https://files.catbox.moe/1d74mx.mp3",//nuevo enlace
             lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt",
-			audio_eng: "https://files.catbox.moe/44zvrf.mp3",
+			audio_eng: "https://files.catbox.moe/fany52.mp3",
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/fenixx.txt",
 			coments: "https://luxiodev93.github.io/coments/fenixx.txt"
         },
