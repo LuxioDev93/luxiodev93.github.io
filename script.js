@@ -208,8 +208,8 @@ const musicData = [
             img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
             author: "Cuco Club",
             audio: "https://files.catbox.moe/2nhp1u.mp3",
-            audio_eng: "https://files.catbox.moe/yumn7z.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/Slitherbrk.txt",
+			audio_eng: "https://files.catbox.moe/yumn7z.mp3",
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/Slitherbrk.txt",
 			coments: "https://luxiodev93.github.io/coments/Slitherbrk.txt"
         },
@@ -217,8 +217,11 @@ const musicData = [
             title: "La gallinita Ciega",
             img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg",
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/5qynrf.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/ceiga.txt"
+            audio: "https://files.catbox.moe/cttffl.mp3",//nuevo enlace
+            lyrics: "https://luxiodev93.github.io/lyrics/ceiga.txt",
+			audio_eng: "https://files.catbox.moe/cttffl.mp3",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/ceiga.txt",
+			coments: "https://luxiodev93.github.io/coments/ceiga.txt"
         },
         {
             title: "Gallinita Espacial",
@@ -233,8 +236,11 @@ const musicData = [
             title: "Iguana del Caos",
             img: "https://i.ibb.co/rgJdfSr/content-75.jpg",
             author: "Metal Insano",
-            audio: "https://files.catbox.moe/e27db5.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/iguanacaos.txt"
+            audio: "https://files.catbox.moe/y6vk2b.mp3",//nuevo enlace
+            lyrics: "https://luxiodev93.github.io/lyrics/iguanacaos.txt",
+			audio_eng: "https://files.catbox.moe/44zvrf.mp3",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/iguanacaos.txt",
+			coments: "https://luxiodev93.github.io/coments/iguanacaos.txt"
         },
         {
             title: "Engranaje del vacío",
@@ -254,8 +260,11 @@ const musicData = [
             title: "Fénix",
             img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
             author: "Metal Insano",
-            audio: "https://files.catbox.moe/b1a57n.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt"
+            audio: "https://files.catbox.moe/fany52.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt",
+			audio_eng: "https://files.catbox.moe/44zvrf.mp3",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/fenixx.txt",
+			coments: "https://luxiodev93.github.io/coments/fenixx.txt"
         },
         {
             title: "Bloque a Bloque",
