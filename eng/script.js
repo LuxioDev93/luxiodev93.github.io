@@ -248,7 +248,7 @@ async function checkWeeklyRewardsStatus() {
         const currentWeek = getCurrentWeekNumber();
         const { data: stats, error } = await supabaseClient
             .from('user_stats')
-            .select('id, week_number, tablet_redeemed, tablet_released, video_redeemed, video_released')
+            .select('id, week_number, tablet_redeemed, tablet_released, video_redeemed, video_released, switch_redeemed, switch_released')
             .single();
 
         if (error || !stats) return;
@@ -262,7 +262,9 @@ async function checkWeeklyRewardsStatus() {
                 tablet_redeemed: false,
                 tablet_released: false,
                 video_redeemed: false,
-                video_released: false
+                video_released: false,
+                switch_redeemed: false,
+                switch_released: false
             }).eq('id', stats.id);
         }
     } catch (e) {
@@ -404,7 +406,10 @@ window.buyLife = async function() {
 };
 
 async function buyReward(type, cost) {
-    const rewardName = type === 'tablet' ? '+10 min extra de tablet' : 'Ver 1 video de YouTube';
+    let rewardName = 'Recompensa';
+    if (type === 'tablet') rewardName = '+10 min extra de tablet';
+    else if (type === 'video') rewardName = 'Ver 1 video de YouTube';
+    else if (type === 'switch') rewardName = '30 min Nintendo Switch';
     
     if (!confirm(`¿Estás seguro de que deseas comprar "${rewardName}" por ${cost} aciertos?`)) {
         return;
@@ -413,7 +418,7 @@ async function buyReward(type, cost) {
     try {
         const { data: stats, error: fetchError } = await supabaseClient
             .from('user_stats')
-            .select('id, hits, tablet_redeemed, video_redeemed')
+            .select('id, hits, tablet_redeemed, video_redeemed, switch_redeemed')
             .single();
 
         if (fetchError || !stats) {
@@ -426,7 +431,7 @@ async function buyReward(type, cost) {
             return;
         }
 
-        const alreadyRedeemed = type === 'tablet' ? stats.tablet_redeemed : stats.video_redeemed;
+        const alreadyRedeemed = stats[`${type}_redeemed`];
         if (alreadyRedeemed) {
             alert("⚠️ Esta recompensa ya ha sido canjeada para esta semana.");
             return;
@@ -455,7 +460,10 @@ async function buyReward(type, cost) {
 }
 
 async function releaseReward(type) {
-    const rewardName = type === 'tablet' ? 'Tablet (+10 min)' : 'Video de YouTube';
+    let rewardName = 'Recompensa';
+    if (type === 'tablet') rewardName = 'Tablet (+10 min)';
+    else if (type === 'video') rewardName = 'Video de YouTube';
+    else if (type === 'switch') rewardName = 'Nintendo Switch (30 min)';
     
     if (!confirm(`¿Estás seguro de liberar la recompensa "${rewardName}"?`)) {
         return;
@@ -464,7 +472,7 @@ async function releaseReward(type) {
     try {
         const { data: stats, error: fetchError } = await supabaseClient
             .from('user_stats')
-            .select('id, tablet_redeemed, tablet_released, video_redeemed, video_released')
+            .select('id, tablet_redeemed, tablet_released, video_redeemed, video_released, switch_redeemed, switch_released')
             .single();
 
         if (fetchError || !stats) {
@@ -472,8 +480,8 @@ async function releaseReward(type) {
             return;
         }
 
-        const isRedeemed = type === 'tablet' ? stats.tablet_redeemed : stats.video_redeemed;
-        const isReleased = type === 'tablet' ? stats.tablet_released : stats.video_released;
+        const isRedeemed = stats[`${type}_redeemed`];
+        const isReleased = stats[`${type}_released`];
 
         if (!isRedeemed) {
             alert("⚠️ Esta recompensa aún no ha sido canjeada.");
@@ -510,7 +518,7 @@ async function updateShopUIStates() {
     try {
         const { data: stats } = await supabaseClient
             .from('user_stats')
-            .select('hits, tablet_redeemed, tablet_released, video_redeemed, video_released')
+            .select('hits, tablet_redeemed, tablet_released, video_redeemed, video_released, switch_redeemed, switch_released')
             .single();
 
         if (!stats) return;
@@ -526,6 +534,7 @@ async function updateShopUIStates() {
         }
 
         applyRewardUIState('tablet', stats.tablet_redeemed, stats.tablet_released, 100);
+        applyRewardUIState('switch', stats.switch_redeemed, stats.switch_released, 100);
         applyRewardUIState('video', stats.video_redeemed, stats.video_released, 75);
 
     } catch (e) {
@@ -679,6 +688,10 @@ function injectDevScreens() {
                             <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:6px;">
                                 <span>📱 Tablet (+10 min)</span>
                                 <button id="dev-release-tablet" onclick="releaseReward('tablet')" style="padding:6px 12px; background:#444; color:#777; border:none; border-radius:4px; cursor:not-allowed; font-weight:bold;" disabled>Liberar</button>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:6px;">
+                                <span>🎮 Nintendo Switch (30 min)</span>
+                                <button id="dev-release-switch" onclick="releaseReward('switch')" style="padding:6px 12px; background:#444; color:#777; border:none; border-radius:4px; cursor:not-allowed; font-weight:bold;" disabled>Liberar</button>
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:6px;">
                                 <span>🎞 Video YouTube</span>
