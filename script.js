@@ -75,8 +75,11 @@ const musicData = [
             title: "Voy a cocinar una gallina",
             img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/uitu6e.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/cocillina.txt"
+            audio: "https://files.catbox.moe/hbgfip.mp3",//nuevo enlace
+            lyrics: "https://luxiodev93.github.io/lyrics/cocillina.txt",
+			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/cocillina.txt",
+			audio_eng: "https://files.catbox.moe/hbgfip.mp3",
+            coments: "https://luxiodev93.github.io/coments/cocillina.txt"
         },
         {
             title: "The 93 Kid",
