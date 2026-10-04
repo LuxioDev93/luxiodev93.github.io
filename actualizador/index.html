@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Listas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    h1 { font-weight: 500; font-size: 1.4rem; margin-bottom: 1.5rem; }
+    button {
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    button:hover:not(:disabled) { background: #333; border-color: #666; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .status {
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: #888;
+      min-height: 1.3em;
+      text-align: center;
+    }
+    pre {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 1.25rem;
+      width: 100%;
+      max-width: 900px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .copy-btn {
+      margin-top: 0.9rem;
+      font-size: 0.85rem;
+      padding: 0.45rem 1.2rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generador de Listas</h1>
+  <button id="btn">Generar</button>
+  <div class="status" id="status">Listo para generar</div>
+  <pre id="output">Pulsa el botón Generar…</pre>
+  <button class="copy-btn" id="copy">Copiar resultado</button>
+
+  <script>
+    const URL_MAIN = 'https://raw.githubusercontent.com/luxiodev93/luxiodev93.github.io/main/script.js';
+    const URL_ENG  = 'https://raw.githubusercontent.com/luxiodev93/luxiodev93.github.io/main/eng/script.js';
+
+    const btn     = document.getElementById('btn');
+    const status  = document.getElementById('status');
+    const output  = document.getElementById('output');
+    const copyBtn = document.getElementById('copy');
+
+    btn.addEventListener('click', generate);
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        copyBtn.textContent = '¡Copiado!';
+        setTimeout(() => copyBtn.textContent = 'Copiar resultado', 1600);
+      });
+    });
+
+    async function generate() {
+      btn.disabled = true;
+      status.textContent = 'Descargando scripts…';
+      output.textContent = '';
+      copyBtn.style.display = 'none';
+
+      try {
+        const [txtMain, txtEng] = await Promise.all([
+          fetch(URL_MAIN + '?t=' + Date.now()).then(r => {
+            if (!r.ok) throw new Error('Error script principal: ' + r.status);
+            return r.text();
+          }),
+          fetch(URL_ENG + '?t=' + Date.now()).then(r => {
+            if (!r.ok) throw new Error('Error script eng: ' + r.status);
+            return r.text();
+          })
+        ]);
+
+        status.textContent = 'Extrayendo musicData…';
+
+        const dataMain = extractMusicData(txtMain);
+        const dataEng  = extractMusicData(txtEng);
+
+        const listaPrincipal  = buildLinesFromMainAudio(dataMain);
+        const listaSecundaria = buildLinesSecundaria(dataMain, dataEng);
+
+        const result =
+`const LISTA_PRINCIPAL = [
+${listaPrincipal}
+];
+
+const LISTA_SECUNDARIA = [
+${listaSecundaria}
+];`;
+
+        output.textContent = result;
+        status.textContent = 'Listo';
+        copyBtn.style.display = 'inline-block';
+      } catch (err) {
+        console.error(err);
+        status.textContent = 'Error: ' + err.message;
+        output.textContent = err.stack || String(err);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function extractMusicData(jsText) {
+      const startMarker = 'const musicData = [';
+      const startIdx = jsText.indexOf(startMarker);
+      if (startIdx === -1) throw new Error('No se encontró "const musicData = ["');
+
+      let i = startIdx + startMarker.length - 1;
+      let depth = 0;
+      let inString = false;
+      let stringChar = '';
+      let escaped = false;
+
+      for (; i < jsText.length; i++) {
+        const ch = jsText[i];
+
+        if (inString) {
+          if (escaped) escaped = false;
+          else if (ch === '\\') escaped = true;
+          else if (ch === stringChar) inString = false;
+          continue;
+        }
+
+        if (ch === '"' || ch === "'" || ch === '`') {
+          inString = true;
+          stringChar = ch;
+          continue;
+        }
+
+        if (ch === '[') depth++;
+        else if (ch === ']') {
+          depth--;
+          if (depth === 0) {
+            const arrayCode = jsText.slice(startIdx + 'const musicData = '.length, i + 1);
+            const data = new Function('return ' + arrayCode)();
+            if (!Array.isArray(data)) throw new Error('musicData no es un array');
+            return data;
+          }
+        }
+      }
+      throw new Error('No se encontró el cierre del array musicData');
+    }
+
+    function isRatedOn(item) {
+      return String(item.rated || '').toLowerCase() === 'on';
+    }
+
+    /** Excluir URLs de cdn1.suno.ai */
+    function isBlockedUrl(url) {
+      return url.includes('cdn1.suno.ai');
+    }
+
+    function buildLinesFromMainAudio(data) {
+      const lines = [];
+      const seen = new Set();
+
+      for (const item of data) {
+        if (!item || typeof item !== 'object') continue;
+        if (isRatedOn(item)) continue;
+
+        const title = (item.title || '').trim();
+        const url   = (item.audio || '').trim();
+        if (!title || !url) continue;
+        if (isBlockedUrl(url)) continue;   // ← nueva regla
+
+        const line = ` "${url}",// ${title}`;
+        if (seen.has(line)) continue;
+        seen.add(line);
+        lines.push(line);
+      }
+      return lines.join('\n');
+    }
+
+    function buildLinesSecundaria(dataMain, dataEng) {
+      const lines = [];
+      const seen = new Set();
+
+      // 1) audio_eng del script PRINCIPAL
+      for (const item of dataMain) {
+        if (!item || typeof item !== 'object') continue;
+        if (isRatedOn(item)) continue;
+
+        const title = (item.title || '').trim();
+        const url   = (item.audio_eng || '').trim();
+        if (!title || !url) continue;
+        if (isBlockedUrl(url)) continue;   // ← nueva regla
+
+        const line = ` "${url}",// ${title}`;
+        if (seen.has(line)) continue;
+        seen.add(line);
+        lines.push(line);
+      }
+
+      // 2) audio del script ENG
+      for (const item of dataEng) {
+        if (!item || typeof item !== 'object') continue;
+        if (isRatedOn(item)) continue;
+
+        const title = (item.title || '').trim();
+        const url   = (item.audio || '').trim();
+        if (!title || !url) continue;
+        if (isBlockedUrl(url)) continue;   // ← nueva regla
+
+        const line = ` "${url}",// ${title}`;
+        if (seen.has(line)) continue;
+        seen.add(line);
+        lines.push(line);
+      }
+
+      return lines.join('\n');
+    }
+  </script>
+</body>
+</html>
