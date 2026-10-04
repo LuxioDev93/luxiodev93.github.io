@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsIP - Agregador de Noticias por Ubicación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * { font-family: 'Inter', sans-serif; }
+
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .dark .skeleton {
+            background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+            background-size: 200% 100%;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .dark .card-hover:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+        }
+        .dark .spinner {
+            border-color: #334155;
+            border-top-color: #60a5fa;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">News<span class="text-primary-600 dark:text-primary-400">IP</span></h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" aria-label="Cambiar tema">
+                    <svg id="sunIcon" class="w-5 h-5 text-gray-700 dark:text-gray-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <svg id="moonIcon" class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+                <button id="refreshBtn" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" aria-label="Actualizar noticias">
+                    <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Location Banner -->
+        <section id="locationBanner" class="mb-8">
+            <div class="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-primary-100 text-sm font-medium mb-1">Ubicación detectada</p>
+                        <h2 id="locationText" class="text-2xl sm:text-3xl font-bold">Detectando ubicación...</h2>
+                        <p id="coordsText" class="text-primary-200 text-sm mt-1"></p>
+                    </div>
+                    <div id="locationFlag" class="text-4xl"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="mb-8">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Categoría:</span>
+                <div id="categoryFilters" class="flex flex-wrap gap-2">
+                    <button data-category="general" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-primary-600 text-white transition-colors">General</button>
+                    <button data-category="business" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Negocios</button>
+                    <button data-category="technology" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Tecnología</button>
+                    <button data-category="science" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Ciencia</button>
+                    <button data-category="health" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Salud</button>
+                    <button data-category="sports" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Deportes</button>
+                    <button data-category="entertainment" class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Entretenimiento</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <section id="loadingState" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-5 space-y-3">
+                        <div class="skeleton h-4 rounded w-3/4"></div>
+                        <div class="skeleton h-4 rounded w-1/2"></div>
+                        <div class="skeleton h-3 rounded w-full"></div>
+                        <div class="skeleton h-3 rounded w-2/3"></div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-5 space-y-3">
+                        <div class="skeleton h-4 rounded w-3/4"></div>
+                        <div class="skeleton h-4 rounded w-1/2"></div>
+                        <div class="skeleton h-3 rounded w-full"></div>
+                        <div class="skeleton h-3 rounded w-2/3"></div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-5 space-y-3">
+                        <div class="skeleton h-4 rounded w-3/4"></div>
+                        <div class="skeleton h-4 rounded w-1/2"></div>
+                        <div class="skeleton h-3 rounded w-full"></div>
+                        <div class="skeleton h-3 rounded w-2/3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error State -->
+        <section id="errorState" class="hidden">
+            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-8 text-center">
+                <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+                <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">Error al cargar noticias</h3>
+                <p id="errorMessage" class="text-red-600 dark:text-red-300 mb-4"></p>
+                <button id="retryBtn" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                    Reintentar
+                </button>
+            </div>
+        </section>
+
+        <!-- News Grid -->
+        <section id="newsSection">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Noticias destacadas</h2>
+                <span id="newsCount" class="text-sm text-gray-500 dark:text-gray-400"></span>
+            </div>
+            <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <!-- Empty State -->
+        <section id="emptyState" class="hidden text-center py-16">
+            <svg class="w-20 h-20 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-600 dark:text-gray-400">No se encontraron noticias</h3>
+            <p class="text-gray-400 dark:text-gray-500 mt-1">Intenta con otra categoría o vuelve a intentarlo más tarde.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-700 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                NewsIP &copy; 2026 — Agregador de noticias basado en ubicación IP
+            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                Datos de ubicación: ipapi.co | Noticias: rss2json / GNews
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * ============================================
+         * NewsIP - Agregador de Noticias por IP
+         * ============================================
+         * Aplicación web autocontenida que detecta la ubicación
+         * del usuario mediante su IP y muestra noticias relevantes.
+         */
+
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        const CONFIG = {
+            // APIs de geocalización (se prueban en orden hasta que una funcione)
+            geoAPIs: [
+                { name: 'ipapi.co', url: 'https://ipapi.co/json/' },
+                { name: 'ipinfo.io', url: 'https://ipinfo.io/json' },
+                { name: 'ipwho.is', url: 'https://ipwho.is/' }
+            ],
+            // API rss2json (gratuita, sin clave para uso básico)
+            rss2jsonBase: 'https://api.rss2json.com/v1/api.json?rss_url=',
+            // GNews API (requiere clave - opcional)
+            gnewsApiKey: '', // Añade tu clave aquí si tienes una
+            gnewsBase: 'https://gnews.io/api/v4/top-headlines',
+            // Fuentes RSS por país/categoría
+            rssFeeds: {
+                general: {
+                    es: ['https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/rss', 'https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml'],
+                    mx: ['https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/rss', 'https://www.jornada.com.mx/rss/edicion.xml'],
+                    ar: ['https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/rss', 'https://www.clarin.com/rss/lo-ultimo/'],
+                    us: ['https://feeds.npr.org/1001/rss.xml', 'https://rss.cnn.com/rss/edition.rss'],
+                    gb: ['https://feeds.bbci.co.uk/news/rss.xml'],
+                    default: ['https://feeds.npr.org/1001/rss.xml', 'https://rss.cnn.com/rss/edition.rss']
+                },
+                business: {
+                    es: ['https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/rss'],
+                    default: ['https://feeds.npr.org/1001/rss.xml']
+                },
+                technology: {
+                    default: ['https://feeds.npr.org/1001/rss.xml', 'https://rss.cnn.com/rss/edition.rss']
+                },
+                science: {
+                    default: ['https://feeds.npr.org/1001/rss.xml']
+                },
+                health: {
+                    default: ['https://feeds.npr.org/1001/rss.xml']
+                },
+                sports: {
+                    default: ['https://feeds.npr.org/1001/rss.xml']
+                },
+                entertainment: {
+                    default: ['https://feeds.npr.org/1001/rss.xml']
+                }
+            },
+            // Códigos de país ISO a código de bandera emoji
+            countryToFlag: {
+                'ES': '🇪🇸', 'MX': '🇲🇽', 'AR': '🇦🇷', 'US': '🇺🇸', 'GB': '🇬🇧',
+                'CO': '🇨🇴', 'CL': '🇨🇱', 'PE': '🇵🇪', 'VE': '🇻🇪', 'UY': '🇺🇾',
+                'PY': '🇵🇾', 'BO': '🇧🇴', 'EC': '🇪🇨', 'CR': '🇨🇷', 'PA': '🇵🇦',
+                'DO': '🇩🇴', 'CU': '🇨🇺', 'PR': '🇵🇷', 'GT': '🇬🇹', 'HN': '🇭🇳',
+                'SV': '🇸🇻', 'NI': '🇳🇮', 'DE': '🇩🇪', 'FR': '🇫🇷', 'IT': '🇮🇹',
+                'PT': '🇵🇹', 'BR': '🇧🇷', 'CA': '🇨🇦', 'AU': '🇦🇺', 'JP': '🇯🇵',
+                'CN': '🇨🇳', 'IN': '🇮🇳', 'RU': '🇷🇺', 'KR': '🇰🇷', 'NL': '🇳🇱',
+                'SE': '🇸🇪', 'NO': '🇳🇴', 'DK': '🇩🇰', 'FI': '🇫🇮', 'PL': '🇵🇱',
+                'TR': '🇹🇷', 'ZA': '🇿🇦', 'NG': '🇳🇬', 'EG': '🇪🇬', 'SA': '🇸🇦',
+                'AE': '🇦🇪', 'IL': '🇮🇱', 'TH': '🇹🇭', 'ID': '🇮🇩', 'PH': '🇵🇭',
+                'VN': '🇻🇳', 'MY': '🇲🇾', 'SG': '🇸🇬', 'NZ': '🇳🇿', 'IE': '🇮🇪',
+                'AT': '🇦🇹', 'BE': '🇧🇪', 'CH': '🇨🇭', 'CZ': '🇨🇿', 'GR': '🇬🇷',
+                'HU': '🇭🇺', 'RO': '🇷🇴', 'UA': '🇺🇦'
+            }
+        };
+
+        // ============================================
+        // ESTADO GLOBAL
+        // ============================================
+        const state = {
+            location: null,
+            currentCategory: 'general',
+            news: [],
+            loading: false,
+            darkMode: false
+        };
+
+        // ============================================
+        // REFERENCIAS DOM
+        // ============================================
+        const DOM = {
+            locationText: document.getElementById('locationText'),
+            coordsText: document.getElementById('coordsText'),
+            locationFlag: document.getElementById('locationFlag'),
+            newsGrid: document.getElementById('newsGrid'),
+            newsCount: document.getElementById('newsCount'),
+            loadingState: document.getElementById('loadingState'),
+            errorState: document.getElementById('errorState'),
+            emptyState: document.getElementById('emptyState'),
+            newsSection: document.getElementById('newsSection'),
+            errorMessage: document.getElementById('errorMessage'),
+            retryBtn: document.getElementById('retryBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            themeToggle: document.getElementById('themeToggle'),
+            sunIcon: document.getElementById('sunIcon'),
+            moonIcon: document.getElementById('moonIcon'),
+            categoryFilters: document.getElementById('categoryFilters')
+        };
+
+        // ============================================
+        // UTILIDADES
+        // ============================================
+
+        /**
+         * Obtiene el código de bandera emoji a partir del código de país ISO
+         */
+        function getFlagEmoji(countryCode) {
+            return CONFIG.countryToFlag[countryCode?.toUpperCase()] || '🌍';
+        }
+
+        /**
+         * Formatea una fecha relativa (ej: "hace 2 horas")
+         */
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Ahora mismo';
+            if (diffMins < 60) return `Hace ${diffMins} min`;
+            if (diffHours < 24) return `Hace ${diffHours}h`;
+            if (diffDays < 7) return `Hace ${diffDays}d`;
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        }
+
+        /**
+         * Limpia texto de entidades HTML
+         */
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        /**
+         * Trunca texto a un número máximo de caracteres
+         */
+        function truncate(text, maxLength) {
+            if (!text) return '';
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength).trim() + '...';
+        }
+
+        /**
+         * Genera una imagen placeholder con color basado en el texto
+         */
+        function getPlaceholderImage(text) {
+            const colors = ['3b82f6', '8b5cf6', 'ec4899', 'f59e0b', '10b981', '06b6d4', 'f97316', '6366f1'];
+            let hash = 0;
+            for (let i = 0; i < text.length; i++) {
+                hash = text.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const color = colors[Math.abs(hash) % colors.length];
+            const encodedText = encodeURIComponent(truncate(text, 30));
+            return `https://placehold.co/600x400/${color}/ffffff?text=${encodedText}`;
+        }
+
+        // ============================================
+        // TEMA CLARO/OSCURO
+        // ============================================
+
+        /**
+         * Inicializa el tema basado en preferencia del sistema o localStorage
+         */
+        function initTheme() {
+            const saved = localStorage.getItem('newsip-theme');
+            if (saved) {
+                state.darkMode = saved === 'dark';
+            } else {
+                state.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            applyTheme();
+        }
+
+        /**
+         * Aplica el tema actual al documento
+         */
+        function applyTheme() {
+            if (state.darkMode) {
+                document.documentElement.classList.add('dark');
+                DOM.sunIcon.classList.remove('hidden');
+                DOM.moonIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                DOM.sunIcon.classList.add('hidden');
+                DOM.moonIcon.classList.remove('hidden');
+            }
+            localStorage.setItem('newsip-theme', state.darkMode ? 'dark' : 'light');
+        }
+
+        /**
+         * Alterna entre tema claro y oscuro
+         */
+        function toggleTheme() {
+            state.darkMode = !state.darkMode;
+            applyTheme();
+        }
+
+        // ============================================
+        // GEOLOCALIZACIÓN POR IP
+        // ============================================
+
+        /**
+         * Intenta obtener la ubicación del usuario usando múltiples APIs
+         * Prueba cada API en orden hasta obtener una respuesta exitosa
+         */
+        async function detectLocation() {
+            for (const api of CONFIG.geoAPIs) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                    const response = await fetch(api.url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) continue;
+
+                    const data = await response.json();
+
+                    // Normalizar respuestas de diferentes APIs
+                    const location = normalizeGeoData(data, api.name);
+                    if (location) {
+                        state.location = location;
+                        updateLocationUI(location);
+                        return location;
+                    }
+                } catch (error) {
+                    console.warn(`Error con ${api.name}:`, error.message);
+                    continue;
+                }
+            }
+
+            // Si todas las APIs fallan, usar ubicación por defecto
+            const fallback = {
+                city: 'Madrid',
+                country: 'España',
+                countryCode: 'ES',
+                latitude: 40.4168,
+                longitude: -3.7038
+            };
+            state.location = fallback;
+            updateLocationUI(fallback);
+            return fallback;
+        }
+
+        /**
+         * Normaliza los datos de geolocalización de diferentes APIs
+         * a un formato común
+         */
+        function normalizeGeoData(data, apiName) {
+            try {
+                switch (apiName) {
+                    case 'ipapi.co':
+                        if (data.city && data.country_name) {
+                            return {
+                                city: data.city,
+                                country: data.country_name,
+                                countryCode: data.country_code,
+                                region: data.region,
+                                latitude: data.latitude,
+                                longitude: data.longitude
+                            };
+                        }
+                        break;
+                    case 'ipinfo.io':
+                        if (data.city && data.country) {
+                            const [latitude, longitude] = (data.loc || '0,0').split(',').map(Number);
+                            return {
+                                city: data.city,
+                                country: data.country,
+                                countryCode: data.country,
+                                region: data.region,
+                                latitude,
+                                longitude
+                            };
+                        }
+                        break;
+                    case 'ipwho.is':
+                        if (data.city && data.country) {
+                            return {
+                                city: data.city,
+                                country: data.country,
+                                countryCode: data.country_code,
+                                region: data.region,
+                                latitude: data.latitude,
+                                longitude: data.longitude
+                            };
+                        }
+                        break;
+                }
+            } catch (e) {
+                console.error('Error normalizando datos de geolocalización:', e);
+            }
+            return null;
+        }
+
+        /**
+         * Actualiza la interfaz con la ubicación detectada
+         */
+        function updateLocationUI(location) {
+            DOM.locationText.textContent = `Mostrando noticias para: ${location.city}, ${location.country}`;
+            DOM.coordsText.textContent = `Coordenadas: ${location.latitude?.toFixed(4)}, ${location.longitude?.toFixed(4)}`;
+            DOM.locationFlag.textContent = getFlagEmoji(location.countryCode);
+        }
+
+        // ============================================
+        // OBTENCIÓN DE NOTICIAS
+        // ============================================
+
+        /**
+         * Obtiene noticias usando rss2json como fuente principal
+         * con fallback a GNews si está configurado
+         */
+        async function fetchNews(category = 'general') {
+            showLoading();
+            hideError();
+
+            const countryCode = state.location?.countryCode?.toLowerCase() || 'us';
+            const feeds = getFeedsForCategory(category, countryCode);
+
+            const allNews = [];
+
+            // Intentar obtener noticias de cada feed RSS
+            for (const feedUrl of feeds) {
+                try {
+                    const url = `${CONFIG.rss2jsonBase}${encodeURIComponent(feedUrl)}`;
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                    const response = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) continue;
+
+                    const data = await response.json();
+
+                    if (data.status === 'ok' && data.items) {
+                        const items = data.items.map(item => ({
+                            title: item.title || 'Sin título',
+                            description: stripHtml(item.description || item.content || ''),
+                            link: item.link || '#',
+                            image: item.enclosure?.link || item.thumbnail || null,
+                            source: data.feed?.title || new URL(feedUrl).hostname,
+                            pubDate: item.pubDate || new Date().toISOString(),
+                            category: category
+                        }));
+                        allNews.push(...items);
+                    }
+                } catch (error) {
+                    console.warn(`Error obteniendo feed ${feedUrl}:`, error.message);
+                    continue;
+                }
+            }
+
+            // Si no se obtuvieron noticias de RSS, intentar con GNews
+            if (allNews.length === 0 && CONFIG.gnewsApiKey) {
+                try {
+                    const gnewsData = await fetchGNews(category, countryCode);
+                    allNews.push(...gnewsData);
+                } catch (error) {
+                    console.warn('Error con GNews:', error.message);
+                }
+            }
+
+            // Si aún no hay noticias, usar datos de demostración
+            if (allNews.length === 0) {
+                const demoNews = generateDemoNews(category);
+                allNews.push(...demoNews);
+            }
+
+            // Limitar a 12 noticias y eliminar duplicados
+            const uniqueNews = [...new Map(allNews.map(item => [item.title, item])).values()].slice(0, 12);
+
+            state.news = uniqueNews;
+            hideLoading();
+            renderNews(uniqueNews);
+        }
+
+        /**
+         * Obtiene feeds RSS apropiados para la categoría y país
+         */
+        function getFeedsForCategory(category, countryCode) {
+            const categoryFeeds = CONFIG.rssFeeds[category] || CONFIG.rssFeeds.general;
+            return categoryFeeds[countryCode] || categoryFeeds.default || CONFIG.rssFeeds.general.default;
+        }
+
+        /**
+         * Obtiene noticias desde GNews API (requiere clave)
+         */
+        async function fetchGNews(category, countryCode) {
+            const categoryMap = {
+                general: 'general', business: 'business', technology: 'technology',
+                science: 'science', health: 'health', sports: 'sports', entertainment: 'entertainment'
+            };
+
+            const url = `${CONFIG.gnewsBase}?lang=${countryCode === 'es' ? 'es' : 'en'}&country=${countryCode}&category=${categoryMap[category]}&apikey=${CONFIG.gnewsApiKey}&max=10`;
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('GNews API error');
+
+            const data = await response.json();
+
+            return (data.articles || []).map(article => ({
+                title: article.title,
+                description: article.description || '',
+                link: article.url,
+                image: article.image,
+                source: article.source?.name || 'GNews',
+                pubDate: article.publishedAt,
+                category: category
+            }));
+        }
+
+        /**
+         * Genera noticias de demostración cuando las APIs no están disponibles
+         */
+        function generateDemoNews(category) {
+            const demoData = {
+                general: [
+                    { title: 'Cumbre internacional aborda desafíos globales de 2026', description: 'Líderes mundiales se reúnen para discutir cooperación internacional y desarrollo sostenible en un contexto de cambios geopolíticos.', source: 'Reuters' },
+                    { title: 'Nuevo informe revela tendencias económicas globales', description: 'El FMI publica perspectivas actualizadas sobre el crecimiento mundial y los mercados emergentes para el próximo trimestre.', source: 'Bloomberg' },
+                    { title: 'Avances en energías marcan hito histórico', description: 'La capacidad de energía renovable alcanza niveles récord, transformando el panorama energético global.', source: 'AP News' },
+                    { title: 'Educación digital transforma el aprendizaje', description: 'Plataformas educativas innovadoras democratizan el acceso a la educación de calidad en regiones vulnerables.', source: 'BBC' },
+                    { title: 'Descubrimiento arqueológico cambia la historia', description: 'Investigadores encuentran evidencia que reescribe capítulos fundamentales de la historia antigua.', source: 'National Geographic' }
+                ],
+                business: [
+                    { title: 'Mercados financieros muestran signos de recuperación', description: 'Los principales índices globales registran ganancias sostenidas impulsadas por resultados corporativos positivos.', source: 'Financial Times' },
+                    { title: 'Startups tecnológicas atraen inversión récord', description: 'El capital de riesgo fluye hacia empresas emergentes en inteligencia artificial y biotecnología.', source: 'TechCrunch' },
+                    { title: 'Transformación digital acelera en el sector retail', description: 'Empresas adoptan soluciones omnicanal para satisfacer las expectativas cambiantes de los consumidores.', source: 'Forbes' },
+                    { title: 'Cadenas de suministro se reinventan', description: 'La inteligencia artificial y el IoT optimizan la logística global reduciendo costos y tiempos de entrega.', source: 'WSJ' },
+                    { title: 'E-commerce supera expectativas de crecimiento', description: 'Las ventas online continúan expandiéndose con innovaciones en entrega rápida y experiencias personalizadas.', source: 'CNBC' }
+                ],
+                technology: [
+                    { title: 'IA generativa revoluciona la industria creativa', description: 'Nuevas herramientas de inteligencia artificial transforman la producción de contenido audiovisual y diseño.', source: 'The Verge' },
+                    { title: 'Computación cuántica alcanza nuevo hito', description: 'Investigadores logran estabilidad en qubits que acerca la computación cuántica práctica.', source: 'Nature' },
+                    { title: 'Redes 6G prometen velocidades sin precedentes', description: 'Los primeros estándares de sexta generación móvil sugieren velocidades 100 veces superiores al 5G.', source: 'IEEE Spectrum' },
+                    { title: 'Ciberseguridad se prioriza en empresas', description: 'Las amenazas digitales impulsan inversiones masivas en protección de datos y sistemas.', source: 'Wired' },
+                    { title: 'Realidad mixta transforma el trabajo remoto', description: 'Espacios de trabajo virtuales inmersivos redefinen la colaboración entre equipos distribuidos.', source: 'MIT Technology Review' }
+                ],
+                science: [
+                    { title: 'Misión espacial descubre agua en luna de Júpiter', description: 'Datos confirman la presencia de océanos subterráneos que podrían albergar condiciones para la vida.', source: 'NASA' },
+                    { title: 'Avance en fusión nuclear acerca energía limpia', description: 'Científicos mantienen reacción de fusión por tiempo récord, hito hacia energía ilimitada.', source: 'Science Daily' },
+                    { title: 'Nuevo tratamiento genético muestra resultados prometedores', description: 'Terapias personalizadas con CRISPR demuestran eficacia en enfermedades genéticas raras.', source: 'The Lancet' },
+                    { title: 'Biodiversidad: descubren nuevas especies en océano profundo', description: 'Expedición científica documenta ecosistemas desconocidos en fosas oceánicas abisales.', source: 'National Geographic' },
+                    { title: 'Cambio climático: innovaciones en captura de carbono', description: 'Nuevas tecnologías de captura directa de aire muestran eficacia a escala industrial.', source: 'Nature Climate Change' }
+                ],
+                health: [
+                    { title: 'Vacuna universal contra la gripe muestra eficacia', description: 'Ensayos clínicos fase III demuestran protección amplia contra múltiples cepas de influenza.', source: 'WHO' },
+                    { title: 'Telemedicina se consolida como estándar de atención', description: 'La salud digital reduce barreras de acceso y mejora resultados en pacientes crónicos.', source: 'JAMA' },
+                    { title: 'Nutrición personalizada basada en microbioma', description: 'Dietas adaptadas a la flora intestinal individual muestran beneficios significativos.', source: 'Cell' },
+                    { title: 'Avances en detección temprana de Alzheimer', description: 'Biomarcadores en sangre permiten diagnóstico años antes de la aparición de síntomas.', source: 'NEJM' },
+                    { title: 'Salud mental: apps terapéuticas ganan evidencia', description: 'Intervenciones digitales validadas clínicamente complementan tratamientos tradicionales.', source: 'The Lancet Digital Health' }
+                ],
+                sports: [
+                    { title: 'Nuevo récord mundial en atletismo sorprende', description: 'Atleta rompe marca histórica en competencia internacional con rendimiento excepcional.', source: 'ESPN' },
+                    { title: 'Tecnología VAR transforma el arbitraje deportivo', description: 'Sistemas de asistencia de video mejoran precisión en decisiones controversiales.', source: 'FIFA' },
+                    { title: 'Deportes electrónicos alcanzan audiencia masiva', description: 'Torneos de e-sports superan viewership de eventos deportivos tradicionales.', source: 'The Esports Observer' },
+                    { title: 'Innovaciones en equipamiento deportivo', description: 'Materiales avanzados y wearables optimizan rendimiento y prevención de lesiones.', source: 'Sports Illustrated' },
+                    { title: 'Igualdad de género avanza en el deporte', description: 'Nuevas políticas promueven paridad en premios y cobertura mediática deportiva.', source: 'Olympics.com' }
+                ],
+                entertainment: [
+                    { title: 'Streaming revoluciona la producción de contenido', description: 'Plataformas digitales invierten en producciones originales que compiten con cine tradicional.', source: 'Variety' },
+                    { title: 'Música en vivo regresa con fuerza', description: 'Festivales y conciertos experimentan demanda récord tras años de pandemia.', source: 'Rolling Stone' },
+                    { title: 'Videojuegos: la nueva narrativa interactiva', description: 'Títulos AAA ofrecen experiencias cinematográficas con narrativas ramificadas.', source: 'IGN' },
+                    { title: 'Realidad virtual transforma el entretenimiento', description: 'Experiencias inmersivas en VR redefinen conciertos, cine y eventos culturales.', source: 'The Verge' },
+                    { title: 'Celebridades adoptan plataformas emergentes', description: 'Figuras públicas conectan con audiencias a través de formatos innovadores de contenido.', source: 'Hollywood Reporter' }
+                ]
+            };
+
+            const news = demoData[category] || demoData.general;
+            return news.map((item, index) => ({
+                ...item,
+                link: '#',
+                image: null,
+                pubDate: new Date(Date.now() - (index * 3600000)).toISOString(),
+                category
+            }));
+        }
+
+        // ============================================
+        // RENDERIZADO
+        // ============================================
+
+        /**
+         * Renderiza las noticias en el grid
+         */
+        function renderNews(news) {
+            DOM.newsGrid.innerHTML = '';
+            DOM.newsCount.textContent = `${news.length} noticias`;
+
+            if (news.length === 0) {
+                DOM.emptyState.classList.remove('hidden');
+                return;
+            }
+
+            DOM.emptyState.classList.add('hidden');
+
+            news.forEach((item, index) => {
+                const card = createNewsCard(item, index);
+                DOM.newsGrid.appendChild(card);
+            });
+        }
+
+        /**
+         * Crea un elemento de tarjeta de noticia
+         */
+        function createNewsCard(item, index) {
+            const card = document.createElement('article');
+            card.className = 'bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm card-hover fade-in flex flex-col';
+            card.style.animationDelay = `${index * 0.05}s`;
+
+            const imageUrl = item.image || getPlaceholderImage(item.title);
+            const timeAgoText = timeAgo(item.pubDate);
+
+            card.innerHTML = `
+                <div class="relative h-48 overflow-hidden bg-gray-200 dark:bg-gray-700">
+                    <img src="${imageUrl}" alt="${item.title}" class="w-full h-full object-cover" loading="lazy"
+                         onerror="this.onerror=null; this.src='${getPlaceholderImage(item.title)}';">
+                    <div class="absolute top-3 left-3">
+                        <span class="px-3 py-1 bg-primary-600/90 backdrop-blur-sm text-white text-xs font-medium rounded-full capitalize">${item.category}</span>
+                    </div>
+                </div>
+                <div class="p-5 flex flex-col flex-1">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xs font-medium text-primary-600 dark:text-primary-400">${item.source}</span>
+                        <span class="text-gray-300 dark:text-gray-600">|</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">${timeAgoText}</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 leading-tight">${item.title}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4 flex-1">${truncate(item.description, 150)}</p>
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors mt-auto">
+                        Leer noticia completa
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // ============================================
+        // ESTADOS DE UI
+        // ============================================
+
+        function showLoading() {
+            state.loading = true;
+            DOM.loadingState.classList.remove('hidden');
+            DOM.newsGrid.classList.add('hidden');
+            DOM.emptyState.classList.add('hidden');
+            DOM.errorState.classList.add('hidden');
+            DOM.newsCount.textContent = 'Cargando...';
+        }
+
+        function hideLoading() {
+            state.loading = false;
+            DOM.loadingState.classList.add('hidden');
+            DOM.newsGrid.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            state.loading = false;
+            DOM.loadingState.classList.add('hidden');
+            DOM.errorState.classList.remove('hidden');
+            DOM.errorMessage.textContent = message || 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.';
+        }
+
+        function hideError() {
+            DOM.errorState.classList.add('hidden');
+        }
+
+        // ============================================
+        // EVENTOS
+        // ============================================
+
+        function setupEventListeners() {
+            // Toggle de tema
+            DOM.themeToggle.addEventListener('click', toggleTheme);
+
+            // Botón de actualizar
+            DOM.refreshBtn.addEventListener('click', () => {
+                fetchNews(state.currentCategory);
+            });
+
+            // Botón de reintentar
+            DOM.retryBtn.addEventListener('click', () => {
+                fetchNews(state.currentCategory);
+            });
+
+            // Filtros de categoría
+            DOM.categoryFilters.addEventListener('click', (e) => {
+                const btn = e.target.closest('.category-btn');
+                if (!btn) return;
+
+                // Actualizar estilos de botones
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.remove('bg-primary-600', 'text-white');
+                    b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+                });
+                btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+                btn.classList.add('bg-primary-600', 'text-white');
+
+                // Cambiar categoría y obtener noticias
+                state.currentCategory = btn.dataset.category;
+                fetchNews(state.currentCategory);
+            });
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+
+        /**
+         * Punto de entrada de la aplicación
+         */
+        async function init() {
+            initTheme();
+            setupEventListeners();
+
+            // Detectar ubicación primero
+            await detectLocation();
+
+            // Luego obtener noticias
+            await fetchNews(state.currentCategory);
+        }
+
+        // Iniciar la aplicación cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
