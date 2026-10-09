@@ -307,6 +307,14 @@ const musicData = [
             author: "Doña Madre",
             lyrics: "https://luxiodev93.github.io/lyrics/madreama.txt"
         },
+	        {
+            title: "Media Habitación-MadridLowLife",
+            img: "https://i.ibb.co/GQnq4yW0/machaedited-image.jpg", 
+            audio: "https://files.catbox.moe/n4bozb.mp3",
+            author: "Macha-K",
+            rated: "on",
+            lyrics: ""
+        },
         {
             title: "Que le den al algoritmo",
             img: "https://cdn2.suno.ai/image_large_2bd8299d-de12-4b3c-b7e9-cff0294a912d.jpeg", 
