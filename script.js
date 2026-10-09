@@ -1191,6 +1191,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if (songParam) {
         const foundIndex = musicData.findIndex(item => slugify(item.title) === songParam);
         if (foundIndex !== -1) {
+            // NUEVO: Si la canción está marcada como 'rated: "on"', la desbloqueamos automáticamente
+            if (musicData[foundIndex].rated === "on") {
+                isRatedUnlocked = true;
+            }
             currentIndex = foundIndex;
             isSingleSongMode = true;
         }
