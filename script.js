@@ -313,7 +313,8 @@ const musicData = [
             audio: "https://files.catbox.moe/n4bozb.mp3",
             author: "Macha-K",
             rated: "on",
-            lyrics: "https://luxiodev93.github.io/lyrics/madll.txt"
+            lyrics: "https://luxiodev93.github.io/lyrics/madll.txt",
+			coments: "https://luxiodev93.github.io/coments/madll.txt"
         },
         {
             title: "Que le den al algoritmo",
