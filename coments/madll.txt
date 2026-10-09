@@ -1,0 +1,152 @@
+[
+    [
+        "Carlos_Fdez78",
+        "https://i.pravatar.cc/150?img=8",
+        "Esta canción es el himno real de la media habitación en Madrid, clava la situación"
+    ],
+    [
+        "sofia_vives04",
+        "https://i.pravatar.cc/150?img=43",
+        "Madrid Low Life suena demasiado fuerte ahora mismo"
+    ],
+    [
+        "pablo_madrid65",
+        "https://i.pravatar.cc/150?img=64",
+        "Por fin alguien dice lo del alquiler sin filtros"
+    ],
+    [
+        "DaniGamer_99",
+        "https://i.pravatar.cc/150?img=68",
+        "El estribillo ese se me ha pegado todo el día"
+    ],
+    [
+        "laura_viajes",
+        "https://i.pravatar.cc/150?img=19",
+        "Macha-K describiendo mi vida en Vallecas literal"
+    ],
+    [
+        "alex._.sk8",
+        "https://i.pravatar.cc/150?img=11",
+        "Alquiler por las nubes y sueldo de mierda, exacto"
+    ],
+    [
+        "MariaG_fotografia",
+        "https://i.pravatar.cc/150?img=35",
+        "La acampada de Sol y esta canción van de la mano"
+    ],
+    [
+        "irene_twitch",
+        "https://i.pravatar.cc/150?img=46",
+        "Machala a Madrid, esa historia se repite mucho"
+    ],
+    [
+        "carmen_valencia",
+        "https://i.pravatar.cc/150?img=28",
+        "Mi hijo vive exactamente así, media habitación"
+    ],
+    [
+        "sergio_profe",
+        "https://i.pravatar.cc/150?img=70",
+        "Flow agresivo y letra que duele porque es verdadDesde "
+    ],
+    [
+        "javi_skater22",
+        "https://i.pravatar.cc/150?img=22",
+        "MADRID LOW LIFE CHUCHA se va a cantar en Sol seguro"
+    ],
+    [
+        "Ana_Ramos83",
+        "https://i.pravatar.cc/150?img=45",
+        "El verso del padre que se partió el lomo me ha llegado"
+    ],
+    [
+        "lucas_gamer_x",
+        "https://i.pravatar.cc/150?img=56",
+        "Mickey Mouse y la IA, jajaja qué pasada"
+    ],
+    [
+        "elena_viajera",
+        "https://i.pravatar.cc/150?img=42",
+        "No tengo chalet ni herencia, solo calle y hambre, brutal"
+    ],
+    [
+        "mario_madrid70",
+        "https://i.pravatar.cc/150?img=33",
+        "Los que llaman perroflautas no han pagado un alquiler en su vida"
+    ],
+    [
+        "nina._.aesthetic",
+        "https://i.pravatar.cc/150?img=41",
+        "Esta canción explica por qué la gente está acampando"
+    ],
+    [
+        "pedro_foto_pro",
+        "https://i.pravatar.cc/150?img=69",
+        "Idealista pidiendo nómina y aval, la realidad cruda"
+    ],
+    [
+        "dani_stream_es",
+        "https://i.pravatar.cc/150?img=3",
+        "El beat boom bap le da un peso brutal a la letra"
+    ],
+    [
+        "lucia_valencia",
+        "https://i.pravatar.cc/150?img=27",
+        "Hijo de inmigrantes y nacido aquí, esta ciudad también es suya"
+    ],
+    [
+        "carlos_hobby_bike",
+        "https://i.pravatar.cc/150?img=57",
+        "Trabajo pa vivir, vivo pa currar, eso es Madrid ahora"
+    ],
+    [
+        "sofia_twitch04",
+        "https://i.pravatar.cc/150?img=9",
+        "La parte de la santería pa que no suban el alquiler es oro"
+    ],
+    [
+        "antonio_sevilla58",
+        "https://api.dicebear.com/8.x/avataaars/svg?seed=7950",
+        "Remigración dicen algunos, pero el problema es el precio de los pisos"
+    ],
+    [
+        "alex_profe_madrid",
+        "https://i.pravatar.cc/150?img=61",
+        "Macha-K pone voz a lo que muchos callan en el metro"
+    ],
+    [
+        "irene_sk8_life",
+        "https://i.pravatar.cc/150?img=40",
+        "Media habitación y ventana al techo, lo he vivido"
+    ],
+    [
+        "jorge_nunez",
+        "https://i.pravatar.cc/150?img=66",
+        "El puente sarcástico sobre las paguitas es demoledor"
+    ],
+    [
+        "maria_viajes_es",
+        "https://i.pravatar.cc/150?img=36",
+        "Desde la banana capital hasta el menú de cinco euros, real"
+    ],
+    [
+        "pablo_hobby_foto",
+        "https://i.pravatar.cc/150?img=14",
+        "Esta canción merece el éxito porque nombra lo que duele"
+    ],
+    [
+        "laura_madrid_23",
+        "https://i.pravatar.cc/150?img=39",
+        "Low life elegante, ja ja ja, y la ciudad llena de derechos falsos"
+    ],
+    [
+        "dani_vives_ok",
+        "https://i.pravatar.cc/150?img=65",
+        "Usera Vallecas Lavapiés, conoce la ciudad de verdad"
+    ],
+    [
+        "carmen_profe65",
+        "https://i.pravatar.cc/150?img=24",
+        "No es invasión, es gente que curra y no llega a fin de mes"
+    ]
+]
