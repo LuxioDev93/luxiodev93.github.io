@@ -309,7 +309,7 @@ const musicData = [
         },
 	        {
             title: "Media Habitación-MadridLowLife",
-            img: "https://i.ibb.co/GQnq4yW0/machaedited-image.jpg", 
+            img: "https://i.ibb.co/xKpSWHdK/vivo-pa-currarjjj-Gemini-Generated-Image-3gkn6k3gkn6k3gkn.jpg", 
             audio: "https://files.catbox.moe/n4bozb.mp3",
             author: "Macha-K",
             rated: "on",
