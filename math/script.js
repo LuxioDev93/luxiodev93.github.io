@@ -378,17 +378,43 @@ function setupKeyboardListeners() {
         if (isProcessing) return;
 
         if (e.key >= '0' && e.key <= '9') {
-            if (userInput.length < 3) {
-                userInput += e.key;
-                document.getElementById('user-input').textContent = userInput;
-            }
+            numkeyPress(parseInt(e.key, 10));
         } else if (e.key === 'Backspace') {
-            userInput = userInput.slice(0, -1);
-            document.getElementById('user-input').textContent = userInput;
+            numkeyBackspace();
         } else if (e.key === 'Enter') {
             validateAnswer();
         }
     });
+}
+
+// --- TECLADO NUMÉRICO TÁCTIL ---
+function numkeyPress(num) {
+    const gameScreen = document.getElementById('game-screen');
+    if (!gameScreen || gameScreen.style.display === 'none') return;
+    if (isProcessing) return;
+    
+    if (userInput.length < 3) {
+        userInput += num.toString();
+        document.getElementById('user-input').textContent = userInput;
+    }
+}
+
+function numkeyClear() {
+    const gameScreen = document.getElementById('game-screen');
+    if (!gameScreen || gameScreen.style.display === 'none') return;
+    if (isProcessing) return;
+    
+    userInput = "";
+    document.getElementById('user-input').textContent = userInput;
+}
+
+function numkeyBackspace() {
+    const gameScreen = document.getElementById('game-screen');
+    if (!gameScreen || gameScreen.style.display === 'none') return;
+    if (isProcessing) return;
+    
+    userInput = userInput.slice(0, -1);
+    document.getElementById('user-input').textContent = userInput;
 }
 
 // --- FUNCIONES DE SESIÓN Y BARRA DE PROGRESO ---
