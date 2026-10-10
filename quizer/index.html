@@ -66,21 +66,20 @@
 <body>
 
     <div class="container">
-        <pre id="textoPrompt">Convierte el siguiente temario en preguntas para una app de aprendizaje.
+        <pre id="textoPrompt"Genera un archivo JavaScript con preguntas de opción múltiple para una app de aprendizaje.Formato obligatorio:
+window.QUIZ_QUESTIONS = [
+    { question: '...', correct: '...', wrong1: '...', wrong2: '...', learned: false },
+    ...
+];Reglas:Propiedad learned SIEMPRE en false
+Preguntas cerradas con respuesta única
+correct = respuesta correcta, wrong1/wrong2 = incorrectas plausibles
+Sin caracteres especiales que rompan el JS (escapar comillas simples con \')
+preguntas necesarias para considerar que el usuario sabe del tema no menos de 10
+Devuelve SOLO el código JavaScript sin explicaciones
 
-Formato obligatorio (una por línea, separadas por | sin espacios):
-pregunta|respuesta correcta|incorrecta 1|incorrecta 2
+Tema a convertir: 
 
-Reglas:
-- Exactamente 4 campos por línea, sin líneas vacías ni encabezados
-- Preguntas cerradas con respuesta única (la app compara strings, no texto abierto)
-- La respuesta correcta siempre en el segundo campo
-- Las 2 incorrectas deben ser plausibles pero claramente distintas de la correcta
-- Sin tildes ni caracteres especiales que puedan romper el formato
-- Usa comillas dentro de la pregunta si es necesario: ¿Cómo se dice "amarillo" en inglés?
-- Genera entre 8 y 15 preguntas
-
-Temario a convertir:</pre>
+</pre>
         
         <button onclick="copiarTexto()">Copiar al portapapeles</button>
         <div id="mensaje" class="mensaje">¡Texto copiado con éxito!</div>
