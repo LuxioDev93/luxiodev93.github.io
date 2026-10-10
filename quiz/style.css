@@ -1,0 +1,47 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #1a1a2e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+#feedback-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+}
+
+button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.answer-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #ffeb3b !important;
+}
+
+.answer-btn.correct {
+    background: rgba(76, 175, 80, 0.3) !important;
+    border-color: #4CAF50 !important;
+}
+
+.answer-btn.incorrect {
+    background: rgba(244, 67, 54, 0.3) !important;
+    border-color: #f44336 !important;
+}
