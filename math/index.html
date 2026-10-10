@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEY MATH</title>
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Vinculación del CSS en la misma raíz -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="feedback-overlay"></div>
+
+    <!-- PANTALLA DE INICIO / MENÚ PRINCIPAL -->
+    <div id="home-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; box-sizing: border-box; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <div style="max-width: 500px; width: 100%; background: rgba(255, 255, 255, 0.05); padding: 40px 30px; border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <!-- Disparador oculto de Modo Desarrollador (7 clics en el título) -->
+            <h1 id="dev-trigger" style="font-size: 3rem; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px; color: #ffeb3b; text-shadow: 0 2px 10px rgba(255, 235, 59, 0.3); cursor: pointer; user-select: none;">
+                KEY MATH
+            </h1>
+            <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Practica operaciones matemáticas</p>
+            
+            <div id="total-score-container" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-around; font-size: 1.1rem; flex-wrap: wrap; gap: 10px;">
+                <div>✅ Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
+                <div>❤ Vidas Math: <span id="total-lives" style="font-weight:bold; color:#ffeb3b;">5</span></div>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-play" onclick="startGame()" style="padding: 15px 40px; font-size: 1.2rem; font-weight: bold; background: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Jugar</button>
+                <button onclick="openShopScreen()" style="padding: 15px 25px; font-size: 1.1rem; font-weight: bold; background: #ff9800; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);">🛒 Tienda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO (Oculta por defecto) -->
+<!-- PANTALLA DE JUEGO -->
+<div id="game-screen" style="display: none; flex-direction: column; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; background: #1a1a2e; z-index: 1000; box-sizing: border-box; padding: 15px; align-items: center; overflow-y: auto;">
+    
+    <!-- Banner de advertencia de trampa corregido -->
+    <div id="cheat-warning-banner" style="display: none; background: #d32f2f; color: #fff; padding: 12px; text-align: center; font-weight: bold; border-radius: 8px; margin-bottom: 15px; width: 100%; max-width: 600px; box-sizing: border-box; animation: pulse-warning 1s infinite;">
+        ⚠ Se ha detectado que estás haciendo trampa, no se permite el uso de calculadoras externas, si sigues haciendo trampa se te penalizará perdiendo todos tus puntos y vidas.
+    </div>
+
+    <div class="game-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; margin: 0 auto 20px auto;">
+        <button class="btn-exit" onclick="confirmExitGame()" style="background-color: #ea4335; color: white; border: none; padding: 8px 14px; font-size: 0.95rem; font-weight: bold; border-radius: 6px; cursor: pointer;">Salir</button>
+        <div class="game-top-center" style="color: #fff; font-weight: 600;">
+            <div class="game-lives-badge" style="background: #f1f3f4; color: #3c4043; padding: 2px 10px; border-radius: 12px;">💓 Vidas Math: <span id="game-lives-count" style="font-weight:bold; color:#e53935;">5</span></div>
+        </div>
+        <div style="width: 60px;"></div>
+    </div>
+
+    <!-- BARRA DE PROGRESO DE SESIÓN -->
+    <div id="session-progress-container" style="width: 100%; max-width: 600px; margin: 0 auto 15px auto; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative;">
+        <div style="display: flex; justify-content: space-between; width: 100%; color: #fff; font-size: 0.9rem;">
+            <span>Sesión: <span id="session-questions-count">0</span>/15 preguntas</span>
+            <span>Hits: <span id="session-hits-display" style="color: #4CAF50; font-weight: bold;">0</span></span>
+        </div>
+        <div id="progress-bar-outer" style="width: 100%; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; border: 2px solid rgba(255,255,255,0.2);">
+            <div id="progress-bar-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s ease; border-radius: 8px;"></div>
+            <div id="plus-one-indicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #4CAF50; font-size: 1.2rem; font-weight: bold; opacity: 0; transition: opacity 0.15s; pointer-events: none; text-shadow: 0 0 10px rgba(76, 175, 80, 0.8);">+1</div>
+        </div>
+    </div>
+
+    <div id="quiz-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; max-width: 600px; margin: 0 auto; width: 100%;">
+        <div id="game-body" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div id="math-area" style="font-size: 2.5rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 15px;">
+                <span id="operation-text">14 - 8</span>
+                <span id="equal-sign">=</span>
+                <div id="answer-box" style="border: 2px solid #ffeb3b; padding: 5px 15px; border-radius: 8px; min-width: 80px; text-align: center;">
+                    <span id="user-input"></span>
+                    <span class="cursor">|</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="button-area" style="margin-top: 30px; display: flex; gap: 15px;">
+            <button id="check-btn" onclick="validateAnswer()" style="padding: 12px 25px; background: #2196F3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem;">CHECK</button>
+        </div>
+    </div>
+</div>
+
+    <audio id="snd-correct" src="sounds/correct.mp3"></audio>
+    <audio id="snd-error" src="sounds/error.mp3"></audio>
+
+    <!-- Vinculación directa del script unificado -->
+    <script src="script.js"></script>
+</body>
+</html>
