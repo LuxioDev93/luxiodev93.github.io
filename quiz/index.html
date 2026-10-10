@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="feedback-overlay"></div>
+
+    <!-- PANTALLA DE INICIO -->
+    <div id="home-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px; box-sizing: border-box; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <div style="max-width: 500px; width: 100%; background: rgba(255, 255, 255, 0.05); padding: 40px 30px; border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <h1 style="font-size: 3rem; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px; color: #ffeb3b; text-shadow: 0 2px 10px rgba(255, 235, 59, 0.3);">
+                Key Quiz
+            </h1>
+            <p style="font-size: 1.1rem; color: #b0bec5; margin-bottom: 20px;">Repasa las lecciones con preguntas</p>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: center; font-size: 1.1rem; gap: 10px;">
+                <div>✅ Aciertos: <span id="total-hits" style="font-weight:bold; color:#4CAF50;">0</span></div>
+            </div>
+
+            <button onclick="startGame()" style="padding: 15px 40px; font-size: 1.2rem; font-weight: bold; background: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Jugar</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO -->
+    <div id="game-screen" style="display: none; flex-direction: column; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; background: #1a1a2e; z-index: 1000; box-sizing: border-box; padding: 15px; align-items: center; overflow-y: auto;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; margin: 0 auto 20px auto;">
+            <button onclick="exitGame()" style="background-color: #ea4335; color: white; border: none; padding: 8px 14px; font-size: 0.95rem; font-weight: bold; border-radius: 6px; cursor: pointer;">Salir</button>
+            <div style="color: #fff; font-weight: 600; font-size: 1.1rem;">Pregunta <span id="game-question-num">1</span></div>
+            <div style="width: 60px;"></div>
+        </div>
+
+        <!-- BARRA DE PROGRESO: LECCIONES APRENDIDAS -->
+        <div id="session-progress-container" style="width: 100%; max-width: 600px; margin: 0 auto 15px auto; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative;">
+            <div style="display: flex; justify-content: space-between; width: 100%; color: #fff; font-size: 0.9rem;">
+                <span>Lecciones aprendidas: <span id="session-hits-display" style="color: #4CAF50; font-weight: bold;">0</span></span>
+                <span>Total preguntas: <span id="total-questions-count" style="color: #ffeb3b; font-weight: bold;">0</span></span>
+            </div>
+            <div style="width: 100%; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; border: 2px solid rgba(255,255,255,0.2);">
+                <div id="progress-bar-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s ease; border-radius: 8px;"></div>
+            </div>
+        </div>
+
+        <div id="quiz-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; max-width: 600px; margin: 0 auto; width: 100%;">
+            <div id="question-area" style="font-size: 1.8rem; color: #fff; font-weight: bold; text-align: center; margin-bottom: 30px;">
+                <span id="question-text">¿Cómo se dice "amarillo" en inglés?</span>
+            </div>
+            <div id="answers-area" style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px;">
+                <button class="answer-btn" onclick="checkAnswer(0)" style="padding: 15px 25px; background: rgba(255,255,255,0.05); color: white; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s;">Yellow</button>
+                <button class="answer-btn" onclick="checkAnswer(1)" style="padding: 15px 25px; background: rgba(255,255,255,0.05); color: white; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s;">Blue</button>
+                <button class="answer-btn" onclick="checkAnswer(2)" style="padding: 15px 25px; background: rgba(255,255,255,0.05); color: white; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s;">Red</button>
+            </div>
+            <div id="text-input-area" style="display: none; flex-direction: column; gap: 15px; width: 100%; max-width: 400px;">
+                <input type="text" id="text-answer-input" placeholder="Escribe tu respuesta..." style="padding: 15px 25px; background: rgba(255,255,255,0.05); color: white; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 1.1rem; outline: none;">
+                <button onclick="checkTextAnswer()" style="padding: 15px 25px; background: #4CAF50; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.1rem;">Comprobar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

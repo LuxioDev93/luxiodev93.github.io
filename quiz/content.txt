@@ -1,0 +1,10 @@
+¿Cómo se dice "amarillo" en inglés?|Yellow|Blue|Red
+¿Cómo se dice "rojo" en inglés?|Red|Green|Blue
+¿Cómo se dice "azul" en inglés?|Blue|Yellow|Orange
+¿Cómo se dice "verde" en inglés?|Green|Purple|Pink
+¿Cómo se dice "naranja" en inglés?|Orange|Black|White
+¿Cómo se dice "morado" en inglés?|Purple|Brown|Gray
+¿Cómo se dice "rosa" en inglés?|Pink|Cyan|Gold
+¿Cómo se dice "negro" en inglés?|Black|Silver|Beige
+¿Cómo se dice "blanco" en inglés?|White|Navy|Turquoise
+¿Cómo se dice "marrón" en inglés?|Brown|Olive|Indigo
