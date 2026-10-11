@@ -287,13 +287,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             audio: "https://files.catbox.moe/pkhw45.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/dds.txt"
         },
-        {
-            title: "Por ustedes hijos míos",
-            img: "https://cdn2.suno.ai/image_large_74737745-03b8-4b54-9412-249f6b2123e9.jpeg", 
-            audio: "https://cdn1.suno.ai/74737745-03b8-4b54-9412-249f6b2123e9.mp3",
-            author: "Doña Madre",
-            lyrics: "https://luxiodev93.github.io/lyrics/madreama.txt"
-        },
+        
 		{
   title: "Days We'll Not Forget",
   author: "Go English",
@@ -345,6 +339,13 @@ img: "https://img.magnific.com/free-photo/students-knowing-right-answer_329181-1
 audio: "https://files.catbox.moe/iecdhf.mp3",
 lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
 },
+	{
+            title: "Por ustedes hijos míos",
+            img: "https://cdn2.suno.ai/image_large_74737745-03b8-4b54-9412-249f6b2123e9.jpeg", 
+            audio: "https://cdn1.suno.ai/74737745-03b8-4b54-9412-249f6b2123e9.mp3",
+            author: "Doña Madre",
+            lyrics: "https://luxiodev93.github.io/lyrics/madreama.txt"
+        },
 	
 	        {
             title: "Media Habitación-MadridLowLife",
