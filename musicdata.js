@@ -55,6 +55,7 @@ window.musicData = [
         },
 	        {
             title: "Corro por la banda",
+			author: "Cuco Club",
             img: "https://i.ibb.co/60cgdDLD/corroxlabanda.jpg", 
             audio: "https://files.catbox.moe/mhb5k9.mp3",
 			coments: "https://luxiodev93.github.io/coments/cxlb.txt",
