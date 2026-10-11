@@ -27,7 +27,7 @@ window.musicData = [
             title: "Exploit Explosion",
             img: "https://i.ibb.co/JW6Yfhxx/6868c0ae-3e1c-4b6a-95c7-893900519c38-75.jpg", 
             audio: "https://files.catbox.moe/wd8w2a.mp3",
-            author: "No Respawn",
+            author: "Respawn Day",
             lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt",
             coments: "https://badluchothree-glitch.github.io/coments/expexp.txt"
     },
@@ -70,7 +70,7 @@ window.musicData = [
         {
             title: "Dark Cloud",
             img: "https://wallpapercave.com/wp/wp2974051.jpg",
-            author: "No Respawn",
+            author: "Respawn Day",
             audio: "https://files.catbox.moe/e451ms.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/drkld.txt"
         },
@@ -218,7 +218,7 @@ window.musicData = [
         {
             title: "Iguana del Caos",
             img: "https://i.ibb.co/rgJdfSr/content-75.jpg",
-            author: "Metal Insano",
+            author: "Caos in Park",
             audio: "https://files.catbox.moe/y6vk2b.mp3",//nuevo enlace
             lyrics: "https://luxiodev93.github.io/lyrics/iguanacaos.txt",
 			audio_eng: "https://files.catbox.moe/44zvrf.mp3",
@@ -228,21 +228,21 @@ window.musicData = [
         {
             title: "Engranaje del vacío",
             img: "https://cdn2.suno.ai/image_large_31f502aa-fc9a-485b-a99a-34cc9a0b18ad.jpeg",
-            author: "Metal Insano",
+            author: "Caos in Park",
             audio: "https://files.catbox.moe/xtypy7.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/engravci.txt"
         },
         {
             title: "Espejo ciego",
             img: "https://cdn2.suno.ai/image_large_9f7ad9b3-997b-4795-bb15-050343640e46.jpeg",
-            author: "Metal Insano",
+            author: "Caos in Park",
             audio: "https://cdn1.suno.ai/9f7ad9b3-997b-4795-bb15-050343640e46.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/espcieg.txt"
         },
         {
             title: "Fénix",
             img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
-            author: "Metal Insano",
+            author: "Caos in Park",
             audio: "https://files.catbox.moe/1d74mx.mp3",//nuevo enlace
             lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt",
 			audio_eng: "https://files.catbox.moe/fany52.mp3",
@@ -252,7 +252,7 @@ window.musicData = [
         {
             title: "Bloque a Bloque",
             img: "https://cdn2.suno.ai/image_large_bd51f09a-26f6-42f9-8697-79449d3f5c7f.jpeg",
-            author: "Metal Insano",
+            author: "Caos in Park",
             audio: "https://cdn1.suno.ai/bd51f09a-26f6-42f9-8697-79449d3f5c7f.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/blqblq.txt"
         },
@@ -260,7 +260,7 @@ window.musicData = [
             title: "Thirty Something Grind!",
             img: "https://i.ibb.co/wZpSQ7F0/30sg.jpg", 
             audio: "https://files.catbox.moe/l1hhxz.mp3",
-            author: "No Respawn",
+            author: "Respawn Day",
             lyrics: "https://luxiodev93.github.io/lyrics/30sg.txt"
         },
         {
@@ -268,7 +268,7 @@ window.musicData = [
             img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg", 
             audio: "https://files.catbox.moe/n81t5k.mp3",
 			audio_eng: "https://files.catbox.moe/s9455p.mp3",
-            author: "No Respawn",
+            author: "Respawn Day",
             lyrics: "https://luxiodev93.github.io/lyrics/lvl99hrbk.txt",
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
 			coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
@@ -276,7 +276,7 @@ window.musicData = [
 	        {
             title: "Don't Delete the Save",
             img: "https://i.ibb.co/3Y98r03r/2-Gemini-Generated-Image-r496hwr496hwr496.jpg",
-            author: "No Respawn",
+            author: "Respawn Day",
             audio: "https://files.catbox.moe/pkhw45.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/dds.txt"
         },
