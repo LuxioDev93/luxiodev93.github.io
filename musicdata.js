@@ -61,6 +61,13 @@ window.musicData = [
 			coments: "https://luxiodev93.github.io/coments/cxlb.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/cxlb.txt"
         },
+		{
+title: "This is my world",
+author: "Go English",
+img: "https://i.pinimg.com/736x/68/b7/29/68b72937564071dbf236fddbf50f6eca.jpg", 
+audio: "https://files.catbox.moe/i4u5iu.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
+},
         {
             title: "The 93 Kid",
             img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
@@ -287,6 +294,58 @@ window.musicData = [
             author: "Doña Madre",
             lyrics: "https://luxiodev93.github.io/lyrics/madreama.txt"
         },
+		{
+  title: "Days We'll Not Forget",
+  author: "Go English",
+  img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
+  audio: "https://files.catbox.moe/tvxyos.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/dynf.txt",
+},
+	{
+  title: "Large Old Town",
+  author: "Go English",
+  img: "https://img.goodfon.com/wallpaper/big/5/68/velikobritaniya-shotlandiya-1728.webp",
+  audio: "https://files.catbox.moe/nnhppj.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/lotwn.txt",
+},
+	{
+  title: "Life is Wonderful",
+  author: "Go English",
+  img: "https://img.magnific.com/free-photo/world-smile-day-emojis-arrangement_23-2149024492.jpg?semt=ais_hybrid&w=740&q=80",
+  audio: "https://files.catbox.moe/pw0gq6.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/lifewnr.txt",
+},
+	{
+  title: "Music and Nature",
+  author: "Go English",
+  img: "https://static.vecteezy.com/system/resources/thumbnails/069/717/060/small/guitar-resting-porch-step-surrounded-by-vibrant-sunflowers-and-scenic-countryside-view-evokes-free-photo.jpeg",
+  audio: "https://files.catbox.moe/eb9igt.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/MandN.txt",
+},
+	{
+  title: "a great day",
+  author: "Go English",
+  img: "https://media.istockphoto.com/id/2165330008/photo/white-fluffy-clouds.jpg?s=612x612&w=0&k=20&c=IRYIsGm1waLJi_HZfI2aQy4blBvgSzmtteQ_00hzXNA=",
+  audio: "https://files.catbox.moe/ojn23v.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/agreatday.txt",
+},
+
+	{
+  title: "Choose my way",
+  author: "Go English",
+  img: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500",
+  audio: "https://files.catbox.moe/amurs0.mp3",
+  lyrics: "https://luxiodev93.github.io/lyrics_eng/chosmw.txt",
+},
+
+	{
+title: "Hello class",
+author: "Go English",
+img: "https://img.magnific.com/free-photo/students-knowing-right-answer_329181-14271.jpg?semt=ais_hybrid&w=740&q=80", 
+audio: "https://files.catbox.moe/iecdhf.mp3",
+lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
+},
+	
 	        {
             title: "Media Habitación-MadridLowLife",
             img: "https://i.ibb.co/xKpSWHdK/vivo-pa-currarjjj-Gemini-Generated-Image-3gkn6k3gkn6k3gkn.jpg", 
