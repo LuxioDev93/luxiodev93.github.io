@@ -53,6 +53,13 @@ window.musicData = [
 			audio_eng: "https://files.catbox.moe/hbgfip.mp3",
             coments: "https://luxiodev93.github.io/coments/cocillina.txt"
         },
+	        {
+            title: "Corro por la banda",
+            img: "https://i.ibb.co/60cgdDLD/corroxlabanda.jpg", 
+            audio: "https://files.catbox.moe/mhb5k9.mp3",
+			coments: "https://luxiodev93.github.io/coments/cxlb.txt",
+            lyrics: "https://luxiodev93.github.io/lyrics/cxlb.txt"
+        },
         {
             title: "The 93 Kid",
             img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
