@@ -132,7 +132,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
     audio: "https://files.catbox.moe/zg020j.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/countries.txt",
     img_anim: [
-        { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 219 }
+        { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
     ],
     img_2: [
         { url: "https://i.ibb.co/Z1hk2Bfn/Gemini-Generated-Image-ff79iaff79iaff79.jpg", time: "00:37.00" },
