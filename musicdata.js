@@ -58,6 +58,8 @@ window.musicData = [
 			author: "Cuco Club",
             img: "https://i.ibb.co/60cgdDLD/corroxlabanda.jpg", 
             audio: "https://files.catbox.moe/mhb5k9.mp3",
+							lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/cxlb.txt",
+			audio_eng: "https://files.catbox.moe/s9buwy.mp3",
 			coments: "https://luxiodev93.github.io/coments/cxlb.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/cxlb.txt"
         },
