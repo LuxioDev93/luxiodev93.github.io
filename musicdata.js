@@ -142,7 +142,9 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
                 { url: "https://i.ibb.co/k6Gf7Nxg/europa835x282.jpg", x: 835, y: 282 }
             ]
         },
-        { url: "https://i.ibb.co/cBXbWh8/Geminxx-Generated-Image-g5gm84g5gm84g5gm.jpg", time: "01:24.00" }
+        { url: "https://i.ibb.co/cBXbWh8/Geminxx-Generated-Image-g5gm84g5gm84g5gm.jpg", time: "01:24.00", anim: [
+                { url: "https://i.ibb.co/G3sR2323/gallo3.jpg", x: 835, y: 282 }
+            ] }
     ]
 },
         {
