@@ -135,7 +135,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
         { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
     ],
     img_2: [
-        { url: "https://i.ibb.co/Z1hk2Bfn/Gemini-Generated-Image-ff79iaff79iaff79.jpg", time: "00:37.00" },
+        { 
+            url: "https://i.ibb.co/Z1hk2Bfn/Gemini-Generated-Image-ff79iaff79iaff79.jpg", 
+            time: "00:37.00",
+            anim: [
+                { url: "https://i.ibb.co/k6Gf7Nxg/europa835x282.jpg", x: 385, y: 282 }
+            ]
+        },
         { url: "https://i.ibb.co/cBXbWh8/Geminxx-Generated-Image-g5gm84g5gm84g5gm.jpg", time: "01:24.00" }
     ]
 },
