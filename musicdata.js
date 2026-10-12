@@ -127,7 +127,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
         },
         {
             title: "Los países",
-            img: "https://cdn.forum.snap.berkeley.edu/original/3X/9/f/9fae0a709a729e6e7c6b655e80f305cdc3e7f471.gif", 
+            img: "https://i.ibb.co/nsztKBWr/gallocarlos.jpg", 
             author: "Cuco Club",
             audio: "https://files.catbox.moe/zg020j.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/countries.txt"
