@@ -1,60 +1,92 @@
-[00:00.00]Estados Unidos 🇺🇸, Canadá 🇨🇦, México 🇲🇽, Panamá 🇵🇦, Haití 🇭🇹,
-[00:02.67]Jamaica 🇯🇲, Perú 🇵🇪;
-[00:05.11]República Dominicana 🇩🇴, Cuba 🇨🇺, Caribe 🏝️️, Groenlandia 🇬🇱,
-[00:07.23]El Salvador 🇸🇻,
-[00:08.69]¡yo!
-[00:09.86]Puerto Rico 🇵🇷, Colombia 🇨🇴, Venezuela 🇻🇪, Honduras 🇭🇳,
-[00:12.20]Guyana 🇬🇾, oh sí;
-[00:14.40]Guatemala 🇬🇹, Bolivia 🇧🇴, luego Argentina 🇦🇷,
-[00:16.83]y Ecuador 🇪🇨, Chile 🇨🇱, Brasil 🇧🇷.
-[00:19.08]Costa Rica 🇨🇷, Belice 🇧🇿, Nicaragua 🇳🇮,
-[00:21.14]Bermudas 🇧🇲, Bahamas 🇧🇸, Tobago 🇹🇹, San Juan 🏝️;
-[00:23.19]Paraguay 🇵🇾, Uruguay 🇺🇾, Surinam 🇸🇷
-[00:25.02]y Guayana Francesa 🇬🇫, Barbados 🇧🇧 y Guam 🇬🇺
-[00:28.50]Noruega 🇳🇴 y Suecia 🇸🇪 e Islandia 🇮🇸 y Finlandia 🇫🇮
-[00:30.51]Y Alemania 🇩🇪 está lista;
-[00:32.76]Suiza 🇨🇭, Austria 🇦🇹, Checoslovaquia 🇨🇿🇸🇰,
-[00:34.59]Italia 🇮🇹, Turquía 🇹🇷 y Grecia 🇬🇷
-[00:38.01]Polonia 🇵🇱, Rumanía 🇷🇴, Escocia 🏴󠁧󠁢󠁳󠁣󠁴󠁿, Albania 🇦🇱,
-[00:39.55]Irlanda 🇮🇪, Rusia 🇷🇺, Omán 🇴🇲;
-[00:42.92]Bulgaria 🇧🇬, Arabia Saudí 🇸🇦, Hungría 🇭🇺,
-[00:45.28]Chipre 🇨🇾, Irak 🇮🇶 e Irán 🇮🇷
-[00:47.48]Siria 🇸🇾, Líbano 🇱🇧, Israel 🇮🇱, Jordania 🇯🇴,
-[00:49.54]ambos Yemén 🇾🇪, Kuwait 🇰🇼 y Baréin 🇧🇭;
-[00:52.25]Países Bajos 🇳🇱, Luxemburgo 🇱🇺,
-[00:53.51]Bélgica 🇧🇪 y Portugal 🇵🇹,
-[00:54.50]Francia 🇫🇷, Inglaterra 🇬🇧󠁧󠁢󠁥󠁮󠁧󠁿, Dinamarca 🇩🇰
-[00:55.82]y España 🇪🇸
-[00:57.22]India 🇮🇳, Pakistán 🇵🇰, Birmania 🇲🇲, Afganistán 🇦🇫,
-[00:59.32]Tailandia 🇹🇭, Nepal 🇳🇵 y Bután 🇧🇹;
-[01:01.66]Kampuchea 🇰🇭, Malasia 🇲🇾, Bangladesh 🇧🇩,
-[01:03.63]Asia 🌏, China 🇨🇳, Corea 🇰🇵🇰🇷, Japón 🇯🇵
-[01:06.40]Mongolia 🇲🇳, Laos 🇱🇦 y Tíbet 🏳️, Indonesia 🇮🇩,
-[01:09.08]las islas Filipinas 🇵🇭, Taiwán 🇹🇼;
-[01:11.13]Sri Lanka 🇱🇰, Nueva Guinea 🇬🇳️, Sumatra 🏳️,
-[01:13.61]Nueva Zelanda 🇳🇿, luego Borneo 🏳️ y Vietnam 🇻🇳
-[01:16.06]Túnez 🇹🇳, Marruecos 🇲🇦, Uganda 🇺🇬, Angola 🇦🇴,
-[01:18.36]Zimbabue 🇿🇼, Yibuti 🇩🇯, Botsuana 🇧🇼;
-[01:20.61]Mozambique 🇲🇿, Zambia 🇿🇲, Suazilandia 🇸🇿, Gambia 🇬🇲,
-[01:22.95]Guinea 🇬🇳, Argelia 🇩🇿, Ghana 🇬🇭
-[01:25.62]Burundi 🇧🇮, Lesoto 🇱🇸 y Malaui 🇲🇼, Togo 🇹🇬,
-[01:27.83]el Sáhara Español 🏳️ no, ha terminado;
-[01:30.26]Níger 🇳🇪, Nigeria 🇳🇬,
-[01:31.53]Chad 🇹🇩 y Liberia 🇱🇷,
-[01:32.60]Egipto 🇪🇬, Benín 🇧🇯 y Gabón 🇬🇦
-[01:34.80]Tanzania 🇹🇿, Somalia 🇸🇴, Kenia 🇰🇪 y Malí 🇲🇱,
-[01:37.10]Sierra Leona 🇸🇱 y Argel 🏳️;
-[01:39.39]Dahomey 🐘, Namibia 🇳🇦, Senegal 🇸🇳, Libia 🇱🇾,
-[01:41.88]Camerún 🇨🇲, Congo 🇨🇬, Zaire 🏳️
-[01:44.23]Etiopía 🇪🇹, Guinea-Bissau 🇬🇼,
-[01:46.15]Madagascar 🇲🇬, Ruanda 🇷🇼, Maore 🇾🇹 y Caimán 🇰🇾;
-[01:48.92]Hong Kong 🇭🇰, Abu Dabi 🇦🇪, Catar 🇶🇦,
-[01:51.16]Yugoslavia 🧩...
-[01:53.88]Creta 🇬🇷️, Mauritania 🇲🇷,
-[01:58.62]luego Transilvania 🦇️...
-[02:03.04]Mónaco 🇲🇨,
-[02:04.21]Liechtenstein 🇱🇮,
-[02:05.52]Malta 🇲🇹 y Palestina 🇵🇸,
-[02:07.40]Fiyi 🇫🇯,
-[02:08.24]Australia 🇦🇺,
-[02:09.93]Sudán 🇸🇩
+[00:00.00]Desde 🇺🇸 Alaska hasta Tierra del Fuego,
+[00:02.14]mil horizontes se encienden al sol; ☀️
+[00:04.55]Canadá 🇨🇦, Estados Unidos 🇺🇸 y México 🇲🇽,
+[00:06.65]Belice 🇧🇿 y Guatemala 🇬🇹 se suman al son. 🎶
+[00:09.23]El Salvador 🇸🇻, Honduras 🇭🇳, Nicaragua 🇳🇮,
+[00:11.40]Costa Rica 🇨🇷 y Panamá 🇵🇦 junto al mar; 🌊
+[00:13.86]Cuba 🇨🇺, Jamaica 🇯🇲, Haití 🇭🇹 y Bahamas 🇧🇸,
+[00:15.79]República Dominicana 🇩🇴 al bailar. 💃
+[00:18.42]Colombia 🇨🇴 descubre caminos, 🛤️
+[00:20.84]Venezuela 🇻🇪 mira hacia el mar; 🌊
+[00:23.32]Guyana 🇬🇾, Surinam 🇸🇷 y Ecuador 🇪🇨,
+[00:25.43]Perú 🇵🇪, Bolivia 🇧🇴 y Paraguay 🇵🇾.
+[00:28.05]Brasil 🇧🇷 abre selvas inmensas, 🌴🦜
+[00:30.30]Chile 🇨🇱 se alarga hacia el sur; 🏔️
+[00:32.50]Argentina 🇦🇷, Uruguay 🇺🇾 y sus pampas, 🌾
+[00:34.83]todo el continente se llena de luz. 🌎✨
+[00:37.44]Europa despierta entre montes, 🏔️
+[00:39.78]con ciudades que cuentan su historia: 🏛️
+[00:42.26]Portugal 🇵🇹, España 🇪🇸 y Francia 🇫🇷,
+[00:44.25]Italia 🇮🇹 y Grecia 🇬🇷, memoria tras memoria.
+[00:46.77]Reino Unido 🇬🇧, Irlanda 🇮🇪 e Islandia 🇮🇸,
+[00:49.15]Noruega 🇳🇴, Suecia 🇸🇪 y Finlandia 🇫🇮;
+[00:51.42]Dinamarca 🇩🇰, Alemania 🇩🇪 y Polonia 🇵🇱,
+[00:53.63]Chequia 🇨🇿 y Eslovaquia 🇸🇰 se alinean.
+[00:56.63]Austria 🇦🇹, Suiza 🇨🇭 y Hungría 🇭🇺,
+[00:58.59]Eslovenia 🇸🇮, Croacia 🇭🇷 y Albania 🇦🇱;
+[01:00.84]Bosnia y Herzegovina 🇧🇦, Serbia 🇷🇸,
+[01:03.14]Montenegro 🇲🇪 y Macedonia del Norte 🇲🇰 en marcha.
+[01:05.73]Rumanía 🇷🇴, Bulgaria 🇧🇬 y Moldavia 🇲🇩,
+[01:08.02]Ucrania 🇺🇦, Bielorrusia 🇧🇾 y Rusia 🇷🇺;
+[01:10.20]Estonia 🇪🇪, Letonia 🇱🇻 y Lituania 🇱🇹,
+[01:12.52]Países Bajos 🇳🇱, Bélgica 🇧🇪 y Luxemburgo 🇱🇺 en armonía.
+[01:15.45]Malta 🇲🇹, Chipre 🇨🇾, Andorra 🇦🇩, Mónaco 🇲🇨,
+[01:17.63]San Marino 🇸🇲, Liechtenstein 🇱🇮 y el Vaticano 🇻🇦;
+[01:20.05]cada frontera guarda una historia, 📖
+[01:22.56]cada ciudad abre un nuevo escenario. 🏙️
+[01:24.87]Por Asia se extiende la aurora, 🌅
+[01:27.79]de los desiertos al arrozal; 🏜️🌾
+[01:30.50]Turquía 🇹🇷, Georgia 🇬🇪 y Armenia 🇦🇲,
+[01:32.68]Azerbaiyán 🇦🇿 junto al Caspio azul. 🌊
+[01:35.03]Arabia Saudita 🇸🇦, Yemen 🇾🇪 y Omán 🇴🇲,
+[01:37.07]Emiratos Árabes Unidos 🇦🇪, Catar 🇶🇦 y Baréin 🇧🇭;
+[01:39.35]Kuwait 🇰🇼, Irak 🇮🇶, Irán 🇮🇷 y Jordania 🇯🇴,
+[01:41.65]Israel 🇮🇱, Palestina 🇵🇸 y Líbano 🇱🇧 también.
+[01:44.32]Siria 🇸🇾, Kazajistán 🇰🇿 y Uzbekistán 🇺🇿,
+[01:45.98]Kirguistán 🇰🇬, Tayikistán 🇹🇯 y Turkmenistán 🇹🇲;
+[01:47.83]Afganistán 🇦🇫, Pakistán 🇵🇰 e India 🇮🇳,
+[01:49.58]Nepal 🇳🇵 y Bután 🇧🇹 entre montañas. 🏔️
+[01:53.81]Bangladés 🇧🇩, Sri Lanka 🇱🇰 y Maldivas 🇲🇻,
+[01:55.97]China 🇨🇳 y Mongolia 🇲🇳 bajo el cielo; 🌌
+[01:58.29]Corea del Norte 🇰🇵, Corea del Sur 🇰🇷,
+[02:00.52]Japón 🇯🇵 ilumina el extremo. 🌅
+[02:03.17]Myanmar 🇲🇲, Tailandia 🇹🇭 y Laos 🇱🇦,
+[02:05.62]Camboya 🇰🇭, Vietnam 🇻🇳 y Malasia 🇲🇾;
+[02:07.97]Singapur 🇸🇬, Brunéi 🇧🇳, Indonesia 🇮🇩,
+[02:10.14]Filipinas 🇵🇭 y Timor Oriental 🇹🇱 nos llaman.
+[02:12.51]África ruge con fuerza y color, 🦁🌍
+[02:15.15]del Mediterráneo al cabo austral; 🌊
+[02:17.45]Marruecos 🇲🇦, Argelia 🇩🇿 y Túnez 🇹🇳,
+[02:19.56]Libia 🇱🇾 y Egipto 🇪🇬 junto al Nilo ancestral. 🏞️
+[02:22.02]Mauritania 🇲🇷, Senegal 🇸🇳 y Gambia 🇬🇲,
+[02:24.24]Guinea 🇬🇳, Guinea-Bisáu 🇬🇼 y Sierra Leona 🇸🇱;
+[02:26.62]Liberia 🇱🇷, Costa de Marfil 🇨🇮 y Ghana 🇬🇭,
+[02:28.83]Togo 🇹🇬 y Benín 🇧🇯 hacen coro en la zona. 🎶
+[02:31.58]Burkina Faso 🇧🇫, Malí 🇲🇱 y Níger 🇳🇪,
+[02:33.86]Nigeria 🇳🇬, Chad 🇹🇩 y Camerún 🇨🇲;
+[02:36.11]República Centroafricana 🇨🇫 y Gabón 🇬🇦,
+[02:38.19]Guinea Ecuatorial 🇬🇶 bajo el azul. 🌤️
+[02:40.93]Congo 🇨🇬 y República Democrática del Congo 🇨🇩,
+[02:42.98]Angola 🇦🇴, Zambia 🇿🇲 y Botsuana 🇧🇼;
+[02:45.30]Namibia 🇳🇦, Zimbabue 🇿🇼 y Sudáfrica 🇿🇦,
+[02:47.50]Lesoto 🇱🇸 y Esuatini 🇸🇿 en la sabana. 🦒🌾
+[02:50.09]Sudán 🇸🇩, Sudán del Sur 🇸🇸 y Eritrea 🇪🇷,
+[02:52.26]Etiopía 🇪🇹, Yibuti 🇩🇯 y Somalia 🇸🇴;
+[02:54.68]Uganda 🇺🇬, Kenia 🇰🇪 y Ruanda 🇷🇼,
+[02:57.06]Burundi 🇧🇮 y Tanzania 🇹🇿 avanzan.
+[02:59.60]Malaui 🇲🇼, Mozambique 🇲🇿 y Madagascar 🇲🇬,
+[03:01.80]Comoras 🇰🇲, Mauricio 🇲🇺 y Seychelles 🇸🇨;
+[03:04.06]Cabo Verde 🇨🇻 y Santo Tomé y Príncipe 🇸🇹,
+[03:06.58]las islas también tienen su papel. 🏝️
+[03:09.09]Cruzamos el mundo, cambiamos de clima, 🌍
+[03:11.23]del hielo polar al calor tropical; 🧊🌴
+[03:13.42]cada bandera representa una historia, 🏳️
+[03:15.87]cada pueblo, una forma de soñar. 💫
+[03:18.31]Australia 🇦🇺, Nueva Zelanda 🇳🇿 y Fiyi 🇫🇯,
+[03:20.80]Papúa Nueva Guinea 🇵🇬 junto al mar; 🌊
+[03:22.88]Vanuatu 🇻🇺, Samoa 🇼🇸 y Tonga 🇹🇴,
+[03:25.22]Islas Salomón 🇸🇧 para terminar.
+[03:28.17]Kiribati 🇰🇮, Tuvalu 🇹🇻 y Nauru 🇳🇷,
+[03:30.21]Palaos 🇵🇼 y las Islas Marshall 🇲🇭 también;
+[03:32.56]Estados y pueblos de tierras lejanas, 🌏
+[03:34.85]¡el mundo es enorme y queda mucho por ver! 🌎✨
