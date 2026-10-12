@@ -372,6 +372,14 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             audio: "https://files.catbox.moe/us4gj3.mp3",
             rated: "on",
             lyrics: "https://luxiodev93.github.io/lyrics/MachalaLOWLIFE.txt"
+        },
+	        {
+            title: "Lima Low Life",
+            img: "https://i.ibb.co/QF9VsS00/limalowlaif.jpg", 
+            author: "Macha-K",
+            audio: "https://files.catbox.moe/0y2w78.mp3",
+            rated: "on",
+            lyrics: "https://luxiodev93.github.io/lyrics/limall.txt"
         }
 ];
 
