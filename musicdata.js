@@ -117,6 +117,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
             author: "Cuco Club",
             audio: "https://files.catbox.moe/vunfuh.mp3",
+			coments: "https://luxiodev93.github.io/coments/cucaracha.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
         },
         {
