@@ -663,9 +663,69 @@ function closeGuestConfirmModal() {
     if (modal) modal.classList.remove('open');
 }
 
+/* Procesa la imagen del invitado en el navegador: recorta el cuadrado
+   máximo centrado y escala el resultado a 200x200px usando <canvas>.
+   Devuelve un Blob JPEG listo para subir. */
+const GUEST_AVATAR_SIZE = 200;
+
+function processGuestAvatarImage(file) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type || file.type.indexOf('image/') !== 0) {
+            reject(new Error('El archivo seleccionado no es una imagen.'));
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+
+        img.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+
+            const iw = img.naturalWidth || img.width;
+            const ih = img.naturalHeight || img.height;
+            if (!iw || !ih) {
+                reject(new Error('No se pudo leer la imagen.'));
+                return;
+            }
+
+            // Cuadrado 1x1 centrado: toma el lado máximo posible desde el centro
+            const side = Math.min(iw, ih);
+            const sx = (iw - side) / 2;
+            const sy = (ih - side) / 2;
+
+            // Dibuja el recorte centrado escalado al tamaño final exacto
+            const canvas = document.createElement('canvas');
+            canvas.width = GUEST_AVATAR_SIZE;
+            canvas.height = GUEST_AVATAR_SIZE;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, sx, sy, side, side, 0, 0, GUEST_AVATAR_SIZE, GUEST_AVATAR_SIZE);
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject(new Error('No se pudo generar el avatar.'));
+                }
+            }, 'image/jpeg', 0.85);
+        };
+
+        img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('No se pudo cargar la imagen.'));
+        };
+
+        img.src = objectUrl;
+    });
+}
+
 async function uploadGuestImageToImgBB(file) {
+    // Procesa en el cliente: recorte cuadrado centrado + escala 200x200
+    const blob = await processGuestAvatarImage(file);
+
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', blob, 'avatar.jpg');
 
     const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
         method: 'POST',
