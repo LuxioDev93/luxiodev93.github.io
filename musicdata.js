@@ -96,6 +96,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             img: "https://previews.123rf.com/images/twinsterphoto/twinsterphoto1612/twinsterphoto161200036/66805425-father-and-son-running-and-chasing-each-other-in-green-park.jpg",
             author: "Cuco Club",
             audio: "https://files.catbox.moe/bdq62w.mp3",//newcatbox
+			coments: "https://luxiodev93.github.io/coments/vlcnic.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/vlcnic.txt"
         },
         {
