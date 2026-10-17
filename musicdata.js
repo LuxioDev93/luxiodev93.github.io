@@ -102,6 +102,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             title: "Pásame la sosa",
             img: "https://i.ibb.co/BMmLRXJ/minipika1f7-b691-643680fea33a.gif", 
             audio: "https://files.catbox.moe/qvdw53.mp3",
+			coments: "https://luxiodev93.github.io/coments/sosa.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/sosa.txt"
         },
         {
