@@ -5,6 +5,6 @@
         "https://i.ibb.co/pv0rxZ62/qqqkkk.jpg",
         "Mi Nico el mejor hermano mayor 😍😍"
     ],
-["Nelly", "https://api.dicebear.com/7.x/bottts/svg?seed=3n2weuyv90t", "Es hermosa canción para el Eriquito los quiero mucho 💕"].
+["Nelly", "https://api.dicebear.com/7.x/bottts/svg?seed=3n2weuyv90t", "Es hermosa canción para el Eriquito los quiero mucho 💕"],
 ["Gabi maldonado", "https://i.ibb.co/HDBSsxJt/968021-B7-65-EC-41-D5-B649-E7-B1881-CA29-F.jpg", "El mejor hermano  mayor 🫶🏼🥰🥰"]
 ]
