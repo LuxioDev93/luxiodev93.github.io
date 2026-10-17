@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor guest_comments</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #0f1115;
+            --surface: #171a21;
+            --surface-2: #1f232c;
+            --text: #e9ecf1;
+            --text-dim: #98a0ad;
+            --border: #2c313c;
+            --accent: #4c8dff;
+            --danger: #ff4d4d;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 16px 22px;
+            background: rgba(15, 17, 21, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        header .count {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        header .spacer { flex: 1; }
+
+        button {
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text);
+            padding: 8px 14px;
+            transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+        }
+
+        button:hover { background: #2a2f3a; }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: default; }
+
+        #status {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            min-width: 120px;
+        }
+
+        main {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 48px 12px;
+            font-size: 1rem;
+        }
+
+        .row-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+            transition: filter 0.15s ease;
+        }
+
+        .row-card:hover { filter: brightness(1.04); }
+
+        .row-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .row-index {
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0.85;
+            background: rgba(255, 255, 255, 0.85);
+            color: #111;
+            border-radius: 6px;
+            padding: 2px 9px;
+        }
+
+        .row-user {
+            font-size: 0.95rem;
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .row-top .spacer { flex: 1; }
+
+        .btn-save,
+        .btn-delete {
+            background: rgba(255, 255, 255, 0.9);
+            color: #111;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-save:hover { background: #ffffff; }
+        .btn-delete { background: rgba(255, 255, 255, 0.9); color: #b00000; }
+        .btn-delete:hover { background: #ffe5e5; color: #b00000; }
+
+        .fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .field.full { grid-column: 1 / -1; }
+
+        .field label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: #111;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 8px 10px;
+            outline: none;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 42px;
+            line-height: 1.35;
+        }
+
+        .field input:focus,
+        .field textarea:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .media {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .media .thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .media .grow { flex: 1; min-width: 0; }
+
+        .toast {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #111;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 50;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 640px) {
+            .fields { grid-template-columns: 1fr; }
+            header { padding: 12px 14px; }
+            main { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>guest_comments</h1>
+        <span class="count" id="count"></span>
+        <span class="spacer"></span>
+        <span id="status"></span>
+        <button id="btn-reload">Recargar</button>
+    </header>
+
+    <main id="rows"></main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        /* --- CREDENCIALES (embebidas, no visibles en la interfaz) --- */
+        const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const rowsEl = document.getElementById('rows');
+        const statusEl = document.getElementById('status');
+        const countEl = document.getElementById('count');
+        const toastEl = document.getElementById('toast');
+
+        let records = [];
+
+        /* --- PALETA RAINBOW + ORDEN DE ALTO CONTRASTE (1º,7º,2º,6º,3º,5º,4º) --- */
+        const RAINBOW = ['#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#3949ab', '#8e24aa'];
+        const CONTRAST_ORDER = [0, 6, 1, 5, 2, 4, 3];
+        const ROTATION = CONTRAST_ORDER.map(i => RAINBOW[i]);
+
+        function hexToRgb(hex) {
+            const c = hex.replace('#', '');
+            return {
+                r: parseInt(c.substr(0, 2), 16),
+                g: parseInt(c.substr(2, 2), 16),
+                b: parseInt(c.substr(4, 2), 16)
+            };
+        }
+
+        function relLuminance(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const chan = v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            };
+            return 0.2126 * chan(r) + 0.7152 * chan(g) + 0.0722 * chan(b);
+        }
+
+        function contrastText(hex) {
+            return relLuminance(hex) > 0.5 ? '#111111' : '#ffffff';
+        }
+
+        function showToast(msg) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toastEl.classList.remove('show'), 2200);
+        }
+
+        /* --- NORMALIZAR payload: { "song_title": [usuario, imagen, comentario] } --- */
+        function parsePayload(payload) {
+            let songTitle = '', usuario = '', image = '', comentario = '';
+
+            if (Array.isArray(payload)) {
+                if (payload.length >= 4) {
+                    songTitle = payload[0] ?? '';
+                    usuario = payload[1] ?? '';
+                    image = payload[2] ?? '';
+                    comentario = payload[3] ?? '';
+                } else {
+                    usuario = payload[0] ?? '';
+                    image = payload[1] ?? '';
+                    comentario = payload[2] ?? '';
+                }
+            } else if (payload && typeof payload === 'object') {
+                const keys = Object.keys(payload);
+                songTitle = keys.length ? keys[0] : '';
+                const arr = songTitle ? payload[songTitle] : null;
+                if (Array.isArray(arr)) {
+                    usuario = arr[0] ?? '';
+                    image = arr[1] ?? '';
+                    comentario = arr[2] ?? '';
+                }
+            }
+
+            return {
+                songTitle: String(songTitle),
+                usuario: String(usuario),
+                image: String(image),
+                comentario: String(comentario)
+            };
+        }
+
+        /* --- ASIGNACIÓN DE COLOR: mismo usuario = mismo color (primera aparición) --- */
+        function assignColors(list) {
+            const userColor = new Map();
+            let nextIndex = 0;
+
+            return list.map(rec => {
+                const user = rec.fields.usuario.trim() || '(sin usuario)';
+                if (!userColor.has(user)) {
+                    userColor.set(user, ROTATION[nextIndex % ROTATION.length]);
+                    nextIndex++;
+                }
+                const color = userColor.get(user);
+                return { ...rec, color, textColor: contrastText(color) };
+            });
+        }
+
+        function setStatus(msg) {
+            statusEl.textContent = msg || '';
+        }
+
+        async function loadRecords() {
+            setStatus('Cargando…');
+            rowsEl.innerHTML = '';
+
+            const { data, error } = await supabaseClient
+                .from('guest_comments')
+                .select('id, payload')
+                .order('id', { ascending: true });
+
+            if (error) {
+                setStatus('');
+                rowsEl.innerHTML = `<div class="empty">Error al cargar: ${error.message}</div>`;
+                return;
+            }
+
+            records = (data || []).map(rec => ({
+                id: rec.id,
+                fields: parsePayload(rec.payload)
+            }));
+
+            const colored = assignColors(records);
+            countEl.textContent = `${colored.length} registro(s)`;
+            setStatus('');
+            render(colored);
+        }
+
+        function render(list) {
+            if (!list.length) {
+                rowsEl.innerHTML = '<div class="empty">No hay registros visibles.<br>' +
+                    'Si sabes que existen, la tabla <b>guest_comments</b> probablemente tiene ' +
+                    'RLS activado sin política de SELECT para el rol <b>anon</b>.</div>';
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+
+            list.forEach((rec, index) => {
+                const card = document.createElement('div');
+                card.className = 'row-card';
+                card.style.background = rec.color;
+                card.style.color = rec.textColor;
+                card.dataset.id = rec.id;
+
+                /* Cabecera de fila */
+                const top = document.createElement('div');
+                top.className = 'row-top';
+
+                const idx = document.createElement('span');
+                idx.className = 'row-index';
+                idx.textContent = `#${index + 1}`;
+
+                const userLabel = document.createElement('span');
+                userLabel.className = 'row-user';
+                userLabel.textContent = rec.fields.usuario || '(sin usuario)';
+
+                const spacer = document.createElement('span');
+                spacer.className = 'spacer';
+
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'btn-save';
+                saveBtn.textContent = 'Guardar';
+                saveBtn.addEventListener('click', () => saveRecord(rec.id, card));
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete';
+                delBtn.textContent = 'Eliminar';
+                delBtn.addEventListener('click', () => deleteRecord(rec.id));
+
+                top.append(idx, userLabel, spacer, saveBtn, delBtn);
+                card.appendChild(top);
+
+                /* Campos editables */
+                const fields = document.createElement('div');
+                fields.className = 'fields';
+
+                fields.appendChild(makeField('song title', 'input', rec.fields.songTitle, card, 'songTitle', 'full'));
+                fields.appendChild(makeArrayField(rec.fields, card));
+
+                card.appendChild(fields);
+                frag.appendChild(card);
+            });
+
+            rowsEl.innerHTML = '';
+            rowsEl.appendChild(frag);
+        }
+
+        function makeField(label, tag, value, card, key, extraClass) {
+            const wrap = document.createElement('div');
+            wrap.className = 'field' + (extraClass ? ' ' + extraClass : '');
+
+            const lbl = document.createElement('label');
+            lbl.textContent = label;
+
+            const input = document.createElement(tag);
+            input.dataset.key = key;
+            input.value = value;
+            if (tag === 'textarea') {
+                input.rows = 2;
+                input.maxLength = 100;
+            }
+
+            wrap.append(lbl, input);
+            return wrap;
+        }
+
+        function formatArray(arr) {
+            const safe = [arr[0], arr[1], arr[2]].map(v => v == null ? '' : String(v));
+            return JSON.stringify(safe).replace(/","/g, '", "');
+        }
+
+        function parseArrayText(text) {
+            const t = String(text == null ? '' : text).trim();
+
+            try {
+                const parsed = JSON.parse(t);
+                if (Array.isArray(parsed)) {
+                    return [parsed[0], parsed[1], parsed[2]].map(v => v == null ? '' : String(v));
+                }
+            } catch (e) { /* fallback manual */ }
+
+            let inner = t;
+            if (inner.startsWith('[')) inner = inner.slice(1);
+            if (inner.endsWith(']')) inner = inner.slice(0, -1);
+
+            const parts = [];
+            let cur = '';
+            let inStr = false;
+            let quote = '';
+            let esc = false;
+
+            for (let i = 0; i < inner.length; i++) {
+                const ch = inner[i];
+                if (inStr) {
+                    if (esc) { cur += ch; esc = false; }
+                    else if (ch === '\\') { esc = true; cur += ch; }
+                    else if (ch === quote) { inStr = false; cur += ch; }
+                    else { cur += ch; }
+                } else if (ch === '"' || ch === "'") {
+                    inStr = true; quote = ch; cur += ch;
+                } else if (ch === ',') {
+                    parts.push(cur); cur = '';
+                } else {
+                    cur += ch;
+                }
+            }
+            parts.push(cur);
+
+            return [0, 1, 2].map(i => {
+                let p = (parts[i] == null ? '' : parts[i]).trim();
+                if (p.length >= 2 &&
+                    ((p.startsWith('"') && p.endsWith('"')) ||
+                     (p.startsWith("'") && p.endsWith("'")))) {
+                    p = p.slice(1, -1);
+                }
+                return p;
+            });
+        }
+
+        function setThumb(img, value) {
+            const v = String(value == null ? '' : value).trim();
+            if (/^https?:\/\//i.test(v)) {
+                img.style.display = '';
+                img.style.visibility = 'visible';
+                img.src = v;
+            } else {
+                img.removeAttribute('src');
+                img.style.display = '';
+                img.style.visibility = 'visible';
+            }
+        }
+
+        function makeArrayField(fields, card) {
+            const wrap = document.createElement('div');
+            wrap.className = 'field full';
+
+            const lbl = document.createElement('label');
+            lbl.textContent = 'usuario, image, comentario';
+
+            const media = document.createElement('div');
+            media.className = 'media';
+
+            const area = document.createElement('textarea');
+            area.className = 'grow';
+            area.dataset.key = 'arrayText';
+            area.rows = 2;
+            area.spellcheck = false;
+            area.value = formatArray([fields.usuario, fields.image, fields.comentario]);
+
+            const thumb = document.createElement('img');
+            thumb.className = 'thumb';
+            thumb.alt = '';
+            thumb.addEventListener('error', () => { thumb.removeAttribute('src'); });
+            setThumb(thumb, fields.image);
+
+            area.addEventListener('input', () => {
+                setThumb(thumb, parseArrayText(area.value)[1]);
+            });
+
+            media.append(area, thumb);
+            wrap.append(lbl, media);
+            return wrap;
+        }
+
+        function readCard(card) {
+            const titleEl = card.querySelector('[data-key="songTitle"]');
+            const areaEl = card.querySelector('[data-key="arrayText"]');
+
+            const songTitle = titleEl ? titleEl.value.trim() : '';
+            const arr = parseArrayText(areaEl ? areaEl.value : '');
+
+            return {
+                songTitle: songTitle,
+                usuario: arr[0].trim(),
+                image: arr[1].trim(),
+                comentario: arr[2]
+            };
+        }
+
+        async function saveRecord(id, card) {
+            const fields = readCard(card);
+
+            if (!fields.usuario) {
+                showToast('El usuario no puede estar vacío');
+                return;
+            }
+
+            const payload = { [fields.songTitle]: [fields.usuario, fields.image, fields.comentario] };
+
+            setStatus('Guardando…');
+            const { data, error } = await supabaseClient
+                .from('guest_comments')
+                .update({ payload })
+                .eq('id', id)
+                .select();
+
+            if (error) {
+                setStatus('');
+                showToast('Error al guardar: ' + error.message);
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                setStatus('');
+                showToast('No se guardó nada: la tabla bloquea UPDATE (falta la política RLS de anon).');
+                return;
+            }
+
+            setStatus('');
+            showToast('Registro actualizado');
+            loadRecords();
+        }
+
+        async function deleteRecord(id) {
+            if (!confirm('¿Eliminar este comentario de invitado?')) return;
+
+            setStatus('Eliminando…');
+            const { data, error } = await supabaseClient
+                .from('guest_comments')
+                .delete()
+                .eq('id', id)
+                .select();
+
+            if (error) {
+                setStatus('');
+                showToast('Error al eliminar: ' + error.message);
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                setStatus('');
+                showToast('No se eliminó nada: la tabla bloquea DELETE (falta la política RLS de anon).');
+                return;
+            }
+
+            setStatus('');
+            showToast('Registro eliminado');
+            loadRecords();
+        }
+
+        document.getElementById('btn-reload').addEventListener('click', loadRecords);
+        document.addEventListener('DOMContentLoaded', loadRecords);
+    </script>
+</body>
+</html>
