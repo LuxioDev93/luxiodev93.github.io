@@ -4,5 +4,6 @@
         "helenmalcas",
         "https://i.ibb.co/pv0rxZ62/qqqkkk.jpg",
         "Mi Nico el mejor hermano mayor 😍😍"
-    ]
+    ],
+["Nelly", "https://api.dicebear.com/7.x/bottts/svg?seed=3n2weuyv90t", "Es hermosa canción para el Eriquito los quiero mucho 💕"]
 ]
