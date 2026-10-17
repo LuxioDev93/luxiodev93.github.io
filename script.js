@@ -6,16 +6,12 @@ const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
 const supabaseClient = (window.supabase && window.supabase.createClient) 
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
     : null;
-let el = document.getElementById('top-sticky-wrapper');
-while (el && el !== document.body) {
-    let overflow = window.getComputedStyle(el).overflow;
-    let overflowY = window.getComputedStyle(el).overflowY;
-    if (overflow !== 'visible' || overflowY !== 'visible') {
-        console.warn('❌ Este contenedor rompe el sticky:', el, 'overflow:', overflow, 'overflowY:', overflowY);
-    }
-    el = el.parentElement;
-}
+
+// --- CONFIGURACIÓN IMGBB (subida de imágenes de invitados) ---
+const IMGBB_API_KEY = 'f05b3ed947457b6a36307813eee62c53';
+
 let currentUserName = null; // Se llena si entra con ?nombre=
+let isGuestMode = false;    // Se activa con ?nombre=guest
 let userCommentState = {
     existingCommentId: null, // Guarda el ID si el usuario ya comentó esta canción
     isEditing: false
@@ -186,7 +182,7 @@ function renderCardHTML(item, index, isActive = false) {
     const authorClass = (!isSingleSongMode) ? 'clickable-author' : '';
 
     return `
-        <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" onclick="playTrack(${index})">
+        <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" tabindex="0" role="button" aria-label="${item.title} - ${item.author}" onclick="playTrack(${index})">
             <div class="yt-thumb-container">
                 <img class="yt-thumb" src="${item.img}" alt="${item.title}" loading="lazy">
                 <span class="playing-badge">Sonando</span>
@@ -290,6 +286,11 @@ function checkUserAccess() {
 
     if (nombreParam) {
         currentUserName = nombreParam.toLowerCase();
+
+        if (currentUserName === 'guest') {
+            isGuestMode = true;
+        }
+
         const profile = USER_PROFILES[currentUserName] || {
             nickname: nombreParam,
             avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${nombreParam}`
@@ -301,6 +302,11 @@ function checkUserAccess() {
         if (formWrapper && userAvatarEl) {
             formWrapper.style.display = 'block';
             userAvatarEl.src = profile.avatar;
+        }
+
+        if (isGuestMode) {
+            const submitBtn = document.getElementById('btn-submit-comment');
+            if (submitBtn) submitBtn.innerText = 'Enviar';
         }
     }
 }
@@ -353,7 +359,8 @@ async function getSongComments() {
             if (!error && data && data.length > 0) {
                 const dbComments = data.map(item => {
                     // Verificar si el usuario logueado ya comentó esta canción
-                    if (currentUserName && item.author_name.toLowerCase() === currentUserName.toLowerCase()) {
+                    // (los invitados siempre pueden volver a comentar)
+                    if (!isGuestMode && currentUserName && item.author_name.toLowerCase() === currentUserName.toLowerCase()) {
                         userCommentState.existingCommentId = item.id;
                     }
 
@@ -419,6 +426,7 @@ function renderComments(commentsList) {
         const text = escapeHTML(comment.comment_text || '');
 
         const isOwner = currentUserName && 
+                        !isGuestMode &&
                         !comment.is_static && 
                         (comment.author_name.toLowerCase() === currentUserName.toLowerCase());
 
@@ -450,6 +458,12 @@ function renderComments(commentsList) {
 }
 
 async function handleCommentSubmit() {
+    // Los invitados pasan por el modal de nombre + imagen antes de guardar
+    if (isGuestMode) {
+        openGuestModal();
+        return;
+    }
+
     const input = document.getElementById('comment-input');
     const text = input.value.trim();
     if (!text || !currentUserName || !supabaseClient) return;
@@ -546,6 +560,218 @@ async function deleteComment(id) {
     }
 }
 
+/* --- COMENTARIOS DE INVITADO (/?nombre=guest) --- */
+let isGuestModalOpen = false;
+let isGuestConfirmOpen = false;
+
+function getSelectedGuestImageOption() {
+    const selected = document.querySelector('input[name="guest-img-option"]:checked');
+    return selected ? selected.value : 'random';
+}
+
+function getLastUploadedGuestImage() {
+    try {
+        const links = JSON.parse(localStorage.getItem('imgbb_links')) || [];
+        if (Array.isArray(links) && links.length > 0) {
+            return links[links.length - 1];
+        }
+    } catch (e) {}
+    return null;
+}
+
+function saveGuestImageLocally(url) {
+    try {
+        const links = JSON.parse(localStorage.getItem('imgbb_links')) || [];
+        links.push(url);
+        localStorage.setItem('imgbb_links', JSON.stringify(links));
+    } catch (e) {}
+}
+
+function updateGuestImagePreview() {
+    const preview = document.getElementById('guest-image-preview');
+    const fileInput = document.getElementById('guest-file-input');
+    const statusEl = document.getElementById('guest-upload-status');
+    if (!preview) return;
+
+    const option = getSelectedGuestImageOption();
+
+    if (fileInput) fileInput.style.display = (option === 'upload') ? 'block' : 'none';
+
+    if (option === 'random') {
+        preview.style.display = 'block';
+        preview.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.random().toString(36).slice(2)}`;
+        if (statusEl) statusEl.innerText = '';
+    } else if (option === 'already') {
+        preview.style.display = 'none';
+        preview.removeAttribute('src');
+        if (statusEl) statusEl.innerText = '';
+    } else {
+        const file = fileInput && fileInput.files && fileInput.files[0];
+        if (file) {
+            preview.style.display = 'block';
+            preview.src = URL.createObjectURL(file);
+            if (statusEl) statusEl.innerText = '';
+        } else {
+            preview.style.display = 'none';
+            if (statusEl) statusEl.innerText = 'Selecciona una imagen para subir.';
+        }
+    }
+}
+
+function openGuestModal() {
+    isGuestModalOpen = true;
+
+    const err = document.getElementById('guest-modal-error');
+    if (err) err.innerText = '';
+    const statusEl = document.getElementById('guest-upload-status');
+    if (statusEl) statusEl.innerText = '';
+
+    const nameInput = document.getElementById('guest-name-input');
+    if (nameInput) nameInput.value = '';
+
+    const fileInput = document.getElementById('guest-file-input');
+    if (fileInput) fileInput.value = '';
+
+    const uploadRadio = document.querySelector('input[name="guest-img-option"][value="upload"]');
+    if (uploadRadio) uploadRadio.checked = true;
+
+    updateGuestImagePreview();
+
+    const modal = document.getElementById('guest-modal');
+    if (modal) modal.classList.add('open');
+
+    if (nameInput) nameInput.focus();
+}
+
+function closeGuestModal() {
+    isGuestModalOpen = false;
+    const modal = document.getElementById('guest-modal');
+    if (modal) modal.classList.remove('open');
+}
+
+function showGuestConfirmModal() {
+    isGuestConfirmOpen = true;
+    const modal = document.getElementById('guest-confirm-modal');
+    if (modal) modal.classList.add('open');
+    const btn = modal ? modal.querySelector('button') : null;
+    if (btn) btn.focus();
+}
+
+function closeGuestConfirmModal() {
+    isGuestConfirmOpen = false;
+    const modal = document.getElementById('guest-confirm-modal');
+    if (modal) modal.classList.remove('open');
+}
+
+async function uploadGuestImageToImgBB(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+    });
+    const data = await response.json();
+
+    if (!data || !data.success || !data.data || !data.data.url) {
+        const msg = (data && data.error && data.error.message) ? data.error.message : 'Error al subir la imagen';
+        throw new Error(msg);
+    }
+    return data.data.url;
+}
+
+async function resolveGuestImage(usuario) {
+    const option = getSelectedGuestImageOption();
+
+    if (option === 'random') {
+        return `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.random().toString(36).slice(2)}`;
+    }
+
+    if (option === 'already') {
+        return usuario || '';
+    }
+
+    const fileInput = document.getElementById('guest-file-input');
+    const file = fileInput && fileInput.files && fileInput.files[0];
+    if (!file) {
+        throw new Error('Selecciona una imagen para subir o elige otra opción.');
+    }
+
+    const url = await uploadGuestImageToImgBB(file);
+    saveGuestImageLocally(url);
+    return url;
+}
+
+async function submitGuestComment() {
+    const err = document.getElementById('guest-modal-error');
+    const statusEl = document.getElementById('guest-upload-status');
+    const okBtn = document.getElementById('btn-guest-ok');
+
+    const nameInput = document.getElementById('guest-name-input');
+    const usuario = nameInput ? nameInput.value.trim() : '';
+
+    const commentInputEl = document.getElementById('comment-input');
+    const comentario = commentInputEl ? commentInputEl.value.trim() : '';
+
+    if (err) err.innerText = '';
+
+    if (!usuario) {
+        if (err) err.innerText = 'Escribe tu nombre de usuario.';
+        return;
+    }
+    if (!comentario) {
+        if (err) err.innerText = 'El comentario está vacío.';
+        return;
+    }
+    if (comentario.length > 100) {
+        if (err) err.innerText = 'El comentario no puede superar los 100 caracteres.';
+        return;
+    }
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+        if (err) err.innerText = 'No se pudo conectar con el servidor.';
+        return;
+    }
+
+    if (okBtn) okBtn.disabled = true;
+    if (statusEl) statusEl.innerText = 'Enviando...';
+
+    try {
+        const imageValue = await resolveGuestImage(usuario);
+
+        // Título de la canción activa (desde el estado del reproductor)
+        const currentSong = musicData[currentIndex];
+        const songTitle = currentSong ? currentSong.title : '';
+
+        // Objeto JSON: { "song_title": ["usuario", "image_url_o_flag", "comentario"] }
+        const payload = { [songTitle]: [usuario, imageValue, comentario] };
+
+        const { error } = await supabaseClient
+            .from('guest_comments')
+            .insert([{ payload }]);
+
+        if (error) throw new Error(error.message || 'Error al guardar el comentario');
+
+        closeGuestModal();
+
+        if (commentInputEl) {
+            commentInputEl.value = '';
+            commentInputEl.style.height = 'auto';
+        }
+        const counter = document.getElementById('char-counter');
+        if (counter) {
+            counter.innerText = '0/100';
+            counter.classList.remove('limit-near');
+        }
+
+        showGuestConfirmModal();
+    } catch (e) {
+        if (err) err.innerText = e.message || 'Error al enviar el comentario.';
+        if (statusEl) statusEl.innerText = '';
+    } finally {
+        if (okBtn) okBtn.disabled = false;
+    }
+}
+
 async function openCommentsPanel() {
     isCommentsOpen = true;
     document.getElementById('comments-panel').classList.add('open');
@@ -580,8 +806,22 @@ async function playTrack(index) {
 
     closeCommentsPanel();
 
+    // Reset de overlays y animaciones de la canción anterior
+    resetOverlayImages();
+    stopAnimOverlays();
+
     currentIndex = index;
     const song = musicData[currentIndex];
+
+    // Clase has-img2: subtitulos sobre la barra de progreso solo si la cancion tiene img_2
+    const playerContainer = document.getElementById('player-container');
+    if (playerContainer) {
+        if (Array.isArray(song.img_2) && song.img_2.length > 0) {
+            playerContainer.classList.add('has-img2');
+        } else {
+            playerContainer.classList.remove('has-img2');
+        }
+    }
 
     updateTrackUI(song);
 
@@ -607,6 +847,9 @@ async function playTrack(index) {
     document.getElementById('player-bg').style.backgroundImage = `url('${song.img}')`;
 
     loadPlaylist();
+
+    // Iniciar overlays y animaciones de la nueva canción
+    startAnimOverlays();
 
     try {
         parsedLyrics = await parseLRC(activeLyrics);
@@ -735,6 +978,292 @@ function updateLyrics(currentTime) {
     document.getElementById('lyric-text').innerText = currentText;
 }
 
+/* --- IMÁGENES ADICIONALES CON TIMESTAMP (img_2, img_3, ...) --- */
+function parseTimestamp(str) {
+    if (!str) return 0;
+    const parts = str.split(':');
+    if (parts.length === 2) {
+        const min = parseInt(parts[0], 10) || 0;
+        const sec = parseFloat(parts[1]) || 0;
+        return min * 60 + sec;
+    }
+    return parseFloat(str) || 0;
+}
+
+function updateOverlayImages(currentTime) {
+    const overlaysContainer = document.getElementById('player-overlays');
+    if (!overlaysContainer) return;
+
+    const song = musicData[currentIndex];
+    if (!song) return;
+
+    // Ocultar animaciones de img_anim cuando la primera img_2 aparece
+    if (Array.isArray(song.img_2) && song.img_2.length > 0) {
+        const firstImg2Time = parseTimestamp(song.img_2[0].time);
+        const animLayer = document.getElementById('anim-layer');
+        if (animLayer && currentTime >= firstImg2Time) {
+            const baseAnims = animLayer.querySelectorAll('[data-anim-idx^="base-"]');
+            baseAnims.forEach(el => {
+                el.style.display = 'none';
+            });
+            // Cancelar timeouts de img_anim
+            imgAnimTimeouts.forEach(id => clearTimeout(id));
+            imgAnimTimeouts = [];
+        }
+    }
+
+    // Mostrar imágenes cuyo timestamp <= currentTime
+    if (!Array.isArray(song.img_2)) return;
+
+    // Solo la img_2 más reciente cuyo tiempo ya pasó está activa
+    // (las anteriores se anulan al aparecer una nueva)
+    let activeOverlayIdx = -1;
+    song.img_2.forEach((imgEntry, idx) => {
+        if (currentTime >= parseTimestamp(imgEntry.time)) activeOverlayIdx = idx;
+    });
+
+    song.img_2.forEach((imgEntry, idx) => {
+        let el = overlaysContainer.querySelector(`[data-overlay-idx="${idx}"]`);
+        const shouldShow = (idx === activeOverlayIdx);
+
+        if (shouldShow && !el) {
+            el = document.createElement('img');
+            el.className = 'player-overlay-img';
+            el.src = imgEntry.url;
+            el.dataset.overlayIdx = idx;
+            overlaysContainer.appendChild(el);
+        } else if (!shouldShow && el) {
+            el.remove();
+        }
+    });
+}
+
+function resetOverlayImages() {
+    const overlaysContainer = document.getElementById('player-overlays');
+    if (overlaysContainer) overlaysContainer.innerHTML = '';
+    const animLayer = document.getElementById('anim-layer');
+    if (animLayer) animLayer.innerHTML = '';
+}
+
+/* --- ANIMACIONES DENTRO DE img_2 (img_2[i].anim) --- */
+function updateImg2Anims(currentTime) {
+    const song = musicData[currentIndex];
+    if (!song || !Array.isArray(song.img_2)) return;
+
+    const animLayer = document.getElementById('anim-layer');
+    if (!animLayer) return;
+
+    // Obtener dimensiones del reproductor
+    const size = getPlayerSize();
+
+    // Solo la img_2 más reciente cuyo tiempo ya pasó está activa
+    // (al aparecer una nueva, la animación de la anterior se anula)
+    let activeIdx = -1;
+    song.img_2.forEach((imgEntry, idx) => {
+        if (currentTime >= parseTimestamp(imgEntry.time)) activeIdx = idx;
+    });
+
+    // PRIMERO: eliminar animaciones de imágenes que ya no están activas
+    const allImg2Anims = animLayer.querySelectorAll('[data-anim-idx^="img2-"]');
+    allImg2Anims.forEach(el => {
+        const parts = el.dataset.animIdx.split('-');
+        const imgIdx = parseInt(parts[1], 10);
+        if (imgIdx !== activeIdx) {
+            if (el._timeoutId) {
+                clearTimeout(el._timeoutId);
+                el._timeoutId = null;
+            }
+            el.remove();
+        }
+    });
+
+    // SEGUNDO: mostrar las animaciones de la imagen activa
+    if (activeIdx < 0) return;
+    const imgEntry = song.img_2[activeIdx];
+    if (!Array.isArray(imgEntry.anim) || imgEntry.anim.length === 0) return;
+
+    imgEntry.anim.forEach((anim, animIdx) => {
+        const dataIdx = `img2-${activeIdx}-${animIdx}`;
+        let el = animLayer.querySelector(`[data-anim-idx="${dataIdx}"]`);
+
+        if (!el) {
+            // Usar dimensiones de la imagen img_2 como referencia
+            const refW = anim.refWidth || 1365;
+            const refH = anim.refHeight || 768;
+            const effSize = size.ready ? size : { w: refW, h: refH, ready: true };
+            const scale = computeAnimScale(refW, refH, effSize);
+
+            const x = (anim.x || 0) * scale;
+            const y = (anim.y || 0) * scale;
+            const w = (anim.width || 136) * scale;
+            const h = (anim.height || 170) * scale;
+
+            const img = document.createElement('img');
+            img.className = 'anim-overlay-img';
+            img.src = anim.url;
+            img.dataset.animIdx = dataIdx;
+            img.style.display = 'block';
+            img.style.left = `${x}px`;
+            img.style.top = `${y}px`;
+            img.style.width = `${w}px`;
+            img.style.height = `${h}px`;
+
+            animLayer.appendChild(img);
+
+            // Intermitencia con tracking individual
+            const toggleVisibility = () => {
+                if (!img.parentNode) return;
+                const isVisible = img.style.display === 'block';
+                img.style.display = isVisible ? 'none' : 'block';
+                const delay = 500 + Math.random() * 300;
+                img._timeoutId = setTimeout(toggleVisibility, delay);
+            };
+            toggleVisibility();
+        }
+    });
+}
+
+let img2RefDimensions = {};
+function getImg2Dimensions(url, callback) {
+    if (img2RefDimensions[url]) {
+        callback(img2RefDimensions[url].w, img2RefDimensions[url].h);
+        return;
+    }
+    const img = new Image();
+    img.onload = function() {
+        img2RefDimensions[url] = { w: this.naturalWidth, h: this.naturalHeight };
+        callback(this.naturalWidth, this.naturalHeight);
+    };
+    img.onerror = function() {
+        callback(690, 388);
+    };
+    img.src = url;
+}
+
+/* --- IMÁGENES ANIMADAS SUPERPUESAS (img2_anim[axb] e img_anim) --- */
+let animTimeouts = [];
+let imgAnimTimeouts = [];
+
+/* Resolución de referencia para las coordenadas de animación = dimensiones naturales de la imagen base */
+let animRefWidth = 690;
+let animRefHeight = 388;
+
+function updateAnimRefFromImage(imgUrl) {
+    const img = new Image();
+    img.onload = function() {
+        animRefWidth = this.naturalWidth;
+        animRefHeight = this.naturalHeight;
+    };
+    img.src = imgUrl;
+}
+
+/* Dimensiones del reproductor (indica si ya está maquetado) */
+function getPlayerSize() {
+    const playerContainer = document.getElementById('player-container');
+    const rect = playerContainer ? playerContainer.getBoundingClientRect() : null;
+    if (rect && rect.width > 0 && rect.height > 0) {
+        return { w: rect.width, h: rect.height, ready: true };
+    }
+    return { w: animRefWidth, h: animRefHeight, ready: false };
+}
+
+/* Escala uniforme segura: nunca 0 ni NaN (evita animaciones invisibles en webOS) */
+function computeAnimScale(refW, refH, size) {
+    const sx = size.w / refW;
+    const sy = size.h / refH;
+    let scale = Math.min(sx, sy);
+    if (!isFinite(scale) || scale <= 0) {
+        scale = (isFinite(sx) && sx > 0) ? sx : 1;
+    }
+    return scale;
+}
+
+/* Crea una imagen de animación superpuesta con intermitencia */
+function createAnimImg(anim, dataIdx, scale, animLayer, timeouts) {
+    const naturalW = anim.width || 81;
+    const naturalH = anim.height || 102;
+
+    const x = (anim.x || 0) * scale;
+    const y = (anim.y || 0) * scale;
+    const w = naturalW * scale;
+    const h = naturalH * scale;
+
+    const img = document.createElement('img');
+    img.className = 'anim-overlay-img';
+    img.src = anim.url;
+    img.dataset.animIdx = dataIdx;
+    img.style.display = 'block';
+    img.style.left = `${x}px`;
+    img.style.top = `${y}px`;
+    img.style.width = `${w}px`;
+    img.style.height = `${h}px`;
+
+    animLayer.appendChild(img);
+
+    const toggleVisibility = () => {
+        if (!img.parentNode) return; // ya fue removido (compatible webOS; isConnected no existe en versiones antiguas)
+        const isVisible = img.style.display === 'block';
+        img.style.display = isVisible ? 'none' : 'block';
+        const delay = 500 + Math.random() * 300;
+        const timeoutId = setTimeout(toggleVisibility, delay);
+        timeouts.push(timeoutId);
+    };
+
+    toggleVisibility();
+}
+
+function startAnimOverlays(retry) {
+    retry = retry || 0;
+    stopAnimOverlays();
+
+    const song = musicData[currentIndex];
+    if (!song) return;
+
+    const animLayer = document.getElementById('anim-layer');
+    if (!animLayer) return;
+
+    // Medir el contenedor (síncrono, sin rAF, que puede no dispararse en webOS)
+    const size = getPlayerSize();
+    const scale = computeAnimScale(animRefWidth, animRefHeight, size);
+
+    // Animaciones sobre la imagen base (img_anim)
+    if (Array.isArray(song.img_anim)) {
+        song.img_anim.forEach((anim, idx) => {
+            createAnimImg(anim, `base-${idx}`, scale, animLayer, imgAnimTimeouts);
+        });
+    }
+
+    // Animaciones sobre imágenes img_2 (img2_anim) — compatibilidad legada
+    if (Array.isArray(song.img2_anim)) {
+        song.img2_anim.forEach((anim, idx) => {
+            createAnimImg(anim, `legacy2-${idx}`, scale, animLayer, animTimeouts);
+        });
+    }
+
+    // Si el reproductor aún no tenía tamaño (webOS al entrar), reintentar recolocar
+    if (!size.ready && retry < 5) {
+        setTimeout(() => startAnimOverlays(retry + 1), 250);
+    }
+}
+
+function stopAnimOverlays() {
+    animTimeouts.forEach(id => clearTimeout(id));
+    animTimeouts = [];
+    imgAnimTimeouts.forEach(id => clearTimeout(id));
+    imgAnimTimeouts = [];
+    const animLayer = document.getElementById('anim-layer');
+    if (animLayer) {
+        // Cancelar también los timeouts individuales de las animaciones de img_2
+        animLayer.querySelectorAll('[data-anim-idx^="img2-"]').forEach(el => {
+            if (el._timeoutId) {
+                clearTimeout(el._timeoutId);
+                el._timeoutId = null;
+            }
+        });
+        animLayer.innerHTML = '';
+    }
+}
+
 function copyToClipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {
         return navigator.clipboard.writeText(text);
@@ -788,6 +1317,9 @@ function toggleFullscreen() {
         document.getElementById('icon-fullscreen-enter').style.display = 'block';
         document.getElementById('icon-fullscreen-exit').style.display = 'none';
     }
+
+    // Recolocar animaciones aunque webOS no dispare fullscreenchange/resize
+    scheduleRecalculate();
 }
 
 function handleDevTap() {
@@ -802,33 +1334,124 @@ function handleDevTap() {
 
     if (tapCount >= 5) {
         tapCount = 0;
-        const code = prompt("Introduce el código de acceso para ver la lista completa:");
-        if (code === "1725") {
-            isRatedUnlocked = true;
-            loadPlaylist();
-            showToast("🔓 Contenido completo desbloqueado");
-        } else if (code !== null) {
-            alert("Código incorrecto.");
-        }
+        openUnlockModal();
     }
 }
 
+/* --- MODAL DE DESBLOQUEO (código de acceso, sin prompt nativo de TV) --- */
+let isUnlockModalOpen = false;
+let unlockInput = "";
+const UNLOCK_CODE = "1725";
+
+function updateUnlockDisplay() {
+    const display = document.getElementById('unlock-code-display');
+    if (!display) return;
+    let s = "";
+    for (let i = 0; i < 4; i++) {
+        s += (i < unlockInput.length) ? "● " : "· ";
+    }
+    display.innerText = s.trim();
+}
+
+function openUnlockModal() {
+    isUnlockModalOpen = true;
+    unlockInput = "";
+    updateUnlockDisplay();
+    const err = document.getElementById('unlock-error');
+    if (err) err.innerText = "";
+    const modal = document.getElementById('unlock-modal');
+    if (modal) modal.classList.add('open');
+    const firstBtn = document.querySelector('#unlock-modal .keypad-btn');
+    if (firstBtn) firstBtn.focus();
+}
+
+function closeUnlockModal() {
+    isUnlockModalOpen = false;
+    const modal = document.getElementById('unlock-modal');
+    if (modal) modal.classList.remove('open');
+    const trigger = document.getElementById('dev-unlock-trigger');
+    if (trigger) trigger.focus();
+}
+
+function appendUnlockDigit(d) {
+    if (!isUnlockModalOpen) return;
+    if (unlockInput.length >= 4) return;
+    unlockInput += d;
+    updateUnlockDisplay();
+    if (unlockInput.length === 4) submitUnlockCode();
+}
+
+function backspaceUnlockDigit() {
+    if (!isUnlockModalOpen) return;
+    unlockInput = unlockInput.slice(0, -1);
+    updateUnlockDisplay();
+}
+
+function submitUnlockCode() {
+    if (unlockInput === UNLOCK_CODE) {
+        isRatedUnlocked = true;
+        closeUnlockModal();
+        loadPlaylist();
+        showToast("Contenido completo desbloqueado");
+    } else {
+        const err = document.getElementById('unlock-error');
+        if (err) err.innerText = "Código incorrecto. Inténtalo de nuevo.";
+        unlockInput = "";
+        updateUnlockDisplay();
+    }
+}
+
+/* --- MODO CLARO / OSCURO --- */
+function updateThemeIcon() {
+    const isDark = document.body.classList.contains('dark-mode');
+    const moon = document.getElementById('icon-moon');
+    const sun = document.getElementById('icon-sun');
+    if (moon) moon.style.display = isDark ? 'none' : 'block';
+    if (sun) sun.style.display = isDark ? 'block' : 'none';
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    try {
+        localStorage.setItem('luxio-theme', isDark ? 'dark' : 'light');
+    } catch (e) {}
+    updateThemeIcon();
+}
+
+function initTheme() {
+    let saved = null;
+    try {
+        saved = localStorage.getItem('luxio-theme');
+    } catch (e) {}
+    if (saved === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    updateThemeIcon();
+}
+
 /* --- EVENT LISTENERS --- */
-document.getElementById('btn-play-pause')?.addEventListener('click', togglePlayPause);
-document.getElementById('btn-english')?.addEventListener('click', toggleEnglishVersion);
-document.getElementById('btn-prev')?.addEventListener('click', playPrevTrack);
-document.getElementById('btn-next')?.addEventListener('click', playNextTrack);
-document.getElementById('btn-repeat')?.addEventListener('click', toggleRepeat);
-document.getElementById('btn-share')?.addEventListener('click', shareCurrentSong);
-document.getElementById('btn-fullscreen')?.addEventListener('click', toggleFullscreen);
-document.getElementById('btn-comments')?.addEventListener('click', toggleCommentsPanel);
-document.getElementById('btn-submit-comment')?.addEventListener('click', handleCommentSubmit);
+function on(id, evt, fn) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(evt, fn);
+}
+
+on('btn-play-pause', 'click', togglePlayPause);
+on('btn-english', 'click', toggleEnglishVersion);
+on('btn-prev', 'click', playPrevTrack);
+on('btn-next', 'click', playNextTrack);
+on('btn-repeat', 'click', toggleRepeat);
+on('btn-share', 'click', shareCurrentSong);
+on('btn-fullscreen', 'click', toggleFullscreen);
+on('btn-comments', 'click', toggleCommentsPanel);
+on('btn-submit-comment', 'click', handleCommentSubmit);
+on('btn-dark-mode', 'click', toggleDarkMode);
 
 // Listener para el contador de caracteres y auto-expandir textarea
 const commentInput = document.getElementById('comment-input');
 const charCounter = document.getElementById('char-counter');
 
-commentInput?.addEventListener('input', function() {
+if (commentInput) commentInput.addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = (this.scrollHeight) + 'px';
 
@@ -843,6 +1466,14 @@ commentInput?.addEventListener('input', function() {
     }
 });
 
+// Listeners del modal de invitado (imagen de perfil)
+const guestFileInput = document.getElementById('guest-file-input');
+if (guestFileInput) guestFileInput.addEventListener('change', updateGuestImagePreview);
+
+document.querySelectorAll('input[name="guest-img-option"]').forEach(radio => {
+    radio.addEventListener('change', updateGuestImagePreview);
+});
+
 currentAudio.addEventListener('timeupdate', () => {
     const current = currentAudio.currentTime;
     const duration = currentAudio.duration;
@@ -854,7 +1485,35 @@ currentAudio.addEventListener('timeupdate', () => {
     }
 
     updateLyrics(current);
+    updateOverlayImages(current);
+    updateImg2Anims(current);
 });
+
+// Reajustar animaciones cuando cambia el tamaño (pantalla completa, resize ventana)
+function recalculateAnimations() {
+    const song = musicData[currentIndex];
+    if (!song) return;
+
+    // Recrear TODAS las animaciones (base + img_2) con las nuevas dimensiones
+    startAnimOverlays();
+
+    if (currentAudio && !isNaN(currentAudio.currentTime)) {
+        updateImg2Anims(currentAudio.currentTime);
+    }
+}
+
+// Deferir un poco para que el layout de webOS ya tenga el tamaño final
+let recalcTimer = null;
+function scheduleRecalculate() {
+    if (recalcTimer) clearTimeout(recalcTimer);
+    recalcTimer = setTimeout(recalculateAnimations, 120);
+}
+
+window.addEventListener('resize', scheduleRecalculate);
+
+// Listener específico para cambios de pantalla completa en webOS
+document.addEventListener('fullscreenchange', scheduleRecalculate);
+document.addEventListener('webkitfullscreenchange', scheduleRecalculate);
 
 currentAudio.addEventListener('ended', () => {
     if (isRepeatEnabled) {
@@ -868,7 +1527,8 @@ currentAudio.addEventListener('ended', () => {
     }
 });
 
-document.getElementById('time-bar')?.addEventListener('click', (e) => {
+const timeBar = document.getElementById('time-bar');
+if (timeBar) timeBar.addEventListener('click', (e) => {
     const bar = e.currentTarget;
     const rect = bar.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -878,9 +1538,215 @@ document.getElementById('time-bar')?.addEventListener('click', (e) => {
     }
 });
 
+/* --- NAVEGACIÓN POR MANDO (D-PAD / FOCO) --- */
+function getFocusableItems() {
+    if (isUnlockModalOpen) {
+        return Array.from(document.querySelectorAll('#unlock-modal button'))
+            .filter(el => !el.disabled && el.offsetParent !== null);
+    }
+    if (isGuestConfirmOpen) {
+        return Array.from(document.querySelectorAll('#guest-confirm-modal button'))
+            .filter(el => !el.disabled && el.offsetParent !== null);
+    }
+    if (isGuestModalOpen) {
+        return Array.from(document.querySelectorAll('#guest-modal button, #guest-modal input, #guest-modal [tabindex="0"]'))
+            .filter(el => !el.disabled && el.offsetParent !== null);
+    }
+    return Array.from(document.querySelectorAll('button, [tabindex="0"]'))
+        .filter(el => !el.disabled && el.offsetParent !== null);
+}
+
+function moveFocus(direction) {
+    const items = getFocusableItems();
+    if (items.length === 0) return;
+
+    const current = document.activeElement;
+    if (!current || !items.includes(current)) {
+        items[0].focus();
+        items[0].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        return;
+    }
+
+    const cr = current.getBoundingClientRect();
+    const cx = cr.left + cr.width / 2;
+    const cy = cr.top + cr.height / 2;
+
+    let best = null;
+    let bestScore = Infinity;
+
+    for (const el of items) {
+        if (el === current) continue;
+        const r = el.getBoundingClientRect();
+        const dx = (r.left + r.width / 2) - cx;
+        const dy = (r.top + r.height / 2) - cy;
+
+        let primary;
+        if (direction === 'right') { if (dx <= 4) continue; primary = dx; }
+        else if (direction === 'left') { if (dx >= -4) continue; primary = -dx; }
+        else if (direction === 'down') { if (dy <= 4) continue; primary = dy; }
+        else { if (dy >= -4) continue; primary = -dy; }
+
+        const secondary = (direction === 'left' || direction === 'right') ? Math.abs(dy) : Math.abs(dx);
+        const score = primary + secondary * 2;
+
+        if (score < bestScore) {
+            bestScore = score;
+            best = el;
+        }
+    }
+
+    if (best) {
+        best.focus();
+        best.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    }
+}
+
+window.addEventListener('keydown', (e) => {
+    const active = document.activeElement;
+    const tag = active ? active.tagName : '';
+    const inputType = active ? (active.type || '').toLowerCase() : '';
+    const isTyping = tag === 'TEXTAREA' ||
+        (tag === 'INPUT' && inputType !== 'radio' && inputType !== 'checkbox' && inputType !== 'file' && inputType !== 'button' && inputType !== 'submit');
+
+    // Tecla Back/Return de webOS
+    if (e.keyCode === 461 || e.key === 'GoBack' || e.key === 'BrowserBack') {
+        if (isUnlockModalOpen) {
+            closeUnlockModal();
+        } else if (isGuestConfirmOpen) {
+            closeGuestConfirmModal();
+        } else if (isGuestModalOpen) {
+            closeGuestModal();
+        } else if (isCommentsOpen) {
+            closeCommentsPanel();
+        } else if (document.fullscreenElement) {
+            toggleFullscreen();
+        }
+        e.preventDefault();
+        return;
+    }
+
+    // No interceptar flechas/Enter mientras se escribe un comentario
+    if (isTyping) return;
+
+    switch (e.key) {
+        case 'ArrowRight': moveFocus('right'); e.preventDefault(); break;
+        case 'ArrowLeft': moveFocus('left'); e.preventDefault(); break;
+        case 'ArrowDown': moveFocus('down'); e.preventDefault(); break;
+        case 'ArrowUp': moveFocus('up'); e.preventDefault(); break;
+        case 'Enter':
+            if (active && active.tagName !== 'BUTTON' && typeof active.click === 'function') {
+                active.click();
+                e.preventDefault();
+            }
+            break;
+    }
+});
+
+/* --- VERIFICACIÓN DE CATBOX (solo al arrancar) --- */
+function checkServerStatus() {
+    const statusEl = document.getElementById('server-status');
+    const statusText = document.getElementById('status-text');
+    if (!statusEl || !statusText) return;
+
+    statusEl.className = 'server-status unknown';
+    statusText.innerText = '...';
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    fetch('https://catbox.moe', {
+        method: 'HEAD',
+        mode: 'no-cors',
+        signal: controller.signal
+    })
+    .then(() => {
+        clearTimeout(timeoutId);
+        statusEl.className = 'server-status up';
+        statusText.innerText = 'UP';
+    })
+    .catch(() => {
+        clearTimeout(timeoutId);
+        statusEl.className = 'server-status down';
+        statusText.innerText = 'DOWN';
+    });
+}
+
+/* --- ANTI-SALVAPANTALLAS EN webOS TV --- */
+let antiScreensaverVideo = null;
+
+let keepScreenOnInterval = null;
+
+function keepScreenOn() {
+    // Método 1: Power Service (formal, requiere permiso en appinfo.json)
+    if (typeof webOS !== 'undefined' && webOS.service) {
+        webOS.service.request("luna://com.webos.service.tvpower", {
+            method: "powerState",
+            parameters: { state: "active" },
+            onSuccess: function() {},
+            onFailure: function() {
+                // Fallback: video oculto en loop
+                startHiddenVideoLoop();
+            }
+        });
+    } else {
+        startHiddenVideoLoop();
+    }
+}
+
+function startKeepScreenOnLoop() {
+    if (keepScreenOnInterval) return;
+    keepScreenOn();
+    // webOS puede resetear el powerState tras unos minutos. Reactivar cada 2 min.
+    keepScreenOnInterval = setInterval(keepScreenOn, 120000);
+}
+
+function startHiddenVideoLoop() {
+    if (antiScreensaverVideo) return;
+
+    // Crear un canvas negro de 1x1 y usar captureStream como fuente de video
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, 1, 1);
+
+    antiScreensaverVideo = document.createElement('video');
+    antiScreensaverVideo.muted = true;
+    antiScreensaverVideo.playsInline = true;
+    antiScreensaverVideo.style.position = 'fixed';
+    antiScreensaverVideo.style.top = '-1000px';
+    antiScreensaverVideo.style.left = '-1000px';
+    antiScreensaverVideo.style.width = '1px';
+    antiScreensaverVideo.style.height = '1px';
+    antiScreensaverVideo.style.opacity = '0';
+    antiScreensaverVideo.style.pointerEvents = 'none';
+
+    try {
+        antiScreensaverVideo.srcObject = canvas.captureStream(1);
+        antiScreensaverVideo.play().catch(() => {});
+    } catch (e) {
+        // Si captureStream no esta disponible, usar un data URI minimo
+        antiScreensaverVideo.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAABhtZGF0AAAC8wYF//+q3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDENMjQgLSBILjI2NC9NUEVHLTQgQVZDIGNvZGVjIC0gQ29weWxlZnQgMjAwMy0yMDI0IC0gaHR0cDovL3d3dy52aWRlb2xhbi5vcmcveDI2NC5odG1sIC0gb3B0aW9uczogY2FiYWM9MCByZWY9MyBkZWJsb2NrPTE6MDowIGFuYWx5c2U9MHgzOjB4MTEzIG1lPWhleCBzdWJtZT03IHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MTYgY2hyb21hX21lPTEgdHJlbGxpcz0xIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PTItMiB0aHJlYWRzPTYgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSBvcGVuX2dvcD0wIHdlaWdodGI9MSBrZXlpbnQ9MjUwIGtleWludF9taW49MjUgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuMDAgYXE9MToxLjAwAIAAAAAAABWngADWd+zD8DJgAADKgAAAAAAAAAMBkAAAAAAAAAIYEAAA4AAYcDG6AAA';
+        antiScreensaverVideo.play().catch(() => {});
+    }
+
+    document.body.appendChild(antiScreensaverVideo);
+
+    // webOS puede pausar el video tras unos minutos. Re-anudar cada 30s.
+    setInterval(() => {
+        if (antiScreensaverVideo && antiScreensaverVideo.paused) {
+            antiScreensaverVideo.play().catch(() => {});
+        }
+    }, 30000);
+}
+
 /* --- INICIALIZACIÓN --- */
 window.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     checkUserAccess();
+    checkServerStatus();
+    startKeepScreenOnLoop();
 
     const urlParams = new URLSearchParams(window.location.search);
     const songParam = urlParams.get('song');
