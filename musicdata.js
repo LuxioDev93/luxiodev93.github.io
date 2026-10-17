@@ -224,7 +224,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             title: "La gallinita Ciega",
             img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg",
             author: "Cuco Club",
-            audio: "https://files.catbox.moe/cttffl.mp3",//nuevo enlace
+            audio: "https://files.catbox.moe/suredo.mp3",//nuevo enlace
             lyrics: "https://luxiodev93.github.io/lyrics/ceiga.txt",
 			audio_eng: "https://files.catbox.moe/cttffl.mp3",
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/ceiga.txt",
