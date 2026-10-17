@@ -779,34 +779,61 @@ body {
 
 /* --- MÓVIL / PANTALLAS VERTICALES (ancho < alto) --- */
 @media (max-aspect-ratio: 1/1) {
+    /* La página encaja exacta en la pantalla: nada scrollea fuera de #right-column */
+    body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    /* La topbar (fija) + #main-layout suman el alto exacto de la pantalla */
     #main-layout {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
+        display: flex;
+        flex-direction: column;
         gap: 0;
         height: 100vh;
-        overflow-y: auto;
-        overflow-x: hidden;
+        height: 100dvh;
+        overflow: hidden;
         padding: calc(8vh + var(--overscan-y)) 4vw 4vh 4vw;
     }
 
-    /* Flatten the left column so its children flow in the main stack */
+    /* Columna izquierda: solo ocupa su contenido (reproductor + info de pista) */
     #left-column {
-        display: contents;
-    }
-
-    /* Orden vertical: reproductor -> info de pista -> lista */
-    #top-player-panel {
+        flex: 0 0 auto;
+        min-height: 0;
         order: 1;
     }
 
-    #current-track-info {
+    /* Columna derecha: absorbe el resto de la altura y es el ÚNICO con scroll */
+    #right-column {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
         order: 2;
-        margin-bottom: 3vh;
     }
 
-    #right-column {
-        order: 3;
-        min-height: 70vh;
+    /* La lista deja de gestionar su propio scroll: lo hace #right-column */
+    #playlist-container {
+        flex: 0 0 auto;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    /* Comentarios: al abrirse queda fijado sobre el area visible de #right-column */
+    #comments-panel.open {
+        position: sticky;
+        top: 0;
+        height: 100%;
+    }
+
+    /* El scroll de la lista de comentarios no arrastra al de #right-column */
+    #comments-list {
+        overscroll-behavior: contain;
+    }
+
+    #current-track-info {
+        margin-bottom: 3vh;
     }
 
     #current-track-title {
