@@ -359,7 +359,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
 	{
             title: "Por ustedes hijos míos",
             img: "https://cdn2.suno.ai/image_large_74737745-03b8-4b54-9412-249f6b2123e9.jpeg", 
-            audio: "https://cdn1.suno.ai/74737745-03b8-4b54-9412-249f6b2123e9.mp3",
+            audio: "https://files.catbox.moe/9qk4sr.mp3",
             author: "Doña Madre",
             lyrics: "https://luxiodev93.github.io/lyrics/madreama.txt"
         },
