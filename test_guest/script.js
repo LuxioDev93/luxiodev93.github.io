@@ -602,15 +602,9 @@ function updateGuestImagePreview() {
         preview.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.random().toString(36).slice(2)}`;
         if (statusEl) statusEl.innerText = '';
     } else if (option === 'already') {
-        const last = getLastUploadedGuestImage();
-        if (last) {
-            preview.style.display = 'block';
-            preview.src = last;
-            if (statusEl) statusEl.innerText = '';
-        } else {
-            preview.style.display = 'none';
-            if (statusEl) statusEl.innerText = 'No hay imágenes subidas antes.';
-        }
+        preview.style.display = 'none';
+        preview.removeAttribute('src');
+        if (statusEl) statusEl.innerText = '';
     } else {
         const file = fileInput && fileInput.files && fileInput.files[0];
         if (file) {
@@ -686,7 +680,7 @@ async function uploadGuestImageToImgBB(file) {
     return data.data.url;
 }
 
-async function resolveGuestImage() {
+async function resolveGuestImage(usuario) {
     const option = getSelectedGuestImageOption();
 
     if (option === 'random') {
@@ -694,7 +688,7 @@ async function resolveGuestImage() {
     }
 
     if (option === 'already') {
-        return getLastUploadedGuestImage() || 'already_uploaded';
+        return usuario || '';
     }
 
     const fileInput = document.getElementById('guest-file-input');
@@ -742,7 +736,7 @@ async function submitGuestComment() {
     if (statusEl) statusEl.innerText = 'Enviando...';
 
     try {
-        const imageValue = await resolveGuestImage();
+        const imageValue = await resolveGuestImage(usuario);
 
         // Título de la canción activa (desde el estado del reproductor)
         const currentSong = musicData[currentIndex];
