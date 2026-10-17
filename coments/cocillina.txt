@@ -3,5 +3,6 @@
         "helenmalcas",
         "https://i.ibb.co/pv0rxZ62/qqqkkk.jpg",
         "Y si hacemos un caldo 🫣😋😋"
-    ]
+    ],
+["Waldina", "https://i.ibb.co/Hvxs7CS/avatar.jpg", "Me gustan las fotos de mi cuquitos y las gallinas"]
 ]
