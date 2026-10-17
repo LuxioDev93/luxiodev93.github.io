@@ -4,5 +4,6 @@
         "helenmalcas",
         "https://i.ibb.co/pv0rxZ62/qqqkkk.jpg",
         "Mi Nico el más rápido del mundo 😍😍"
-    ]
+    ],
+["Waldina", "https://i.ibb.co/Hvxs7CS/avatar.jpg", "Nico mete muchos goles"]
 ]
