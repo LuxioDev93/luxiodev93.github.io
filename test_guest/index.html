@@ -1,1 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lux.io Music</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
 
+    <!-- BARRA SUPERIOR -->
+    <header id="top-bar">
+        <img id="brand-logo" src="https://iahub.es/assets/img/logos/suno-ai.png" alt="Lux.io Music">
+        <button id="btn-dark-mode" class="btn-dark-mode" title="Cambiar tema" aria-label="Cambiar tema">
+            <svg id="icon-moon" viewBox="0 0 24 24" width="22" height="22">
+                <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
+            </svg>
+            <svg id="icon-sun" viewBox="0 0 24 24" width="22" height="22" style="display:none;">
+                <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+            </svg>
+        </button>
+        <div id="server-status" class="server-status" title="Estado del servidor">
+            <svg id="signal-icon" viewBox="0 0 24 28" width="22" height="26">
+                <!-- 5 barras verticales crecientes formando triángulo rectángulo -->
+                <rect id="bar1" x="1"  y="20" width="3.5" height="6"  rx="0.5"/>
+                <rect id="bar2" x="6"  y="16" width="3.5" height="10" rx="0.5"/>
+                <rect id="bar3" x="11" y="12" width="3.5" height="14" rx="0.5"/>
+                <rect id="bar4" x="16" y="8"  width="3.5" height="18" rx="0.5"/>
+                <rect id="bar5" x="21" y="4"  width="3.5" height="22" rx="0.5"/>
+                <!-- X overlay (solo visible cuando está DOWN) -->
+                <g id="signal-x" style="display:none;">
+                    <line x1="2" y1="2" x2="23" y2="26" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="23" y1="2" x2="2" y2="26" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span id="status-text">...</span>
+        </div>
+    </header>
+
+    <div id="main-layout">
+
+        <!-- COLUMNA IZQUIERDA: REPRODUCTOR + INFO DE PISTA -->
+        <div id="left-column">
+            <div id="top-player-panel">
+                <div id="player-container">
+                    <div id="player-bg"></div>
+                    <div id="player-overlays"></div>
+                    <div id="anim-layer"></div>
+
+                    <div id="lyrics-display">
+                        <p id="lyric-text">Selecciona una canción...</p>
+                    </div>
+
+                    <div id="share-toast">Enlace copiado al portapapeles</div>
+
+                    <div id="player-controls">
+                        <div class="time-bar-container">
+                            <div class="time-bar" id="time-bar">
+                                <div class="time-progress" id="time-progress"></div>
+                            </div>
+                            <span class="time-text" id="time-text">0:00 / 0:00</span>
+                        </div>
+
+                        <div class="controls-bottom-row">
+                            <div class="controls-left-group">
+                                <button class="btn-control" id="btn-play-pause" title="Play/Pausa">
+                                    <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    <svg id="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                </button>
+
+                                <div class="nav-buttons-group">
+                                    <button class="btn-control" id="btn-prev" title="Anterior">
+                                        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                                    </button>
+                                    <button class="btn-control" id="btn-next" title="Siguiente">
+                                        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="controls-right-group">
+                                <button class="btn-control" id="btn-repeat" title="Repetir canción">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Botón de la bandera de Inglaterra -->
+                                <button class="btn-control" id="btn-english" title="Versión en Inglés" style="display: none;">
+                                    <svg viewBox="0 0 60 30" width="22" height="22">
+                                        <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                                        <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                                        <g clip-path="url(#s)">
+                                            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                                            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                                            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                                            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                                        </g>
+                                    </svg>
+                                </button>
+
+                                <button class="btn-control" id="btn-share" title="Compartir canción">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                                    </svg>
+                                </button>
+
+                                <button class="btn-control" id="btn-fullscreen" title="Pantalla completa">
+                                    <svg id="icon-fullscreen-enter" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                                    <svg id="icon-fullscreen-exit" viewBox="0 0 24 24" style="display:none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="current-track-info">
+                <div class="track-info-left">
+                    <h2 id="current-track-title">Cargando...</h2>
+                    <p id="current-track-author">Lux.io Music</p>
+                </div>
+                <!-- Botón de comentarios -->
+                <button id="btn-comments" title="Comentarios" aria-label="Abrir comentarios">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H8l-4 4V6c0-1.1.9-2 2-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: LISTA DE CANCIONES + COMENTARIOS SUPERPUESTOS -->
+        <div id="right-column">
+            <div id="playlist-container">
+                <div class="playlist-header-container">
+                    <h3 class="playlist-title" id="playlist-header">A continuación</h3>
+                    <div class="playlist-header-actions" id="author-actions" style="display: none;">
+                        <button id="btn-share-author" class="btn-author-action" onclick="shareAuthorList()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                            Compartir lista
+                        </button>
+                        <button id="btn-reset-filter" class="btn-author-action btn-reset" onclick="clearAuthorFilter()" title="Ver todas las canciones">×</button>
+                    </div>
+                </div>
+                <div id="playlist"></div>
+                <div id="dev-unlock-trigger" onclick="handleDevTap()">Cargando...</div>
+            </div>
+
+            <div id="comments-panel">
+                <!-- Formulario para publicar/editar (Solo visible si accede con ?nombre=...) -->
+                <div id="comment-form-wrapper" style="display: none;">
+                    <div class="comment-input-row">
+                        <img id="user-avatar" class="comment-avatar" src="" alt="Avatar">
+                        <div class="input-container">
+                            <textarea id="comment-input" rows="1" maxlength="100" placeholder="Escribe un comentario..."></textarea>
+                            <span id="char-counter" class="char-counter">0/100</span>
+                        </div>
+                        <button id="btn-submit-comment" class="btn-send-comment">Comentar</button>
+                    </div>
+                </div>
+
+                <div id="comments-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DESBLOQUEO: código de acceso (sin prompt nativo, funciona en TV) -->
+    <div id="unlock-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="modal-title">Introduce el código de acceso</h3>
+            <div id="unlock-code-display" class="unlock-code-display">· · · ·</div>
+            <div id="unlock-error" class="modal-error"></div>
+            <div class="keypad">
+                <button class="keypad-btn" onclick="appendUnlockDigit('1')" tabindex="0">1</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('2')" tabindex="0">2</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('3')" tabindex="0">3</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('4')" tabindex="0">4</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('5')" tabindex="0">5</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('6')" tabindex="0">6</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('7')" tabindex="0">7</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('8')" tabindex="0">8</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('9')" tabindex="0">9</button>
+                <button class="keypad-btn keypad-btn-muted" onclick="backspaceUnlockDigit()" tabindex="0">Borrar</button>
+                <button class="keypad-btn" onclick="appendUnlockDigit('0')" tabindex="0">0</button>
+                <button class="keypad-btn keypad-btn-muted" onclick="closeUnlockModal()" tabindex="0">Cancelar</button>
+            </div>
+            <button class="modal-btn modal-btn-primary" onclick="submitUnlockCode()" tabindex="0">Desbloquear</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE COMENTARIO DE INVITADO (/?nombre=guest): nombre + imagen -->
+    <div id="guest-modal" class="modal-overlay">
+        <div class="modal-box guest-modal-box">
+            <h3 class="modal-title">Completa tu comentario</h3>
+            <div id="guest-modal-error" class="modal-error"></div>
+
+            <label class="guest-label" for="guest-name-input">Nombre de usuario</label>
+            <input id="guest-name-input" class="guest-text-input" type="text" maxlength="40" placeholder="usuario" autocomplete="off">
+
+            <span class="guest-label">Imagen de perfil</span>
+            <div class="guest-options">
+                <label class="guest-option">
+                    <input type="radio" name="guest-img-option" value="upload" checked>
+                    <span>Subir imagen</span>
+                </label>
+                <label class="guest-option">
+                    <input type="radio" name="guest-img-option" value="random">
+                    <span>Usar imagen aleatoria</span>
+                </label>
+                <label class="guest-option">
+                    <input type="radio" name="guest-img-option" value="already">
+                    <span>Ya subí imagen antes</span>
+                </label>
+            </div>
+
+            <input type="file" id="guest-file-input" class="guest-file-input" accept="image/*">
+
+            <img id="guest-image-preview" class="guest-image-preview" alt="Vista previa" style="display: none;">
+
+            <div id="guest-upload-status" class="guest-upload-status"></div>
+
+            <button class="modal-btn modal-btn-primary" id="btn-guest-ok" onclick="submitGuestComment()" tabindex="0">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN: comentario pendiente de moderación -->
+    <div id="guest-confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="guest-confirm-icon">✓</div>
+            <h3 class="modal-title">¡Gracias!</h3>
+            <p class="guest-confirm-text">comentario pendiente de moderacion vuelve despues para verlo</p>
+            <button class="modal-btn modal-btn-primary" onclick="closeGuestConfirmModal()" tabindex="0">OK</button>
+        </div>
+    </div>
+
+    <script src="https://luxiodev93.github.io/musicdata.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
