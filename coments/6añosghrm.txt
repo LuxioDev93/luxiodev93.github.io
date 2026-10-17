@@ -9,3 +9,4 @@
 ["Gabimaldonado", "https://i.ibb.co/23SkZzSK/gabi.jpg", "El mejor hermano  mayor 💕💕💕"]
 ],
 ["Waldina", "https://i.ibb.co/Hvxs7CS/avatar.jpg", "Me encanta la canción de mis cuquitos"]
+]
