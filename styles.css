@@ -1,11 +1,30 @@
 :root {
     --yt-bg: #ffffff;
+    --yt-surface: #f6f6f7;
+    --yt-surface-2: #ececee;
     --yt-text-primary: #0f0f0f;
     --yt-text-secondary: #606060;
-    --yt-hover-bg: #f2f2f2;
-    --yt-active-bg: #e5e5e5;
-    --yt-border: #e5e5e5;
-    --yt-red: #ff0000;
+    --yt-hover-bg: #ececee;
+    --yt-active-bg: #dcdce0;
+    --yt-border: #d2d2d6;
+    --yt-red: #ff2d2d;
+    --focus-ring: #0f0f0f;
+    --topbar-bg: transparent;
+    --overscan-x: 2.2vw;
+    --overscan-y: 2vh;
+}
+
+body.dark-mode {
+    --yt-bg: #0b0b0f;
+    --yt-surface: #14141a;
+    --yt-surface-2: #1c1c24;
+    --yt-text-primary: #f4f4f6;
+    --yt-text-secondary: #9a9aa5;
+    --yt-hover-bg: #1c1c24;
+    --yt-active-bg: #2a2a34;
+    --yt-border: #2a2a34;
+    --focus-ring: #ffffff;
+    --topbar-bg: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
 }
 
 * {
@@ -14,46 +33,149 @@
 
 body {
     margin: 0; 
-    padding: 0; 
-    min-height: 100vh;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
     font-family: "Roboto", "Segoe UI", Arial, sans-serif;
     background-color: var(--yt-bg);
     color: var(--yt-text-primary);
-    /* ELIMINADO: display: flex y align-items: center del body para no romper el flujo del scroll */
 }
 
-/* --- CONTENEDOR FIJO SUPERIOR --- */
-#top-sticky-wrapper {
-    position: -webkit-sticky; /* Soporte para motores WebKit antiguos/TVs */
-    position: sticky;
+/* --- BARRA SUPERIOR --- */
+#top-bar {
+    position: fixed;
     top: 0;
-    z-index: 1000;
-    width: 100%;
-    align-self: flex-start; /* CLAVE: Impide que flexbox colapse la propiedad sticky */
-    background: #ffffff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    left: 0;
+    right: 0;
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--overscan-x);
+    background: var(--topbar-bg);
+    z-index: 2000;
 }
 
+#brand-logo {
+    height: 4.4vh;
+    width: auto;
+    max-width: 24vw;
+    object-fit: contain;
+    display: block;
+}
+
+/* --- BOTÓN DE TEMA (CLARO / OSCURO) --- */
+.btn-dark-mode {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--yt-text-primary);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.1s ease, background 0.2s ease;
+}
+
+.btn-dark-mode:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: var(--yt-hover-bg);
+}
+
+.btn-dark-mode svg {
+    fill: currentColor;
+    display: block;
+}
+
+/* --- INDICADOR DE ESTADO DEL SERVIDOR --- */
+.server-status {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: background 0.3s ease;
+}
+
+.server-status.up {
+    color: #4caf50;
+}
+
+.server-status.up #signal-icon rect {
+    fill: #4caf50;
+}
+
+.server-status.up #signal-icon #signal-x {
+    display: none !important;
+}
+
+.server-status.down {
+    color: #f44336;
+}
+
+.server-status.down #signal-icon rect {
+    fill: #f44336;
+}
+
+.server-status.down #signal-icon #signal-x {
+    display: block !important;
+    stroke: #f44336;
+}
+
+.server-status.unknown {
+    color: #ff9800;
+}
+
+.server-status.unknown #signal-icon rect {
+    fill: #ff9800;
+}
+
+#status-text {
+    text-transform: uppercase;
+}
+
+/* --- LAYOUT PRINCIPAL: 2 COLUMNAS (izq. reproductor / der. lista) --- */
 #main-layout {
-    position: relative; 
+    position: relative;
     z-index: 2;
-    display: flex; 
-    flex-direction: column;
-    width: 100%; 
-    max-width: 800px;
-    min-height: 100vh;
-    margin: 0 auto;
-    /* AGREGADO: Permite que el sticky reconozca el alto total del layout */
-    overflow: visible; 
+    display: grid;
+    grid-template-columns: 68fr 32fr;
+    gap: 2vw;
+    width: 100%;
+    height: 100vh;
+    padding: calc(8vh + var(--overscan-y)) var(--overscan-x) var(--overscan-y) var(--overscan-x);
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-/* --- PARTE SUPERIOR: REPRODUCTOR FIJO --- */
-/* --- PARTE SUPERIOR: REPRODUCTOR --- */
+#left-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+#right-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* --- REPRODUCTOR --- */
 #top-player-panel {
     width: 100%;
-    padding: 12px 16px 8px 16px;
-    background: #ffffff;
-    border-bottom: 1px solid var(--yt-border);
+    padding: 0;
+    background: transparent;
 }
 
 #player-container {
@@ -81,6 +203,30 @@ body {
     transition: background-image 0.5s ease;
 }
 
+#player-overlays {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1;
+}
+
+.player-overlay-img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+}
+
+#anim-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.anim-overlay-img {
+    position: absolute;
+    display: none;
+}
+
 #lyrics-display {
     position: relative;
     z-index: 2;
@@ -90,6 +236,24 @@ body {
     align-items: center;
     text-align: center;
     padding: 20px;
+}
+
+/* Subtitulos sobre la barra de progreso solo para canciones con img_2 */
+#player-container.has-img2 #lyrics-display {
+    position: absolute;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    flex: none;
+    padding: 0 20px;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+/* Sin blur en la imagen base cuando hay img_2 */
+#player-container.has-img2 #player-bg {
+    filter: none;
+    opacity: 1;
 }
 
 #lyric-text {
@@ -102,9 +266,36 @@ body {
     margin: 0;
 }
 
+/* --- PANTALLA COMPLETA: subtítulos (letra) a ancho casi total --- */
+#player-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    aspect-ratio: auto;
+    border-radius: 0;
+}
+
+#player-container:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+}
+
+#player-container:fullscreen #lyrics-display,
+#player-container:-webkit-full-screen #lyrics-display {
+    padding: 3vh 2vw;
+}
+
+#player-container:fullscreen #lyric-text,
+#player-container:-webkit-full-screen #lyric-text {
+    font-size: clamp(1.6rem, 4.8vw, 5.6rem);
+    line-height: 1.15;
+    max-width: 100%;
+}
+
 #player-controls {
     position: relative;
     z-index: 2;
+    margin-top: auto;
     padding: 10px 16px 12px 16px;
     background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
     display: flex;
@@ -210,10 +401,10 @@ body {
 
 /* --- INFO DE LA CANCIÓN --- */
 #current-track-info {
-    margin-top: 10px;
-    padding: 0 4px;
+    margin-top: 1.6vh;
+    padding: 0 0.4vw;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
 }
@@ -226,7 +417,7 @@ body {
 
 #current-track-title {
     margin: 0;
-    font-size: 1.15rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--yt-text-primary);
     white-space: nowrap;
@@ -235,8 +426,8 @@ body {
 }
 
 #current-track-author {
-    margin: 2px 0 0 0;
-    font-size: 0.9rem;
+    margin: 4px 0 0 0;
+    font-size: 1.15rem;
     color: var(--yt-text-secondary);
     font-weight: 500;
     display: inline-block;
@@ -305,30 +496,39 @@ body {
     opacity: 1;
 }
 
-/* --- PANEL DE COMENTARIOS --- */
+/* --- PANEL DE COMENTARIOS (superpuesto a la lista) --- */
 #comments-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease;
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    background: var(--yt-surface);
+    border: 1px solid var(--yt-border);
+    border-radius: 12px;
+    padding: 2vh 1.4vw;
+    box-sizing: border-box;
+    transform: translateX(105%);
     opacity: 0;
-    background: #fafafa;
-    border-bottom: 1px solid transparent;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.3s ease;
+    box-shadow: -24px 0 48px rgba(0, 0, 0, 0.55);
 }
 
 #comments-panel.open {
-    max-height: 320px;
+    transform: translateX(0);
     opacity: 1;
-    border-bottom: 1px solid var(--yt-border);
-    padding: 12px 16px 16px 16px;
+    pointer-events: auto;
 }
 
 #comments-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    max-height: 280px;
+    gap: 2.4vh;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    padding-right: 4px;
+    padding-right: 6px;
 }
 
 #comments-list::-webkit-scrollbar {
@@ -344,13 +544,13 @@ body {
 
 .comment-item {
     display: flex;
-    gap: 12px;
+    gap: 20px;
     align-items: flex-start;
 }
 
 .comment-avatar {
-    width: 36px;
-    height: 36px;
+    width: 66px;
+    height: 66px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
@@ -364,15 +564,15 @@ body {
 }
 
 .comment-username {
-    margin: 0 0 3px 0;
-    font-size: 0.85rem;
+    margin: 0 0 6px 0;
+    font-size: 1.4rem;
     font-weight: 600;
     color: var(--yt-text-primary);
 }
 
 .comment-text {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 1.4rem;
     color: var(--yt-text-secondary);
     line-height: 1.4;
     word-wrap: break-word;
@@ -381,7 +581,7 @@ body {
 .no-comments {
     text-align: center;
     padding: 24px 8px;
-    font-size: 0.9rem;
+    font-size: 1.4rem;
     color: var(--yt-text-secondary);
     font-weight: 500;
 }
@@ -389,17 +589,24 @@ body {
 /* --- PLAYLIST --- */
 #playlist-container {
     flex: 1;
-    padding: 16px;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 1vh;
+    overflow-y: auto;
+    padding-right: 6px;
 }
 
 .playlist-header-container {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 4px;
+    gap: 1vw;
+    padding: 0.6vh 0 1.2vh 0;
+    background: var(--yt-bg);
 }
 
 .playlist-title {
@@ -446,11 +653,13 @@ body {
     display: flex;
     align-items: center;
     background: transparent;
+    border: 2px solid transparent;
     border-radius: 12px;
-    padding: 8px;
+    padding: 10px;
     cursor: pointer;
-    transition: background 0.15s ease;
-    gap: 12px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    gap: 16px;
+    scroll-margin: 90px;
 }
 
 .yt-card:hover {
@@ -463,7 +672,7 @@ body {
 
 .yt-thumb-container {
     position: relative;
-    width: 140px;
+    width: 220px;
     aspect-ratio: 16 / 9;
     flex-shrink: 0;
     border-radius: 8px;
@@ -503,7 +712,7 @@ body {
 
 .yt-title {
     margin: 0 0 4px 0;
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--yt-text-primary);
     white-space: nowrap;
@@ -513,7 +722,7 @@ body {
 
 .yt-author {
     margin: 0 0 2px 0;
-    font-size: 0.825rem;
+    font-size: 0.95rem;
     color: var(--yt-text-secondary);
     font-weight: 400;
     display: inline-block;
@@ -521,7 +730,7 @@ body {
 
 .yt-meta {
     margin: 0;
-    font-size: 0.775rem;
+    font-size: 0.85rem;
     color: var(--yt-text-secondary);
     display: flex;
     align-items: center;
@@ -543,9 +752,10 @@ body {
 }
 
 #dev-unlock-trigger {
+    flex-shrink: 0;
     text-align: center;
-    padding: 24px 8px;
-    font-size: 0.8rem;
+    padding: 2.4vh 8px;
+    font-size: 0.85rem;
     color: var(--yt-text-secondary);
     cursor: pointer;
     user-select: none;
@@ -553,10 +763,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    #top-player-panel {
-        padding: 8px;
-    }
-
     .yt-thumb-container {
         width: 110px;
     }
@@ -565,18 +771,55 @@ body {
         font-size: 0.88rem;
     }
 
-    #comments-panel.open {
-        max-height: 280px;
-        padding: 10px 12px 14px 12px;
-    }
-
-    #comments-list {
-        max-height: 240px;
-    }
-
     .comment-avatar {
-        width: 32px;
-        height: 32px;
+        width: 56px;
+        height: 56px;
+    }
+}
+
+/* --- MÓVIL / PANTALLAS VERTICALES (ancho < alto) --- */
+@media (max-aspect-ratio: 1/1) {
+    #main-layout {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+        gap: 0;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: calc(8vh + var(--overscan-y)) 4vw 4vh 4vw;
+    }
+
+    /* Flatten the left column so its children flow in the main stack */
+    #left-column {
+        display: contents;
+    }
+
+    /* Orden vertical: reproductor -> info de pista -> lista */
+    #top-player-panel {
+        order: 1;
+    }
+
+    #current-track-info {
+        order: 2;
+        margin-bottom: 3vh;
+    }
+
+    #right-column {
+        order: 3;
+        min-height: 70vh;
+    }
+
+    #current-track-title {
+        font-size: 1.4rem;
+    }
+
+    #current-track-author {
+        font-size: 1rem;
+    }
+
+    .yt-card {
+        gap: 12px;
+        padding: 8px;
     }
 }
 
@@ -626,7 +869,7 @@ body {
     outline: none;
     background: transparent;
     font-family: inherit;
-    font-size: 0.875rem;
+    font-size: 1.25rem;
     color: var(--yt-text-primary);
     resize: none;
     padding: 4px 0;
@@ -646,9 +889,9 @@ body {
     background: var(--yt-red);
     color: #fff;
     border: none;
-    padding: 6px 14px;
-    border-radius: 18px;
-    font-size: 0.8rem;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -699,4 +942,247 @@ body {
     color: #ffffff;
     opacity: 1;
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+}
+
+/* --- FOCO VISIBLE (navegación por mando / D-pad) --- */
+.yt-card:focus,
+.btn-control:focus,
+#btn-comments:focus,
+#btn-dark-mode:focus,
+.btn-author-action:focus,
+.btn-send-comment:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 12px;
+}
+
+.yt-card:focus,
+.yt-card:focus-visible {
+    background: var(--yt-active-bg);
+    border-color: var(--yt-border);
+}
+
+.btn-control:focus,
+#btn-comments:focus {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+}
+
+#comment-input:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-bottom-color: var(--focus-ring);
+}
+
+/* --- MODAL DE DESBLOQUEO (código de acceso, funciona en TV sin prompt nativo) --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.72);
+    padding: var(--overscan-y) var(--overscan-x);
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-box {
+    width: min(620px, 90vw);
+    background: var(--yt-surface);
+    border: 1px solid var(--yt-border);
+    border-radius: 18px;
+    padding: 3vh 4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.2vh;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--yt-text-primary);
+    text-align: center;
+}
+
+.unlock-code-display {
+    font-size: 2.6rem;
+    letter-spacing: 0.6rem;
+    color: var(--yt-text-primary);
+    font-weight: 700;
+    min-height: 2.8rem;
+}
+
+.modal-error {
+    min-height: 1.3rem;
+    font-size: 1.05rem;
+    color: var(--yt-red);
+    font-weight: 600;
+    text-align: center;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4vh 1.2vw;
+    width: 100%;
+}
+
+.keypad-btn {
+    background: var(--yt-hover-bg);
+    border: 1px solid var(--yt-border);
+    color: var(--yt-text-primary);
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 1.6vh 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.keypad-btn:hover {
+    background: var(--yt-active-bg);
+}
+
+.keypad-btn-muted {
+    font-size: 1.05rem;
+    color: var(--yt-text-secondary);
+}
+
+.modal-btn {
+    border: none;
+    border-radius: 26px;
+    padding: 1.4vh 3vw;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+}
+
+.modal-btn-primary {
+    background: var(--yt-red);
+}
+
+.modal-btn-primary:hover {
+    background: #cc0000;
+}
+
+.keypad-btn:focus,
+.modal-btn:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* --- MODAL DE COMENTARIO DE INVITADO (/?nombre=guest) --- */
+.guest-modal-box {
+    align-items: stretch;
+    gap: 1.2vh;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.guest-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--yt-text-secondary);
+    text-align: left;
+}
+
+.guest-text-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--yt-border);
+    border-radius: 10px;
+    background: var(--yt-hover-bg);
+    color: var(--yt-text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.guest-text-input:focus {
+    border-color: var(--focus-ring);
+}
+
+.guest-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.guest-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--yt-border);
+    border-radius: 10px;
+    background: var(--yt-hover-bg);
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--yt-text-primary);
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.guest-option:hover {
+    background: var(--yt-active-bg);
+}
+
+.guest-option input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--yt-red);
+    cursor: pointer;
+}
+
+.guest-file-input {
+    width: 100%;
+    font-size: 0.9rem;
+    color: var(--yt-text-secondary);
+}
+
+.guest-image-preview {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    align-self: center;
+    border: 2px solid var(--yt-border);
+    background: var(--yt-hover-bg);
+}
+
+.guest-upload-status {
+    min-height: 1.1rem;
+    font-size: 0.9rem;
+    color: var(--yt-text-secondary);
+    text-align: center;
+}
+
+.guest-confirm-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #4caf50;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    align-self: center;
+}
+
+.guest-confirm-text {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--yt-text-primary);
+    text-align: center;
+    line-height: 1.4;
 }
