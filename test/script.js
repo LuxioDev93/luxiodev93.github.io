@@ -1167,6 +1167,35 @@ function submitUnlockCode() {
     }
 }
 
+/* --- MODO CLARO / OSCURO --- */
+function updateThemeIcon() {
+    const isDark = document.body.classList.contains('dark-mode');
+    const moon = document.getElementById('icon-moon');
+    const sun = document.getElementById('icon-sun');
+    if (moon) moon.style.display = isDark ? 'none' : 'block';
+    if (sun) sun.style.display = isDark ? 'block' : 'none';
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    try {
+        localStorage.setItem('luxio-theme', isDark ? 'dark' : 'light');
+    } catch (e) {}
+    updateThemeIcon();
+}
+
+function initTheme() {
+    let saved = null;
+    try {
+        saved = localStorage.getItem('luxio-theme');
+    } catch (e) {}
+    if (saved === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    updateThemeIcon();
+}
+
 /* --- EVENT LISTENERS --- */
 function on(id, evt, fn) {
     const el = document.getElementById(id);
@@ -1182,6 +1211,7 @@ on('btn-share', 'click', shareCurrentSong);
 on('btn-fullscreen', 'click', toggleFullscreen);
 on('btn-comments', 'click', toggleCommentsPanel);
 on('btn-submit-comment', 'click', handleCommentSubmit);
+on('btn-dark-mode', 'click', toggleDarkMode);
 
 // Listener para el contador de caracteres y auto-expandir textarea
 const commentInput = document.getElementById('comment-input');
@@ -1456,6 +1486,7 @@ function startHiddenVideoLoop() {
 
 /* --- INICIALIZACIÓN --- */
 window.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     checkUserAccess();
     checkServerStatus();
     startKeepScreenOnLoop();
