@@ -1,1776 +1,1188 @@
-// --- CONFIGURACIÓN DE SUPABASE ---
-const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
-
-// USA 'supabaseClient' EN LUGAR DE 'supabase' PARA EVITAR EL CHOQUE
-const supabaseClient = (window.supabase && window.supabase.createClient) 
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-    : null;
-
-// --- CONFIGURACIÓN IMGBB (subida de imágenes de invitados) ---
-const IMGBB_API_KEY = 'f05b3ed947457b6a36307813eee62c53';
-
-let currentUserName = null; // Se llena si entra con ?nombre=
-let isGuestMode = false;    // Se activa con ?nombre=guest
-let userCommentState = {
-    existingCommentId: null, // Guarda el ID si el usuario ya comentó esta canción
-    isEditing: false
-};
-
-// Mapa de avatares/usuarios fijos
-const USER_PROFILES = {
-    "cuco": {
-        nickname: "Nicolás_Numberblock",
-        avatar: "https://i.ibb.co/RTZVDY9h/nicoavatar.jpg"
-    }
-};
-const DEFAULT_AUTHOR = "Lux.io Music";
-
-
-
-let currentAudio = new Audio();
-let currentIndex = 0;
-let parsedLyrics = [];
-let isSingleSongMode = false;
-let activeAuthorFilter = null;
-let isRatedUnlocked = false;
-let isRepeatEnabled = false;
-let isCommentsOpen = false;
-let isEnglishVersion = false;
-
-let tapCount = 0;
-let tapTimer = null;
-
-currentAudio.volume = 0.75;
-
-function getRandomViews() {
-    const rangeChoice = Math.floor(Math.random() * 3);
-    let num;
-    if (rangeChoice === 0) {
-        num = Math.floor(Math.random() * 99) + 1;
-        return num.toString();
-    } else if (rangeChoice === 1) {
-        num = Math.floor(Math.random() * 999) + 1;
-        return `${num}K`;
-    } else {
-        num = (Math.random() * 9 + 1).toFixed(1);
-        if (num.endsWith('.0')) num = Math.floor(num);
-        return `${num}M`;
-    }
+:root {
+    --yt-bg: #ffffff;
+    --yt-surface: #f6f6f7;
+    --yt-surface-2: #ececee;
+    --yt-text-primary: #0f0f0f;
+    --yt-text-secondary: #606060;
+    --yt-hover-bg: #ececee;
+    --yt-active-bg: #dcdce0;
+    --yt-border: #d2d2d6;
+    --yt-red: #ff2d2d;
+    --focus-ring: #0f0f0f;
+    --topbar-bg: transparent;
+    --overscan-x: 2.2vw;
+    --overscan-y: 2vh;
+}
+
+body.dark-mode {
+    --yt-bg: #0b0b0f;
+    --yt-surface: #14141a;
+    --yt-surface-2: #1c1c24;
+    --yt-text-primary: #f4f4f6;
+    --yt-text-secondary: #9a9aa5;
+    --yt-hover-bg: #1c1c24;
+    --yt-active-bg: #2a2a34;
+    --yt-border: #2a2a34;
+    --focus-ring: #ffffff;
+    --topbar-bg: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0; 
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+    background-color: var(--yt-bg);
+    color: var(--yt-text-primary);
 }
 
-function getRandomTimeAgo() {
-    const type = Math.floor(Math.random() * 3);
-    if (type === 0) {
-        const days = Math.floor(Math.random() * 11) + 20;
-        return `hace ${days} d`;
-    } else if (type === 1) {
-        const months = Math.floor(Math.random() * 11) + 1;
-        return `hace ${months} m`;
-    } else {
-        const years = Math.floor(Math.random() * 2) + 1;
-        return `hace ${years} a`;
-    }
+/* --- BARRA SUPERIOR --- */
+#top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--overscan-x);
+    background: var(--topbar-bg);
+    z-index: 2000;
+}
+
+#brand-logo {
+    height: 4.4vh;
+    width: auto;
+    max-width: 24vw;
+    object-fit: contain;
+    display: block;
+}
+
+/* --- BOTÓN DE TEMA (CLARO / OSCURO) --- */
+.btn-dark-mode {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--yt-text-primary);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.1s ease, background 0.2s ease;
 }
 
-musicData.forEach(item => {
-    item.author = (item.author && item.author.trim() !== "") ? item.author : DEFAULT_AUTHOR;
-    item.rated = (item.rated && item.rated.toString().toLowerCase() === "on") ? "on" : "off";
-    item.views = getRandomViews();
-    item.timeAgo = getRandomTimeAgo();
-    if (!Array.isArray(item.coments) && typeof item.coments !== 'string') {
-        item.coments = [];
-    }
-});
-
-function slugify(text) {
-    if (!text) return '';
-    return text
-        .toString()
-        .toLowerCase()
-        .trim()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-');
-}
-
-function escapeHTML(str) {
-    if (!str) return '';
-    return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-}
-
-async function parseLRC(lrcUrl) {
-    if(!lrcUrl) return [];
-    
-    let lrcText = lrcUrl;
-    if (lrcUrl.startsWith('http://') || lrcUrl.startsWith('https://')) {
-        try {
-            const response = await fetch(lrcUrl);
-            if (!response.ok) throw new Error('Error al descargar letra');
-            lrcText = await response.text();
-        } catch (error) {
-            console.error('No se pudo cargar la letra desde la URL:', error);
-            return [];
-        }
-    }
+.btn-dark-mode:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: var(--yt-hover-bg);
+}
+
+.btn-dark-mode svg {
+    fill: currentColor;
+    display: block;
+}
+
+/* --- INDICADOR DE ESTADO DEL SERVIDOR --- */
+.server-status {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: background 0.3s ease;
+}
 
-    const lines = lrcText.split(/\r?\n/);
-    const lyrics = [];
-    const timeReg = /\[(\d{2}):(\d{2})[.:](\d{2,3})\]/;
-
-    lines.forEach(line => {
-        const match = timeReg.exec(line);
-        if (match) {
-            const minutes = parseInt(match[1]);
-            const seconds = parseInt(match[2]);
-            const milliseconds = parseInt(match[3]);
-            const time = minutes * 60 + seconds + (milliseconds / (match[3].length === 3 ? 1000 : 100));
-            const text = line.replace(timeReg, "").trim();
-            if (text) lyrics.push({ time, text });
-        }
-    });
-    return lyrics.sort((a, b) => a.time - b.time);
-}
-
-async function parseComments(comentsSource) {
-    if (!comentsSource) return [];
-    if (Array.isArray(comentsSource)) return comentsSource;
-
-    let textData = "";
-    if (typeof comentsSource === 'string' && (comentsSource.startsWith('http://') || comentsSource.startsWith('https://'))) {
-        try {
-            const response = await fetch(comentsSource);
-            if (!response.ok) throw new Error('Error al descargar comentarios');
-            textData = await response.text();
-        } catch (error) {
-            console.error('No se pudieron cargar los comentarios desde la URL:', error);
-            return [];
-        }
-    } else {
-        textData = comentsSource;
-    }
+.server-status.up {
+    color: #4caf50;
+}
 
-    try {
-        const parsed = JSON.parse(textData);
-        if (Array.isArray(parsed)) return parsed;
-    } catch (e) {
-        console.error('El archivo de comentarios no tiene un formato JSON válido:', e);
-    }
+.server-status.up #signal-icon rect {
+    fill: #4caf50;
+}
 
-    return [];
+.server-status.up #signal-icon #signal-x {
+    display: none !important;
 }
 
-function getActivePlaylist() {
-    let baseList = musicData;
+.server-status.down {
+    color: #f44336;
+}
 
-    if (!isRatedUnlocked) {
-        baseList = baseList.filter(item => item.rated !== "on");
-    }
+.server-status.down #signal-icon rect {
+    fill: #f44336;
+}
 
-    if (isSingleSongMode) return [musicData[currentIndex]];
-    
-    if (activeAuthorFilter) {
-        return baseList.filter(item => item.author === activeAuthorFilter);
-    }
-    return baseList;
-}
-
-function renderCardHTML(item, index, isActive = false) {
-    const authorClickAttr = (!isSingleSongMode) ? `onclick="event.stopPropagation(); filterByAuthor('${item.author}')"` : '';
-    const authorClass = (!isSingleSongMode) ? 'clickable-author' : '';
-
-    return `
-        <div class="yt-card ${isActive ? 'active' : ''}" id="item-${index}" tabindex="0" role="button" aria-label="${item.title} - ${item.author}" onclick="playTrack(${index})">
-            <div class="yt-thumb-container">
-                <img class="yt-thumb" src="${item.img}" alt="${item.title}" loading="lazy">
-                <span class="playing-badge">Sonando</span>
-            </div>
-            <div class="yt-info">
-                <h3 class="yt-title">${item.title}</h3>
-                <p class="yt-author ${authorClass}" ${authorClickAttr}>${item.author}</p>
-                <p class="yt-meta">
-                    <span class="yt-meta-play-icon"></span>${item.views}
-                    <span class="yt-dot-separator">•</span>
-                    <span>${item.timeAgo}</span>
-                </p>
-            </div>
-        </div>
-    `;
-}
-
-function updateTrackUI(song) {
-    document.title = `${song.title} - ${song.author}`;
-    document.getElementById('current-track-title').innerText = song.title;
-    
-    const authorEl = document.getElementById('current-track-author');
-    authorEl.innerText = song.author;
-    
-    if (!isSingleSongMode) {
-        authorEl.classList.add('clickable-author');
-        authorEl.onclick = () => filterByAuthor(song.author);
-    } else {
-        authorEl.classList.remove('clickable-author');
-        authorEl.onclick = null;
-    }
+.server-status.down #signal-icon #signal-x {
+    display: block !important;
+    stroke: #f44336;
 }
 
-function loadPlaylist() {
-    const container = document.getElementById('playlist');
-    const header = document.getElementById('playlist-header');
-    const authorActions = document.getElementById('author-actions');
-    
-    if (isSingleSongMode) {
-        const song = musicData[currentIndex];
-        header.innerText = "Canción compartida";
-        authorActions.style.display = 'none';
-        container.innerHTML = renderCardHTML(song, currentIndex, true);
-    } else {
-        if (activeAuthorFilter) {
-            header.innerText = `Canciones de: ${activeAuthorFilter}`;
-            authorActions.style.display = 'flex';
-        } else {
-            header.innerText = "A continuación";
-            authorActions.style.display = 'none';
-        }
-
-        container.innerHTML = musicData.map((item, index) => {
-            if (!isRatedUnlocked && item.rated === "on") {
-                return '';
-            }
-
-            if (activeAuthorFilter && item.author !== activeAuthorFilter) {
-                return '';
-            }
-            return renderCardHTML(item, index, index === currentIndex);
-        }).join('');
-    }
+.server-status.unknown {
+    color: #ff9800;
 }
 
-function filterByAuthor(authorName) {
-    if (isSingleSongMode) return;
-    activeAuthorFilter = authorName;
-    loadPlaylist();
-
-    const currentSong = musicData[currentIndex];
-    if (currentSong.author !== activeAuthorFilter) {
-        const firstAuthorSongIndex = musicData.findIndex(s => s.author === activeAuthorFilter && (isRatedUnlocked || s.rated !== "on"));
-        if (firstAuthorSongIndex !== -1) {
-            playTrack(firstAuthorSongIndex);
-        }
-    }
+.server-status.unknown #signal-icon rect {
+    fill: #ff9800;
 }
 
-function clearAuthorFilter() {
-    activeAuthorFilter = null;
-    loadPlaylist();
+#status-text {
+    text-transform: uppercase;
 }
 
-function shareAuthorList() {
-    if (!activeAuthorFilter) return;
-    const baseUrl = window.location.origin + window.location.pathname;
-    const shareUrl = `${baseUrl}?author=${slugify(activeAuthorFilter)}`;
+/* --- LAYOUT PRINCIPAL: 2 COLUMNAS (izq. reproductor / der. lista) --- */
+#main-layout {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 68fr 32fr;
+    gap: 2vw;
+    width: 100%;
+    height: 100vh;
+    padding: calc(8vh + var(--overscan-y)) var(--overscan-x) var(--overscan-y) var(--overscan-x);
+    box-sizing: border-box;
+    overflow: hidden;
+}
 
-    copyToClipboard(shareUrl).then(() => {
-        showToast('¡Enlace de la lista copiado! 📋');
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-    });
+#left-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
 }
 
-/* --- CONTROL DE ACCESO POR URL --- */
-function checkUserAccess() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const nombreParam = urlParams.get('nombre');
+#right-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
 
-    if (nombreParam) {
-        currentUserName = nombreParam.toLowerCase();
+/* --- REPRODUCTOR --- */
+#top-player-panel {
+    width: 100%;
+    padding: 0;
+    background: transparent;
+}
 
-        if (currentUserName === 'guest') {
-            isGuestMode = true;
-        }
+#player-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000000;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
 
-        const profile = USER_PROFILES[currentUserName] || {
-            nickname: nombreParam,
-            avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${nombreParam}`
-        };
+#player-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(8px);
+    opacity: 0.35;
+    z-index: 1;
+    transition: background-image 0.5s ease;
+}
 
-        const formWrapper = document.getElementById('comment-form-wrapper');
-        const userAvatarEl = document.getElementById('user-avatar');
-        
-        if (formWrapper && userAvatarEl) {
-            formWrapper.style.display = 'block';
-            userAvatarEl.src = profile.avatar;
-        }
+#player-overlays {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1;
+}
 
-        if (isGuestMode) {
-            const submitBtn = document.getElementById('btn-submit-comment');
-            if (submitBtn) submitBtn.innerText = 'Enviar';
-        }
-    }
+.player-overlay-img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
 }
 
-/* --- PANEL DE COMENTARIOS CON SUPABASE --- */
-/* --- PANEL DE COMENTARIOS CON SUPABASE --- */
-async function getSongComments() {
-    const song = musicData[currentIndex];
-    if (!song) return;
-
-    let staticCommentsRaw = [];
-
-    // 1. Cargar comentarios estáticos de GitHub (SIEMPRE SE CARGAN)
-    if (song.coments) {
-        try {
-            staticCommentsRaw = await parseComments(song.coments);
-        } catch (e) {
-            console.warn("Error procesando comentarios de GitHub:", e);
-            staticCommentsRaw = [];
-        }
-    }
+#anim-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
 
-    let combinedComments = staticCommentsRaw.map((c, index) => {
-        if (Array.isArray(c)) {
-            return {
-                id: `static-${index}`,
-                username: c[0] || 'Anónimo',
-                avatar_url: c[1] || 'https://api.dicebear.com/7.x/bottts/svg?seed=static',
-                comment_text: c[2] || '',
-                author_name: c[0] || 'Anónimo',
-                is_static: true
-            };
-        }
-        return { ...c, is_static: true };
-    });
-
-    // Resetear el estado del comentario del usuario para esta canción
-    userCommentState.existingCommentId = null;
-
-    // 2. Cargar comentarios de Supabase
-    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-        try {
-            const songSlug = slugify(song.title);
-            const { data, error } = await supabaseClient
-                .from('comments')
-                .select('*')
-                .eq('song_slug', songSlug)
-                .order('created_at', { ascending: false });
-
-            if (!error && data && data.length > 0) {
-                const dbComments = data.map(item => {
-                    // Verificar si el usuario logueado ya comentó esta canción
-                    // (los invitados siempre pueden volver a comentar)
-                    if (!isGuestMode && currentUserName && item.author_name.toLowerCase() === currentUserName.toLowerCase()) {
-                        userCommentState.existingCommentId = item.id;
-                    }
-
-                    return {
-                        id: item.id,
-                        username: item.username,
-                        avatar_url: item.avatar_url,
-                        comment_text: item.comment_text,
-                        author_name: item.author_name,
-                        is_static: false
-                    };
-                });
-                // Colocar los comentarios de Supabase al inicio
-                combinedComments = [...dbComments, ...combinedComments];
-            }
-        } catch (dbErr) {
-            console.warn("Error al conectar con Supabase:", dbErr);
-        }
-    }
+.anim-overlay-img {
+    position: absolute;
+    display: none;
+}
 
-    // 3. Controlar la visibilidad de la caja de comentarios (comment-input-row)
-    const inputRow = document.querySelector('.comment-input-row');
-    const formWrapper = document.getElementById('comment-form-wrapper');
-
-    if (formWrapper) {
-        if (currentUserName) {
-            formWrapper.style.display = 'block'; // El usuario tiene sesión activa por URL
-            
-            if (inputRow) {
-                // Si ya comentó en esta canción y NO está editando, se oculta la barra de escribir
-                if (userCommentState.existingCommentId && !userCommentState.isEditing) {
-                    inputRow.style.display = 'none';
-                } else {
-                    inputRow.style.display = 'flex';
-                }
-            }
-        } else {
-            formWrapper.style.display = 'none'; // Si no hay usuario en URL, se oculta la barra
-        }
-    }
+#lyrics-display {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
 
-    // 4. Renderizar la lista combinada (GitHub + Supabase)
-    renderComments(combinedComments);
+/* Subtitulos sobre la barra de progreso solo para canciones con img_2 */
+#player-container.has-img2 #lyrics-display {
+    position: absolute;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    flex: none;
+    padding: 0 20px;
+    align-items: flex-end;
+    pointer-events: none;
 }
 
-function renderComments(commentsList) {
-    const container = document.getElementById('comments-list');
-    if (!container) return;
+/* Sin blur en la imagen base cuando hay img_2 */
+#player-container.has-img2 #player-bg {
+    filter: none;
+    opacity: 1;
+}
 
-    container.innerHTML = '';
+#lyric-text {
+    color: #ffffff;
+    font-size: clamp(1.2rem, 3.5vw, 2.5rem); 
+    line-height: 1.3;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    transition: opacity 0.3s ease; 
+    margin: 0;
+}
 
-    if (!Array.isArray(commentsList) || commentsList.length === 0) {
-        container.innerHTML = '<p class="no-comments">No hay comentarios aún. ¡Sé el primero en comentar!</p>';
-        return;
-    }
+/* --- PANTALLA COMPLETA: subtítulos (letra) a ancho casi total --- */
+#player-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    aspect-ratio: auto;
+    border-radius: 0;
+}
 
-    commentsList.forEach(comment => {
-        const commentEl = document.createElement('div');
-        commentEl.className = 'comment-item';
-        
-        const name = comment.username || comment.author_name || 'Anónimo';
-        const avatar = comment.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
-        const text = escapeHTML(comment.comment_text || '');
-
-        const isOwner = currentUserName && 
-                        !isGuestMode &&
-                        !comment.is_static && 
-                        (comment.author_name.toLowerCase() === currentUserName.toLowerCase());
-
-        let actionsHTML = '';
-        if (isOwner) {
-            actionsHTML = `
-                <div class="comment-actions">
-                    <button class="btn-comment-action" onclick="prepareEditComment('${comment.id}', '${text.replace(/'/g, "\\'")}')">Editar</button>
-                    <button class="btn-comment-action btn-delete" onclick="deleteComment('${comment.id}')">Eliminar</button>
-                </div>
-            `;
-        }
-
-        commentEl.innerHTML = `
-            <img src="${avatar}" 
-                 alt="${name}" 
-                 class="comment-avatar" 
-                 onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}';">
-            <div class="comment-content">
-                <div class="comment-header-row">
-                    <span class="comment-author">${name}</span>
-                    ${actionsHTML}
-                </div>
-                <p class="comment-text">${text}</p>
-            </div>
-        `;
-        container.appendChild(commentEl);
-    });
-}
-
-async function handleCommentSubmit() {
-    // Los invitados pasan por el modal de nombre + imagen antes de guardar
-    if (isGuestMode) {
-        openGuestModal();
-        return;
-    }
+#player-container:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+}
 
-    const input = document.getElementById('comment-input');
-    const text = input.value.trim();
-    if (!text || !currentUserName || !supabaseClient) return;
+#player-container:fullscreen #lyrics-display,
+#player-container:-webkit-full-screen #lyrics-display {
+    padding: 3vh 2vw;
+}
 
-    if (text.length > 100) {
-        alert("El comentario no puede superar los 100 caracteres.");
-        return;
-    }
+#player-container:fullscreen #lyric-text,
+#player-container:-webkit-full-screen #lyric-text {
+    font-size: clamp(1.6rem, 4.8vw, 5.6rem);
+    line-height: 1.15;
+    max-width: 100%;
+}
 
-    const song = musicData[currentIndex];
-    const songSlug = slugify(song.title);
-    const profile = USER_PROFILES[currentUserName] || {
-        nickname: currentUserName,
-        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUserName}`
-    };
-
-    if (userCommentState.existingCommentId) {
-        await supabaseClient
-            .from('comments')
-            .update({ comment_text: text })
-            .eq('id', userCommentState.existingCommentId);
-    } else {
-        await supabaseClient
-            .from('comments')
-            .insert([{
-                song_slug: songSlug,
-                author_name: currentUserName,
-                username: profile.nickname,
-                avatar_url: profile.avatar,
-                comment_text: text
-            }]);
-    }
+#player-controls {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    padding: 10px 16px 12px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-    input.value = "";
-    input.style.height = 'auto';
-    
-    const charCounter = document.getElementById('char-counter');
-    if (charCounter) {
-        charCounter.innerText = "0/100";
-        charCounter.classList.remove('limit-near');
-    }
+.time-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    const submitBtn = document.getElementById('btn-submit-comment');
-    if (submitBtn) submitBtn.innerText = "Comentar";
+.time-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+    transition: height 0.1s ease;
+}
 
-    userCommentState.isEditing = false;
-    getSongComments();
+.time-bar:hover {
+    height: 6px;
 }
 
-function prepareEditComment(id, text) {
-    userCommentState.isEditing = true;
-    userCommentState.existingCommentId = id;
+.time-progress {
+    height: 100%;
+    width: 0%;
+    background: var(--yt-red);
+    border-radius: 2px;
+}
 
-    const inputRow = document.querySelector('.comment-input-row');
-    if (inputRow) inputRow.style.display = 'flex';
+.time-text {
+    font-size: 12px;
+    color: #eeeeee;
+    min-width: 75px;
+    text-align: right;
+}
 
-    const input = document.getElementById('comment-input');
-    input.value = text;
-    input.focus();
-    input.style.height = 'auto';
-    input.style.height = (input.scrollHeight) + 'px';
+.controls-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-    const charCounter = document.getElementById('char-counter');
-    if (charCounter) {
-        charCounter.innerText = `${text.length}/100`;
-    }
+.controls-left-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
 
-    const submitBtn = document.getElementById('btn-submit-comment');
-    if (submitBtn) submitBtn.innerText = "Guardar";
-}
-
-async function deleteComment(id) {
-    if (!confirm("¿Deseas eliminar tu comentario?")) return;
-    
-    if (supabaseClient) {
-        await supabaseClient.from('comments').delete().eq('id', id);
-        
-        const input = document.getElementById('comment-input');
-        if (input) input.value = "";
-        
-        const charCounter = document.getElementById('char-counter');
-        if (charCounter) {
-            charCounter.innerText = "0/100";
-            charCounter.classList.remove('limit-near');
-        }
-
-        userCommentState.existingCommentId = null;
-        userCommentState.isEditing = false;
-        
-        const submitBtn = document.getElementById('btn-submit-comment');
-        if (submitBtn) submitBtn.innerText = "Comentar";
-
-        getSongComments();
-    }
+.controls-right-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* --- COMENTARIOS DE INVITADO (/?nombre=guest) --- */
-let isGuestModalOpen = false;
-let isGuestConfirmOpen = false;
-
-function getSelectedGuestImageOption() {
-    const selected = document.querySelector('input[name="guest-img-option"]:checked');
-    return selected ? selected.value : 'random';
-}
-
-function getLastUploadedGuestImage() {
-    try {
-        const links = JSON.parse(localStorage.getItem('imgbb_links')) || [];
-        if (Array.isArray(links) && links.length > 0) {
-            return links[links.length - 1];
-        }
-    } catch (e) {}
-    return null;
-}
-
-function saveGuestImageLocally(url) {
-    try {
-        const links = JSON.parse(localStorage.getItem('imgbb_links')) || [];
-        links.push(url);
-        localStorage.setItem('imgbb_links', JSON.stringify(links));
-    } catch (e) {}
-}
-
-function updateGuestImagePreview() {
-    const preview = document.getElementById('guest-image-preview');
-    const fileInput = document.getElementById('guest-file-input');
-    const statusEl = document.getElementById('guest-upload-status');
-    if (!preview) return;
-
-    const option = getSelectedGuestImageOption();
-
-    if (fileInput) fileInput.style.display = (option === 'upload') ? 'block' : 'none';
-
-    if (option === 'random') {
-        preview.style.display = 'block';
-        preview.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.random().toString(36).slice(2)}`;
-        if (statusEl) statusEl.innerText = '';
-    } else if (option === 'already') {
-        preview.style.display = 'none';
-        preview.removeAttribute('src');
-        if (statusEl) statusEl.innerText = '';
-    } else {
-        const file = fileInput && fileInput.files && fileInput.files[0];
-        if (file) {
-            preview.style.display = 'block';
-            preview.src = URL.createObjectURL(file);
-            if (statusEl) statusEl.innerText = '';
-        } else {
-            preview.style.display = 'none';
-            if (statusEl) statusEl.innerText = 'Selecciona una imagen para subir.';
-        }
-    }
+.nav-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10%;
 }
 
-function openGuestModal() {
-    isGuestModalOpen = true;
+.btn-control {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: transform 0.1s, opacity 0.2s;
+}
 
-    const err = document.getElementById('guest-modal-error');
-    if (err) err.innerText = '';
-    const statusEl = document.getElementById('guest-upload-status');
-    if (statusEl) statusEl.innerText = '';
+.btn-control:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
 
-    const nameInput = document.getElementById('guest-name-input');
-    if (nameInput) nameInput.value = '';
+.btn-control svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
 
-    const fileInput = document.getElementById('guest-file-input');
-    if (fileInput) fileInput.value = '';
+/* --- ESTILOS PARA EL BOTÓN DE REPETIR --- */
+#btn-repeat {
+    color: #888888;
+    opacity: 0.6;
+    transition: color 0.2s ease, opacity 0.2s ease, filter 0.2s ease, transform 0.1s;
+}
 
-    const uploadRadio = document.querySelector('input[name="guest-img-option"][value="upload"]');
-    if (uploadRadio) uploadRadio.checked = true;
+#btn-repeat.active {
+    color: #ffffff;
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
 
-    updateGuestImagePreview();
+/* --- INFO DE LA CANCIÓN --- */
+#current-track-info {
+    margin-top: 1.6vh;
+    padding: 0 0.4vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
 
-    const modal = document.getElementById('guest-modal');
-    if (modal) modal.classList.add('open');
+.track-info-left {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
 
-    if (nameInput) nameInput.focus();
+#current-track-title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--yt-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-function closeGuestModal() {
-    isGuestModalOpen = false;
-    const modal = document.getElementById('guest-modal');
-    if (modal) modal.classList.remove('open');
+#current-track-author {
+    margin: 4px 0 0 0;
+    font-size: 1.15rem;
+    color: var(--yt-text-secondary);
+    font-weight: 500;
+    display: inline-block;
 }
 
-function showGuestConfirmModal() {
-    isGuestConfirmOpen = true;
-    const modal = document.getElementById('guest-confirm-modal');
-    if (modal) modal.classList.add('open');
-    const btn = modal ? modal.querySelector('button') : null;
-    if (btn) btn.focus();
+.clickable-author {
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
-function closeGuestConfirmModal() {
-    isGuestConfirmOpen = false;
-    const modal = document.getElementById('guest-confirm-modal');
-    if (modal) modal.classList.remove('open');
+.clickable-author:hover {
+    color: var(--yt-text-primary);
+    text-decoration: underline;
 }
 
-async function uploadGuestImageToImgBB(file) {
-    const formData = new FormData();
-    formData.append('image', file);
+/* --- BOTÓN DE COMENTARIOS --- */
+#btn-comments {
+    flex-shrink: 0;
+    background: var(--yt-hover-bg);
+    border: 1px solid var(--yt-border);
+    color: var(--yt-text-secondary);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    margin-top: 2px;
+}
 
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: 'POST',
-        body: formData
-    });
-    const data = await response.json();
+#btn-comments:hover {
+    background: var(--yt-active-bg);
+    color: var(--yt-text-primary);
+}
 
-    if (!data || !data.success || !data.data || !data.data.url) {
-        const msg = (data && data.error && data.error.message) ? data.error.message : 'Error al subir la imagen';
-        throw new Error(msg);
-    }
-    return data.data.url;
+#btn-comments.active {
+    background: var(--yt-active-bg);
+    color: var(--yt-text-primary);
+    border-color: #c0c0c0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
 }
 
-async function resolveGuestImage(usuario) {
-    const option = getSelectedGuestImageOption();
+#btn-comments svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
 
-    if (option === 'random') {
-        return `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.random().toString(36).slice(2)}`;
-    }
+#share-toast {
+    position: absolute;
+    bottom: 60px;
+    right: 15px;
+    background: rgba(15, 15, 15, 0.9);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
 
-    if (option === 'already') {
-        return usuario || '';
-    }
+#share-toast.show {
+    opacity: 1;
+}
 
-    const fileInput = document.getElementById('guest-file-input');
-    const file = fileInput && fileInput.files && fileInput.files[0];
-    if (!file) {
-        throw new Error('Selecciona una imagen para subir o elige otra opción.');
-    }
+/* --- PANEL DE COMENTARIOS (superpuesto a la lista) --- */
+#comments-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    background: var(--yt-surface);
+    border: 1px solid var(--yt-border);
+    border-radius: 12px;
+    padding: 2vh 1.4vw;
+    box-sizing: border-box;
+    transform: translateX(105%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.3s ease;
+    box-shadow: -24px 0 48px rgba(0, 0, 0, 0.55);
+}
 
-    const url = await uploadGuestImageToImgBB(file);
-    saveGuestImageLocally(url);
-    return url;
+#comments-panel.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
 }
 
-async function submitGuestComment() {
-    const err = document.getElementById('guest-modal-error');
-    const statusEl = document.getElementById('guest-upload-status');
-    const okBtn = document.getElementById('btn-guest-ok');
+#comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.4vh;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 6px;
+}
 
-    const nameInput = document.getElementById('guest-name-input');
-    const usuario = nameInput ? nameInput.value.trim() : '';
+#comments-list::-webkit-scrollbar {
+    width: 5px;
+}
+#comments-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+#comments-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
 
-    const commentInputEl = document.getElementById('comment-input');
-    const comentario = commentInputEl ? commentInputEl.value.trim() : '';
+.comment-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
 
-    if (err) err.innerText = '';
+.comment-avatar {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--yt-hover-bg);
+    border: 1px solid var(--yt-border);
+}
 
-    if (!usuario) {
-        if (err) err.innerText = 'Escribe tu nombre de usuario.';
-        return;
-    }
-    if (!comentario) {
-        if (err) err.innerText = 'El comentario está vacío.';
-        return;
-    }
-    if (comentario.length > 100) {
-        if (err) err.innerText = 'El comentario no puede superar los 100 caracteres.';
-        return;
-    }
-    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-        if (err) err.innerText = 'No se pudo conectar con el servidor.';
-        return;
-    }
+.comment-body {
+    flex: 1;
+    min-width: 0;
+}
 
-    if (okBtn) okBtn.disabled = true;
-    if (statusEl) statusEl.innerText = 'Enviando...';
-
-    try {
-        const imageValue = await resolveGuestImage(usuario);
-
-        // Título de la canción activa (desde el estado del reproductor)
-        const currentSong = musicData[currentIndex];
-        const songTitle = currentSong ? currentSong.title : '';
-
-        // Objeto JSON: { "song_title": ["usuario", "image_url_o_flag", "comentario"] }
-        const payload = { [songTitle]: [usuario, imageValue, comentario] };
-
-        const { error } = await supabaseClient
-            .from('guest_comments')
-            .insert([{ payload }]);
-
-        if (error) throw new Error(error.message || 'Error al guardar el comentario');
-
-        closeGuestModal();
-
-        if (commentInputEl) {
-            commentInputEl.value = '';
-            commentInputEl.style.height = 'auto';
-        }
-        const counter = document.getElementById('char-counter');
-        if (counter) {
-            counter.innerText = '0/100';
-            counter.classList.remove('limit-near');
-        }
-
-        showGuestConfirmModal();
-    } catch (e) {
-        if (err) err.innerText = e.message || 'Error al enviar el comentario.';
-        if (statusEl) statusEl.innerText = '';
-    } finally {
-        if (okBtn) okBtn.disabled = false;
-    }
+.comment-username {
+    margin: 0 0 6px 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--yt-text-primary);
 }
 
-async function openCommentsPanel() {
-    isCommentsOpen = true;
-    document.getElementById('comments-panel').classList.add('open');
-    document.getElementById('btn-comments').classList.add('active');
-    
-    // 🟢 OBLIGATORIO: Llama a getSongComments para consultar la BD y GitHub al abrir
-    await getSongComments();
+.comment-text {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--yt-text-secondary);
+    line-height: 1.4;
+    word-wrap: break-word;
 }
 
-function closeCommentsPanel() {
-    isCommentsOpen = false;
-    document.getElementById('comments-panel').classList.remove('open');
-    document.getElementById('btn-comments').classList.remove('active');
+.no-comments {
+    text-align: center;
+    padding: 24px 8px;
+    font-size: 1.4rem;
+    color: var(--yt-text-secondary);
+    font-weight: 500;
 }
 
-function toggleCommentsPanel() {
-    if (isCommentsOpen) {
-        closeCommentsPanel();
-    } else {
-        openCommentsPanel();
-    }
+/* --- PLAYLIST --- */
+#playlist-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    overflow-y: auto;
+    padding-right: 6px;
 }
 
-async function playTrack(index) {
-    if (index < 0) index = 0;
-    if (index >= musicData.length) index = 0;
+.playlist-header-container {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1vw;
+    padding: 0.6vh 0 1.2vh 0;
+    background: var(--yt-bg);
+}
 
-    if (!isRatedUnlocked && musicData[index].rated === "on") {
-        const validIndex = musicData.findIndex(s => s.rated !== "on");
-        index = validIndex !== -1 ? validIndex : 0;
-    }
+.playlist-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--yt-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
 
-    closeCommentsPanel();
-
-    // Reset de overlays y animaciones de la canción anterior
-    resetOverlayImages();
-    stopAnimOverlays();
-
-    currentIndex = index;
-    const song = musicData[currentIndex];
-
-    // Clase has-img2: subtitulos sobre la barra de progreso solo si la cancion tiene img_2
-    const playerContainer = document.getElementById('player-container');
-    if (playerContainer) {
-        if (Array.isArray(song.img_2) && song.img_2.length > 0) {
-            playerContainer.classList.add('has-img2');
-        } else {
-            playerContainer.classList.remove('has-img2');
-        }
-    }
+.playlist-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-    updateTrackUI(song);
-
-    const hasEnglish = song.audio_eng || song.lyrics_eng;
-    const btnEnglish = document.getElementById('btn-english');
-    
-    if (hasEnglish) {
-        btnEnglish.style.display = 'flex';
-    } else {
-        btnEnglish.style.display = 'none';
-        isEnglishVersion = false;
-    }
-    updateEnglishButtonUI();
-
-    const activeAudio = (isEnglishVersion && song.audio_eng) ? song.audio_eng : song.audio;
-    const activeLyrics = (isEnglishVersion && song.lyrics_eng) ? song.lyrics_eng : song.lyrics;
-
-    currentAudio.src = activeAudio;
-    currentAudio.load();
-    
-    parsedLyrics = [];
-    document.getElementById('lyric-text').innerText = "Cargando letra...";
-    document.getElementById('player-bg').style.backgroundImage = `url('${song.img}')`;
-
-    loadPlaylist();
-
-    // Iniciar overlays y animaciones de la nueva canción
-    startAnimOverlays();
-
-    try {
-        parsedLyrics = await parseLRC(activeLyrics);
-        if (parsedLyrics.length === 0) {
-            document.getElementById('lyric-text').innerText = "🎵 Instrumental o sin letra disponible";
-        }
-    } catch (e) {
-        document.getElementById('lyric-text').innerText = "🎵 Disfruta la música";
-    }
+.btn-author-action {
+    background: var(--yt-hover-bg);
+    border: 1px solid var(--yt-border);
+    color: var(--yt-text-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s ease;
+}
 
-    if (isCommentsOpen) {
-        renderComments();
-    }
+.btn-author-action:hover {
+    background: var(--yt-active-bg);
+}
 
-    currentAudio.play().then(() => {
-        updatePlayPauseIcon(true);
-    }).catch(e => {
-        console.log('Autoplay bloqueado por el navegador, pulsa play:', e);
-        updatePlayPauseIcon(false);
-    });
-}
-
-function toggleEnglishVersion() {
-    const song = musicData[currentIndex];
-    const hasEnglish = song.audio_eng || song.lyrics_eng;
-    if (!hasEnglish) return;
-
-    isEnglishVersion = !isEnglishVersion;
-    updateEnglishButtonUI();
-    
-    if (isEnglishVersion) {
-        showToast("🇬🇧 Versión en inglés activada");
-    } else {
-        showToast("🇪🇸 Versión original activada");
-    }
+.btn-author-action.btn-reset {
+    padding: 5px 8px;
+    border-radius: 50%;
+    color: var(--yt-text-secondary);
+}
 
-    playTrack(currentIndex);
+.yt-card {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    gap: 16px;
+    scroll-margin: 90px;
 }
 
-function updateEnglishButtonUI() {
-    const btnEnglish = document.getElementById('btn-english');
-    if (isEnglishVersion) {
-        btnEnglish.classList.add('active');
-    } else {
-        btnEnglish.classList.remove('active');
-    }
+.yt-card:hover {
+    background: var(--yt-hover-bg);
 }
 
-function playNextTrack() {
-    const currentPlaylist = getActivePlaylist();
-    if (currentPlaylist.length === 0) return;
+.yt-card.active {
+    background: var(--yt-active-bg);
+}
 
-    let currentPosInFiltered = currentPlaylist.findIndex(s => s === musicData[currentIndex]);
-    let nextPos = currentPosInFiltered + 1;
+.yt-thumb-container {
+    position: relative;
+    width: 220px;
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+}
 
-    if (nextPos >= currentPlaylist.length) {
-        nextPos = 0;
-    }
+.yt-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-    const nextSong = currentPlaylist[nextPos];
-    const globalIndex = musicData.findIndex(s => s === nextSong);
-    playTrack(globalIndex !== -1 ? globalIndex : 0);
+.playing-badge {
+    display: none;
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 4px;
+    border-radius: 4px;
 }
 
-function playPrevTrack() {
-    const currentPlaylist = getActivePlaylist();
-    if (currentPlaylist.length === 0) return;
+.yt-card.active .playing-badge {
+    display: block;
+}
 
-    let currentPosInFiltered = currentPlaylist.findIndex(s => s === musicData[currentIndex]);
-    let prevPos = currentPosInFiltered - 1;
+.yt-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
 
-    if (prevPos < 0) {
-        prevPos = currentPlaylist.length - 1;
-    }
+.yt-title {
+    margin: 0 0 4px 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--yt-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-    const prevSong = currentPlaylist[prevPos];
-    const globalIndex = musicData.findIndex(s => s === prevSong);
-    playTrack(globalIndex !== -1 ? globalIndex : 0);
-}
-
-function togglePlayPause() {
-    if (currentAudio.paused) {
-        currentAudio.play();
-        updatePlayPauseIcon(true);
-    } else {
-        currentAudio.pause();
-        updatePlayPauseIcon(false);
-    }
+.yt-author {
+    margin: 0 0 2px 0;
+    font-size: 0.95rem;
+    color: var(--yt-text-secondary);
+    font-weight: 400;
+    display: inline-block;
 }
 
-function updatePlayPauseIcon(isPlaying) {
-    document.getElementById('icon-play').style.display = isPlaying ? 'none' : 'block';
-    document.getElementById('icon-pause').style.display = isPlaying ? 'block' : 'none';
+.yt-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--yt-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-function toggleRepeat() {
-    isRepeatEnabled = !isRepeatEnabled;
-    const btnRepeat = document.getElementById('btn-repeat');
-    if (isRepeatEnabled) {
-        btnRepeat.classList.add('active');
-        showToast("🔁 Modo repetición activado");
-    } else {
-        btnRepeat.classList.remove('active');
-        showToast("🔁 Modo repetición desactivado");
-    }
+.yt-meta-play-icon {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid var(--yt-text-secondary);
+    margin-right: 2px;
+}
+
+.yt-dot-separator {
+    margin: 0 2px;
+}
+
+#dev-unlock-trigger {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 2.4vh 8px;
+    font-size: 0.85rem;
+    color: var(--yt-text-secondary);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-function formatTime(seconds) {
-    if (isNaN(seconds)) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return mins + ":" + (secs < 10 ? "0" : "") + secs;
-}
-
-function updateLyrics(currentTime) {
-    if (!parsedLyrics || parsedLyrics.length === 0) return;
-    let currentText = "🎵 ... 🎵";
-    
-    for (let i = 0; i < parsedLyrics.length; i++) {
-        if (currentTime >= parsedLyrics[i].time) {
-            currentText = parsedLyrics[i].text;
-        } else {
-            break;
-        }
+@media (max-width: 480px) {
+    .yt-thumb-container {
+        width: 110px;
     }
-    document.getElementById('lyric-text').innerText = currentText;
-}
-
-/* --- IMÁGENES ADICIONALES CON TIMESTAMP (img_2, img_3, ...) --- */
-function parseTimestamp(str) {
-    if (!str) return 0;
-    const parts = str.split(':');
-    if (parts.length === 2) {
-        const min = parseInt(parts[0], 10) || 0;
-        const sec = parseFloat(parts[1]) || 0;
-        return min * 60 + sec;
+
+    .yt-title {
+        font-size: 0.88rem;
     }
-    return parseFloat(str) || 0;
-}
-
-function updateOverlayImages(currentTime) {
-    const overlaysContainer = document.getElementById('player-overlays');
-    if (!overlaysContainer) return;
-
-    const song = musicData[currentIndex];
-    if (!song) return;
-
-    // Ocultar animaciones de img_anim cuando la primera img_2 aparece
-    if (Array.isArray(song.img_2) && song.img_2.length > 0) {
-        const firstImg2Time = parseTimestamp(song.img_2[0].time);
-        const animLayer = document.getElementById('anim-layer');
-        if (animLayer && currentTime >= firstImg2Time) {
-            const baseAnims = animLayer.querySelectorAll('[data-anim-idx^="base-"]');
-            baseAnims.forEach(el => {
-                el.style.display = 'none';
-            });
-            // Cancelar timeouts de img_anim
-            imgAnimTimeouts.forEach(id => clearTimeout(id));
-            imgAnimTimeouts = [];
-        }
+
+    .comment-avatar {
+        width: 56px;
+        height: 56px;
     }
+}
 
-    // Mostrar imágenes cuyo timestamp <= currentTime
-    if (!Array.isArray(song.img_2)) return;
-
-    // Solo la img_2 más reciente cuyo tiempo ya pasó está activa
-    // (las anteriores se anulan al aparecer una nueva)
-    let activeOverlayIdx = -1;
-    song.img_2.forEach((imgEntry, idx) => {
-        if (currentTime >= parseTimestamp(imgEntry.time)) activeOverlayIdx = idx;
-    });
-
-    song.img_2.forEach((imgEntry, idx) => {
-        let el = overlaysContainer.querySelector(`[data-overlay-idx="${idx}"]`);
-        const shouldShow = (idx === activeOverlayIdx);
-
-        if (shouldShow && !el) {
-            el = document.createElement('img');
-            el.className = 'player-overlay-img';
-            el.src = imgEntry.url;
-            el.dataset.overlayIdx = idx;
-            overlaysContainer.appendChild(el);
-        } else if (!shouldShow && el) {
-            el.remove();
-        }
-    });
-}
-
-function resetOverlayImages() {
-    const overlaysContainer = document.getElementById('player-overlays');
-    if (overlaysContainer) overlaysContainer.innerHTML = '';
-    const animLayer = document.getElementById('anim-layer');
-    if (animLayer) animLayer.innerHTML = '';
-}
-
-/* --- ANIMACIONES DENTRO DE img_2 (img_2[i].anim) --- */
-function updateImg2Anims(currentTime) {
-    const song = musicData[currentIndex];
-    if (!song || !Array.isArray(song.img_2)) return;
-
-    const animLayer = document.getElementById('anim-layer');
-    if (!animLayer) return;
-
-    // Obtener dimensiones del reproductor
-    const size = getPlayerSize();
-
-    // Solo la img_2 más reciente cuyo tiempo ya pasó está activa
-    // (al aparecer una nueva, la animación de la anterior se anula)
-    let activeIdx = -1;
-    song.img_2.forEach((imgEntry, idx) => {
-        if (currentTime >= parseTimestamp(imgEntry.time)) activeIdx = idx;
-    });
-
-    // PRIMERO: eliminar animaciones de imágenes que ya no están activas
-    const allImg2Anims = animLayer.querySelectorAll('[data-anim-idx^="img2-"]');
-    allImg2Anims.forEach(el => {
-        const parts = el.dataset.animIdx.split('-');
-        const imgIdx = parseInt(parts[1], 10);
-        if (imgIdx !== activeIdx) {
-            if (el._timeoutId) {
-                clearTimeout(el._timeoutId);
-                el._timeoutId = null;
-            }
-            el.remove();
-        }
-    });
-
-    // SEGUNDO: mostrar las animaciones de la imagen activa
-    if (activeIdx < 0) return;
-    const imgEntry = song.img_2[activeIdx];
-    if (!Array.isArray(imgEntry.anim) || imgEntry.anim.length === 0) return;
-
-    imgEntry.anim.forEach((anim, animIdx) => {
-        const dataIdx = `img2-${activeIdx}-${animIdx}`;
-        let el = animLayer.querySelector(`[data-anim-idx="${dataIdx}"]`);
-
-        if (!el) {
-            // Usar dimensiones de la imagen img_2 como referencia
-            const refW = anim.refWidth || 1365;
-            const refH = anim.refHeight || 768;
-            const effSize = size.ready ? size : { w: refW, h: refH, ready: true };
-            const scale = computeAnimScale(refW, refH, effSize);
-
-            const x = (anim.x || 0) * scale;
-            const y = (anim.y || 0) * scale;
-            const w = (anim.width || 136) * scale;
-            const h = (anim.height || 170) * scale;
-
-            const img = document.createElement('img');
-            img.className = 'anim-overlay-img';
-            img.src = anim.url;
-            img.dataset.animIdx = dataIdx;
-            img.style.display = 'block';
-            img.style.left = `${x}px`;
-            img.style.top = `${y}px`;
-            img.style.width = `${w}px`;
-            img.style.height = `${h}px`;
-
-            animLayer.appendChild(img);
-
-            // Intermitencia con tracking individual
-            const toggleVisibility = () => {
-                if (!img.parentNode) return;
-                const isVisible = img.style.display === 'block';
-                img.style.display = isVisible ? 'none' : 'block';
-                const delay = 500 + Math.random() * 300;
-                img._timeoutId = setTimeout(toggleVisibility, delay);
-            };
-            toggleVisibility();
-        }
-    });
-}
-
-let img2RefDimensions = {};
-function getImg2Dimensions(url, callback) {
-    if (img2RefDimensions[url]) {
-        callback(img2RefDimensions[url].w, img2RefDimensions[url].h);
-        return;
+/* --- MÓVIL / PANTALLAS VERTICALES (ancho < alto) --- */
+@media (max-aspect-ratio: 1/1) {
+    #main-layout {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+        gap: 0;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: calc(8vh + var(--overscan-y)) 4vw 4vh 4vw;
     }
-    const img = new Image();
-    img.onload = function() {
-        img2RefDimensions[url] = { w: this.naturalWidth, h: this.naturalHeight };
-        callback(this.naturalWidth, this.naturalHeight);
-    };
-    img.onerror = function() {
-        callback(690, 388);
-    };
-    img.src = url;
-}
-
-/* --- IMÁGENES ANIMADAS SUPERPUESAS (img2_anim[axb] e img_anim) --- */
-let animTimeouts = [];
-let imgAnimTimeouts = [];
-
-/* Resolución de referencia para las coordenadas de animación = dimensiones naturales de la imagen base */
-let animRefWidth = 690;
-let animRefHeight = 388;
-
-function updateAnimRefFromImage(imgUrl) {
-    const img = new Image();
-    img.onload = function() {
-        animRefWidth = this.naturalWidth;
-        animRefHeight = this.naturalHeight;
-    };
-    img.src = imgUrl;
-}
-
-/* Dimensiones del reproductor (indica si ya está maquetado) */
-function getPlayerSize() {
-    const playerContainer = document.getElementById('player-container');
-    const rect = playerContainer ? playerContainer.getBoundingClientRect() : null;
-    if (rect && rect.width > 0 && rect.height > 0) {
-        return { w: rect.width, h: rect.height, ready: true };
+
+    /* Flatten the left column so its children flow in the main stack */
+    #left-column {
+        display: contents;
     }
-    return { w: animRefWidth, h: animRefHeight, ready: false };
-}
-
-/* Escala uniforme segura: nunca 0 ni NaN (evita animaciones invisibles en webOS) */
-function computeAnimScale(refW, refH, size) {
-    const sx = size.w / refW;
-    const sy = size.h / refH;
-    let scale = Math.min(sx, sy);
-    if (!isFinite(scale) || scale <= 0) {
-        scale = (isFinite(sx) && sx > 0) ? sx : 1;
+
+    /* Orden vertical: reproductor -> info de pista -> lista */
+    #top-player-panel {
+        order: 1;
     }
-    return scale;
-}
-
-/* Crea una imagen de animación superpuesta con intermitencia */
-function createAnimImg(anim, dataIdx, scale, animLayer, timeouts) {
-    const naturalW = anim.width || 81;
-    const naturalH = anim.height || 102;
-
-    const x = (anim.x || 0) * scale;
-    const y = (anim.y || 0) * scale;
-    const w = naturalW * scale;
-    const h = naturalH * scale;
-
-    const img = document.createElement('img');
-    img.className = 'anim-overlay-img';
-    img.src = anim.url;
-    img.dataset.animIdx = dataIdx;
-    img.style.display = 'block';
-    img.style.left = `${x}px`;
-    img.style.top = `${y}px`;
-    img.style.width = `${w}px`;
-    img.style.height = `${h}px`;
-
-    animLayer.appendChild(img);
-
-    const toggleVisibility = () => {
-        if (!img.parentNode) return; // ya fue removido (compatible webOS; isConnected no existe en versiones antiguas)
-        const isVisible = img.style.display === 'block';
-        img.style.display = isVisible ? 'none' : 'block';
-        const delay = 500 + Math.random() * 300;
-        const timeoutId = setTimeout(toggleVisibility, delay);
-        timeouts.push(timeoutId);
-    };
-
-    toggleVisibility();
-}
-
-function startAnimOverlays(retry) {
-    retry = retry || 0;
-    stopAnimOverlays();
-
-    const song = musicData[currentIndex];
-    if (!song) return;
-
-    const animLayer = document.getElementById('anim-layer');
-    if (!animLayer) return;
-
-    // Medir el contenedor (síncrono, sin rAF, que puede no dispararse en webOS)
-    const size = getPlayerSize();
-    const scale = computeAnimScale(animRefWidth, animRefHeight, size);
-
-    // Animaciones sobre la imagen base (img_anim)
-    if (Array.isArray(song.img_anim)) {
-        song.img_anim.forEach((anim, idx) => {
-            createAnimImg(anim, `base-${idx}`, scale, animLayer, imgAnimTimeouts);
-        });
+
+    #current-track-info {
+        order: 2;
+        margin-bottom: 3vh;
     }
 
-    // Animaciones sobre imágenes img_2 (img2_anim) — compatibilidad legada
-    if (Array.isArray(song.img2_anim)) {
-        song.img2_anim.forEach((anim, idx) => {
-            createAnimImg(anim, `legacy2-${idx}`, scale, animLayer, animTimeouts);
-        });
+    #right-column {
+        order: 3;
+        min-height: 70vh;
     }
 
-    // Si el reproductor aún no tenía tamaño (webOS al entrar), reintentar recolocar
-    if (!size.ready && retry < 5) {
-        setTimeout(() => startAnimOverlays(retry + 1), 250);
+    #current-track-title {
+        font-size: 1.4rem;
     }
-}
 
-function stopAnimOverlays() {
-    animTimeouts.forEach(id => clearTimeout(id));
-    animTimeouts = [];
-    imgAnimTimeouts.forEach(id => clearTimeout(id));
-    imgAnimTimeouts = [];
-    const animLayer = document.getElementById('anim-layer');
-    if (animLayer) {
-        // Cancelar también los timeouts individuales de las animaciones de img_2
-        animLayer.querySelectorAll('[data-anim-idx^="img2-"]').forEach(el => {
-            if (el._timeoutId) {
-                clearTimeout(el._timeoutId);
-                el._timeoutId = null;
-            }
-        });
-        animLayer.innerHTML = '';
+    #current-track-author {
+        font-size: 1rem;
     }
-}
 
-function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        return navigator.clipboard.writeText(text);
-    } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        return new Promise((resolve, reject) => {
-            document.execCommand('copy') ? resolve() : reject();
-            textArea.remove();
-        });
+    .yt-card {
+        gap: 12px;
+        padding: 8px;
     }
 }
 
-function showToast(msg) {
-    const toast = document.getElementById('share-toast');
-    if (msg) toast.innerText = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-function shareCurrentSong() {
-    const song = musicData[currentIndex];
-    const baseUrl = window.location.origin + window.location.pathname;
-    const shareUrl = `${baseUrl}?song=${slugify(song.title)}`;
-
-    copyToClipboard(shareUrl).then(() => {
-        showToast('¡Enlace de la canción copiado! 📋');
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-    });
-}
-
-function toggleFullscreen() {
-    const playerContainer = document.getElementById('player-container');
-    if (!document.fullscreenElement) {
-        if (playerContainer.requestFullscreen) {
-            playerContainer.requestFullscreen();
-        } else if (playerContainer.webkitRequestFullscreen) {
-            playerContainer.webkitRequestFullscreen();
-        }
-        document.getElementById('icon-fullscreen-enter').style.display = 'none';
-        document.getElementById('icon-fullscreen-exit').style.display = 'block';
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        }
-        document.getElementById('icon-fullscreen-enter').style.display = 'block';
-        document.getElementById('icon-fullscreen-exit').style.display = 'none';
-    }
+/* --- ESTILOS PARA EL BOTÓN DE VERSIÓN EN INGLÉS --- */
+#btn-english {
+    color: #888888;
+    opacity: 0.6;
+    transition: color 0.2s ease, opacity 0.2s ease, filter 0.2s ease, transform 0.1s;
+}
+/* --- FORMULARIO DE COMENTARIOS --- */
+#comment-form-wrapper {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--yt-border);
+}
 
-    // Recolocar animaciones aunque webOS no dispare fullscreenchange/resize
-    scheduleRecalculate();
+.comment-input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
 }
 
-function handleDevTap() {
-    if (isRatedUnlocked) return;
+.input-container {
+    position: relative;
+    flex: 1;
+}
 
-    tapCount++;
-    clearTimeout(tapTimer);
+.char-counter {
+    position: absolute;
+    right: 0;
+    bottom: -18px;
+    font-size: 0.7rem;
+    color: var(--yt-text-secondary);
+    transition: color 0.2s ease;
+}
 
-    tapTimer = setTimeout(() => {
-        tapCount = 0;
-    }, 2000);
+/* Cambia a rojo cuando se acerca al límite */
+.char-counter.limit-near {
+    color: var(--yt-red);
+    font-weight: bold;
+}
 
-    if (tapCount >= 5) {
-        tapCount = 0;
-        openUnlockModal();
-    }
+#comment-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--yt-border);
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 1.25rem;
+    color: var(--yt-text-primary);
+    resize: none;
+    padding: 4px 0;
+    line-height: 1.4;
+    transition: border-color 0.2s ease;
 }
 
-/* --- MODAL DE DESBLOQUEO (código de acceso, sin prompt nativo de TV) --- */
-let isUnlockModalOpen = false;
-let unlockInput = "";
-const UNLOCK_CODE = "1725";
-
-function updateUnlockDisplay() {
-    const display = document.getElementById('unlock-code-display');
-    if (!display) return;
-    let s = "";
-    for (let i = 0; i < 4; i++) {
-        s += (i < unlockInput.length) ? "● " : "· ";
-    }
-    display.innerText = s.trim();
-}
-
-function openUnlockModal() {
-    isUnlockModalOpen = true;
-    unlockInput = "";
-    updateUnlockDisplay();
-    const err = document.getElementById('unlock-error');
-    if (err) err.innerText = "";
-    const modal = document.getElementById('unlock-modal');
-    if (modal) modal.classList.add('open');
-    const firstBtn = document.querySelector('#unlock-modal .keypad-btn');
-    if (firstBtn) firstBtn.focus();
-}
-
-function closeUnlockModal() {
-    isUnlockModalOpen = false;
-    const modal = document.getElementById('unlock-modal');
-    if (modal) modal.classList.remove('open');
-    const trigger = document.getElementById('dev-unlock-trigger');
-    if (trigger) trigger.focus();
-}
-
-function appendUnlockDigit(d) {
-    if (!isUnlockModalOpen) return;
-    if (unlockInput.length >= 4) return;
-    unlockInput += d;
-    updateUnlockDisplay();
-    if (unlockInput.length === 4) submitUnlockCode();
-}
-
-function backspaceUnlockDigit() {
-    if (!isUnlockModalOpen) return;
-    unlockInput = unlockInput.slice(0, -1);
-    updateUnlockDisplay();
-}
-
-function submitUnlockCode() {
-    if (unlockInput === UNLOCK_CODE) {
-        isRatedUnlocked = true;
-        closeUnlockModal();
-        loadPlaylist();
-        showToast("Contenido completo desbloqueado");
-    } else {
-        const err = document.getElementById('unlock-error');
-        if (err) err.innerText = "Código incorrecto. Inténtalo de nuevo.";
-        unlockInput = "";
-        updateUnlockDisplay();
-    }
+#comment-input::placeholder {
+    color: #888888;
 }
 
-/* --- MODO CLARO / OSCURO --- */
-function updateThemeIcon() {
-    const isDark = document.body.classList.contains('dark-mode');
-    const moon = document.getElementById('icon-moon');
-    const sun = document.getElementById('icon-sun');
-    if (moon) moon.style.display = isDark ? 'none' : 'block';
-    if (sun) sun.style.display = isDark ? 'block' : 'none';
-}
-
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    try {
-        localStorage.setItem('luxio-theme', isDark ? 'dark' : 'light');
-    } catch (e) {}
-    updateThemeIcon();
-}
-
-function initTheme() {
-    let saved = null;
-    try {
-        saved = localStorage.getItem('luxio-theme');
-    } catch (e) {}
-    if (saved === 'dark') {
-        document.body.classList.add('dark-mode');
-    }
-    updateThemeIcon();
-}
-
-/* --- EVENT LISTENERS --- */
-function on(id, evt, fn) {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener(evt, fn);
-}
-
-on('btn-play-pause', 'click', togglePlayPause);
-on('btn-english', 'click', toggleEnglishVersion);
-on('btn-prev', 'click', playPrevTrack);
-on('btn-next', 'click', playNextTrack);
-on('btn-repeat', 'click', toggleRepeat);
-on('btn-share', 'click', shareCurrentSong);
-on('btn-fullscreen', 'click', toggleFullscreen);
-on('btn-comments', 'click', toggleCommentsPanel);
-on('btn-submit-comment', 'click', handleCommentSubmit);
-on('btn-dark-mode', 'click', toggleDarkMode);
-
-// Listener para el contador de caracteres y auto-expandir textarea
-const commentInput = document.getElementById('comment-input');
-const charCounter = document.getElementById('char-counter');
-
-if (commentInput) commentInput.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-
-    const length = this.value.length;
-    if (charCounter) {
-        charCounter.innerText = `${length}/100`;
-        if (length >= 90) {
-            charCounter.classList.add('limit-near');
-        } else {
-            charCounter.classList.remove('limit-near');
-        }
-    }
-});
-
-// Listeners del modal de invitado (imagen de perfil)
-const guestFileInput = document.getElementById('guest-file-input');
-if (guestFileInput) guestFileInput.addEventListener('change', updateGuestImagePreview);
-
-document.querySelectorAll('input[name="guest-img-option"]').forEach(radio => {
-    radio.addEventListener('change', updateGuestImagePreview);
-});
-
-currentAudio.addEventListener('timeupdate', () => {
-    const current = currentAudio.currentTime;
-    const duration = currentAudio.duration;
-
-    if (!isNaN(duration) && duration > 0) {
-        const pct = (current / duration) * 100;
-        document.getElementById('time-progress').style.width = `${pct}%`;
-        document.getElementById('time-text').innerText = `${formatTime(current)} / ${formatTime(duration)}`;
-    }
+#comment-input:focus {
+    border-bottom: 2px solid var(--yt-text-primary);
+}
 
-    updateLyrics(current);
-    updateOverlayImages(current);
-    updateImg2Anims(current);
-});
+.btn-send-comment {
+    background: var(--yt-red);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    align-self: flex-end;
+}
 
-// Reajustar animaciones cuando cambia el tamaño (pantalla completa, resize ventana)
-function recalculateAnimations() {
-    const song = musicData[currentIndex];
-    if (!song) return;
+.btn-send-comment:hover {
+    background: #cc0000;
+}
 
-    // Recrear TODAS las animaciones (base + img_2) con las nuevas dimensiones
-    startAnimOverlays();
+/* Acciones en comentarios propio (Editar / Eliminar) */
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    if (currentAudio && !isNaN(currentAudio.currentTime)) {
-        updateImg2Anims(currentAudio.currentTime);
-    }
+.comment-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-// Deferir un poco para que el layout de webOS ya tenga el tamaño final
-let recalcTimer = null;
-function scheduleRecalculate() {
-    if (recalcTimer) clearTimeout(recalcTimer);
-    recalcTimer = setTimeout(recalculateAnimations, 120);
+.comment-actions {
+    display: flex;
+    gap: 8px;
 }
 
-window.addEventListener('resize', scheduleRecalculate);
+.btn-comment-action {
+    background: none;
+    border: none;
+    color: var(--yt-text-secondary, #aaa);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 4px;
+}
 
-// Listener específico para cambios de pantalla completa en webOS
-document.addEventListener('fullscreenchange', scheduleRecalculate);
-document.addEventListener('webkitfullscreenchange', scheduleRecalculate);
+.btn-comment-action:hover {
+    color: #fff;
+    text-decoration: underline;
+}
 
-currentAudio.addEventListener('ended', () => {
-    if (isRepeatEnabled) {
-        currentAudio.currentTime = 0;
-        currentAudio.play();
-    } else if (isSingleSongMode) {
-        currentAudio.currentTime = 0;
-        currentAudio.play();
-    } else {
-        playNextTrack();
-    }
-});
-
-const timeBar = document.getElementById('time-bar');
-if (timeBar) timeBar.addEventListener('click', (e) => {
-    const bar = e.currentTarget;
-    const rect = bar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const pct = clickX / rect.width;
-    if (!isNaN(currentAudio.duration)) {
-        currentAudio.currentTime = pct * currentAudio.duration;
-    }
-});
-
-/* --- NAVEGACIÓN POR MANDO (D-PAD / FOCO) --- */
-function getFocusableItems() {
-    if (isUnlockModalOpen) {
-        return Array.from(document.querySelectorAll('#unlock-modal button'))
-            .filter(el => !el.disabled && el.offsetParent !== null);
-    }
-    if (isGuestConfirmOpen) {
-        return Array.from(document.querySelectorAll('#guest-confirm-modal button'))
-            .filter(el => !el.disabled && el.offsetParent !== null);
-    }
-    if (isGuestModalOpen) {
-        return Array.from(document.querySelectorAll('#guest-modal button, #guest-modal input, #guest-modal [tabindex="0"]'))
-            .filter(el => !el.disabled && el.offsetParent !== null);
-    }
-    return Array.from(document.querySelectorAll('button, [tabindex="0"]'))
-        .filter(el => !el.disabled && el.offsetParent !== null);
-}
-
-function moveFocus(direction) {
-    const items = getFocusableItems();
-    if (items.length === 0) return;
-
-    const current = document.activeElement;
-    if (!current || !items.includes(current)) {
-        items[0].focus();
-        items[0].scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        return;
-    }
+.btn-comment-action.btn-delete:hover {
+    color: #ff4d4d;
+}
 
-    const cr = current.getBoundingClientRect();
-    const cx = cr.left + cr.width / 2;
-    const cy = cr.top + cr.height / 2;
-
-    let best = null;
-    let bestScore = Infinity;
-
-    for (const el of items) {
-        if (el === current) continue;
-        const r = el.getBoundingClientRect();
-        const dx = (r.left + r.width / 2) - cx;
-        const dy = (r.top + r.height / 2) - cy;
-
-        let primary;
-        if (direction === 'right') { if (dx <= 4) continue; primary = dx; }
-        else if (direction === 'left') { if (dx >= -4) continue; primary = -dx; }
-        else if (direction === 'down') { if (dy <= 4) continue; primary = dy; }
-        else { if (dy >= -4) continue; primary = -dy; }
-
-        const secondary = (direction === 'left' || direction === 'right') ? Math.abs(dy) : Math.abs(dx);
-        const score = primary + secondary * 2;
-
-        if (score < bestScore) {
-            bestScore = score;
-            best = el;
-        }
-    }
+#btn-english.active {
+    color: #ffffff;
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+}
 
-    if (best) {
-        best.focus();
-        best.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-    }
+/* --- FOCO VISIBLE (navegación por mando / D-pad) --- */
+.yt-card:focus,
+.btn-control:focus,
+#btn-comments:focus,
+#btn-dark-mode:focus,
+.btn-author-action:focus,
+.btn-send-comment:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 12px;
 }
 
-window.addEventListener('keydown', (e) => {
-    const active = document.activeElement;
-    const tag = active ? active.tagName : '';
-    const inputType = active ? (active.type || '').toLowerCase() : '';
-    const isTyping = tag === 'TEXTAREA' ||
-        (tag === 'INPUT' && inputType !== 'radio' && inputType !== 'checkbox' && inputType !== 'file' && inputType !== 'button' && inputType !== 'submit');
-
-    // Tecla Back/Return de webOS
-    if (e.keyCode === 461 || e.key === 'GoBack' || e.key === 'BrowserBack') {
-        if (isUnlockModalOpen) {
-            closeUnlockModal();
-        } else if (isGuestConfirmOpen) {
-            closeGuestConfirmModal();
-        } else if (isGuestModalOpen) {
-            closeGuestModal();
-        } else if (isCommentsOpen) {
-            closeCommentsPanel();
-        } else if (document.fullscreenElement) {
-            toggleFullscreen();
-        }
-        e.preventDefault();
-        return;
-    }
+.yt-card:focus,
+.yt-card:focus-visible {
+    background: var(--yt-active-bg);
+    border-color: var(--yt-border);
+}
 
-    // No interceptar flechas/Enter mientras se escribe un comentario
-    if (isTyping) return;
-
-    switch (e.key) {
-        case 'ArrowRight': moveFocus('right'); e.preventDefault(); break;
-        case 'ArrowLeft': moveFocus('left'); e.preventDefault(); break;
-        case 'ArrowDown': moveFocus('down'); e.preventDefault(); break;
-        case 'ArrowUp': moveFocus('up'); e.preventDefault(); break;
-        case 'Enter':
-            if (active && active.tagName !== 'BUTTON' && typeof active.click === 'function') {
-                active.click();
-                e.preventDefault();
-            }
-            break;
-    }
-});
-
-/* --- VERIFICACIÓN DE CATBOX (solo al arrancar) --- */
-function checkServerStatus() {
-    const statusEl = document.getElementById('server-status');
-    const statusText = document.getElementById('status-text');
-    if (!statusEl || !statusText) return;
-
-    statusEl.className = 'server-status unknown';
-    statusText.innerText = '...';
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    fetch('https://catbox.moe', {
-        method: 'HEAD',
-        mode: 'no-cors',
-        signal: controller.signal
-    })
-    .then(() => {
-        clearTimeout(timeoutId);
-        statusEl.className = 'server-status up';
-        statusText.innerText = 'UP';
-    })
-    .catch(() => {
-        clearTimeout(timeoutId);
-        statusEl.className = 'server-status down';
-        statusText.innerText = 'DOWN';
-    });
-}
-
-/* --- ANTI-SALVAPANTALLAS EN webOS TV --- */
-let antiScreensaverVideo = null;
-
-let keepScreenOnInterval = null;
-
-function keepScreenOn() {
-    // Método 1: Power Service (formal, requiere permiso en appinfo.json)
-    if (typeof webOS !== 'undefined' && webOS.service) {
-        webOS.service.request("luna://com.webos.service.tvpower", {
-            method: "powerState",
-            parameters: { state: "active" },
-            onSuccess: function() {},
-            onFailure: function() {
-                // Fallback: video oculto en loop
-                startHiddenVideoLoop();
-            }
-        });
-    } else {
-        startHiddenVideoLoop();
-    }
+.btn-control:focus,
+#btn-comments:focus {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
 }
 
-function startKeepScreenOnLoop() {
-    if (keepScreenOnInterval) return;
-    keepScreenOn();
-    // webOS puede resetear el powerState tras unos minutos. Reactivar cada 2 min.
-    keepScreenOnInterval = setInterval(keepScreenOn, 120000);
-}
-
-function startHiddenVideoLoop() {
-    if (antiScreensaverVideo) return;
-
-    // Crear un canvas negro de 1x1 y usar captureStream como fuente de video
-    const canvas = document.createElement('canvas');
-    canvas.width = 1;
-    canvas.height = 1;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 1, 1);
-
-    antiScreensaverVideo = document.createElement('video');
-    antiScreensaverVideo.muted = true;
-    antiScreensaverVideo.playsInline = true;
-    antiScreensaverVideo.style.position = 'fixed';
-    antiScreensaverVideo.style.top = '-1000px';
-    antiScreensaverVideo.style.left = '-1000px';
-    antiScreensaverVideo.style.width = '1px';
-    antiScreensaverVideo.style.height = '1px';
-    antiScreensaverVideo.style.opacity = '0';
-    antiScreensaverVideo.style.pointerEvents = 'none';
-
-    try {
-        antiScreensaverVideo.srcObject = canvas.captureStream(1);
-        antiScreensaverVideo.play().catch(() => {});
-    } catch (e) {
-        // Si captureStream no esta disponible, usar un data URI minimo
-        antiScreensaverVideo.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAABhtZGF0AAAC8wYF//+q3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDENMjQgLSBILjI2NC9NUEVHLTQgQVZDIGNvZGVjIC0gQ29weWxlZnQgMjAwMy0yMDI0IC0gaHR0cDovL3d3dy52aWRlb2xhbi5vcmcveDI2NC5odG1sIC0gb3B0aW9uczogY2FiYWM9MCByZWY9MyBkZWJsb2NrPTE6MDowIGFuYWx5c2U9MHgzOjB4MTEzIG1lPWhleCBzdWJtZT03IHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MTYgY2hyb21hX21lPTEgdHJlbGxpcz0xIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PTItMiB0aHJlYWRzPTYgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSBvcGVuX2dvcD0wIHdlaWdodGI9MSBrZXlpbnQ9MjUwIGtleWludF9taW49MjUgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuMDAgYXE9MToxLjAwAIAAAAAAABWngADWd+zD8DJgAADKgAAAAAAAAAMBkAAAAAAAAAIYEAAA4AAYcDG6AAA';
-        antiScreensaverVideo.play().catch(() => {});
-    }
+#comment-input:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-bottom-color: var(--focus-ring);
+}
 
-    document.body.appendChild(antiScreensaverVideo);
-
-    // webOS puede pausar el video tras unos minutos. Re-anudar cada 30s.
-    setInterval(() => {
-        if (antiScreensaverVideo && antiScreensaverVideo.paused) {
-            antiScreensaverVideo.play().catch(() => {});
-        }
-    }, 30000);
-}
-
-/* --- INICIALIZACIÓN --- */
-window.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    checkUserAccess();
-    checkServerStatus();
-    startKeepScreenOnLoop();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const songParam = urlParams.get('song');
-    const authorParam = urlParams.get('author');
-
-    if (songParam) {
-        const foundIndex = musicData.findIndex(item => slugify(item.title) === songParam);
-        if (foundIndex !== -1) {
-            // NUEVO: Si la canción está marcada como 'rated: "on"', la desbloqueamos automáticamente
-            if (musicData[foundIndex].rated === "on") {
-                isRatedUnlocked = true;
-            }
-            currentIndex = foundIndex;
-            isSingleSongMode = true;
-        }
-    } else if (authorParam) {
-        const foundAuthorItem = musicData.find(item => slugify(item.author) === authorParam);
-        if (foundAuthorItem) {
-            activeAuthorFilter = foundAuthorItem.author;
-            const firstAuthorIndex = musicData.findIndex(item => item.author === activeAuthorFilter && (isRatedUnlocked || item.rated !== "on"));
-            if (firstAuthorIndex !== -1) currentIndex = firstAuthorIndex;
-        }
-    }
+/* --- MODAL DE DESBLOQUEO (código de acceso, funciona en TV sin prompt nativo) --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.72);
+    padding: var(--overscan-y) var(--overscan-x);
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-box {
+    width: min(620px, 90vw);
+    background: var(--yt-surface);
+    border: 1px solid var(--yt-border);
+    border-radius: 18px;
+    padding: 3vh 4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.2vh;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--yt-text-primary);
+    text-align: center;
+}
+
+.unlock-code-display {
+    font-size: 2.6rem;
+    letter-spacing: 0.6rem;
+    color: var(--yt-text-primary);
+    font-weight: 700;
+    min-height: 2.8rem;
+}
+
+.modal-error {
+    min-height: 1.3rem;
+    font-size: 1.05rem;
+    color: var(--yt-red);
+    font-weight: 600;
+    text-align: center;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4vh 1.2vw;
+    width: 100%;
+}
+
+.keypad-btn {
+    background: var(--yt-hover-bg);
+    border: 1px solid var(--yt-border);
+    color: var(--yt-text-primary);
+    font-size: 1.6rem;
+    font-weight: 700;
+    padding: 1.6vh 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.keypad-btn:hover {
+    background: var(--yt-active-bg);
+}
+
+.keypad-btn-muted {
+    font-size: 1.05rem;
+    color: var(--yt-text-secondary);
+}
+
+.modal-btn {
+    border: none;
+    border-radius: 26px;
+    padding: 1.4vh 3vw;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+}
+
+.modal-btn-primary {
+    background: var(--yt-red);
+}
+
+.modal-btn-primary:hover {
+    background: #cc0000;
+}
+
+.keypad-btn:focus,
+.modal-btn:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* --- MODAL DE COMENTARIO DE INVITADO (/?nombre=guest) --- */
+.guest-modal-box {
+    align-items: stretch;
+    gap: 1.2vh;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.guest-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--yt-text-secondary);
+    text-align: left;
+}
+
+.guest-text-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--yt-border);
+    border-radius: 10px;
+    background: var(--yt-hover-bg);
+    color: var(--yt-text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.guest-text-input:focus {
+    border-color: var(--focus-ring);
+}
+
+.guest-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.guest-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--yt-border);
+    border-radius: 10px;
+    background: var(--yt-hover-bg);
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--yt-text-primary);
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
 
-    loadPlaylist();
-    playTrack(currentIndex);
-});
+.guest-option:hover {
+    background: var(--yt-active-bg);
+}
+
+.guest-option input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--yt-red);
+    cursor: pointer;
+}
+
+.guest-file-input {
+    width: 100%;
+    font-size: 0.9rem;
+    color: var(--yt-text-secondary);
+}
+
+.guest-image-preview {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    align-self: center;
+    border: 2px solid var(--yt-border);
+    background: var(--yt-hover-bg);
+}
+
+.guest-upload-status {
+    min-height: 1.1rem;
+    font-size: 0.9rem;
+    color: var(--yt-text-secondary);
+    text-align: center;
+}
+
+.guest-confirm-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #4caf50;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    align-self: center;
+}
+
+.guest-confirm-text {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--yt-text-primary);
+    text-align: center;
+    line-height: 1.4;
+}
