@@ -277,7 +277,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             title: "Bloque a Bloque",
             img: "https://cdn2.suno.ai/image_large_bd51f09a-26f6-42f9-8697-79449d3f5c7f.jpeg",
             author: "Caos in Park",
-            audio: "https://cdn1.suno.ai/bd51f09a-26f6-42f9-8697-79449d3f5c7f.mp3",
+            audio: "https://files.catbox.moe/z2lkvz.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/blqblq.txt"
         },
         {
