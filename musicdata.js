@@ -164,7 +164,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             url: "https://i.ibb.co/3mSvMxB4/sentidos2.jpg", 
             time: "00:11.50",
             anim: [
-                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 459, y: 219 }
+                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 440, y: 219 }
             ]
         },
         { 
