@@ -157,49 +157,49 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
     audio: "https://files.catbox.moe/6qpnw0.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
     img_anim: [
-        { url: "https://i.ibb.co/sv066sbK/372x146.jpg", x: 372, y: 146 }
+        { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
     ],
     img_2: [
         { 
             url: "https://i.ibb.co/3mSvMxB4/sentidos2.jpg", 
             time: "00:11.50",
             anim: [
-                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+                { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
             ]
         },
         { 
             url: "https://i.ibb.co/NgKKY7d1/sentidos3.jpg", 
             time: "00:20.70",
             anim: [
-                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+                { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
             ]
         },
-		        { 
+        { 
             url: "https://i.ibb.co/hF6SQYVH/sentidos4.jpg", 
             time: "00:39.90",
             anim: [
-                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+                { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
             ]
         },
-		        { 
+        { 
             url: "https://i.ibb.co/0j6bc6kX/sentido54.jpg", 
             time: "00:48.80",
             anim: [
-                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+                { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
             ]
         },
-		        { 
+        { 
             url: "https://i.ibb.co/twYhtXCy/sentido6.jpg", 
             time: "00:58.40",
             anim: [
-                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+                { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
             ]
         },
-		        { 
+        { 
             url: "https://i.ibb.co/Y7Zg9QJC/sentido7.jpg", 
             time: "01:30.60",
             anim: [
-                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+                { url: "https://i.ibb.co/h1tRwQT6/218x219.jpg", x: 218, y: 120 }
             ]
         }
     ]
