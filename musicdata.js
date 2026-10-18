@@ -131,7 +131,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
 {
     title: "Los países",
     img: "https://i.ibb.co/nsztKBWr/gallocarlos.jpg",
-    author: "Cuco Club",
+    author: "Gallo Carlos",
     audio: "https://files.catbox.moe/zg020j.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/countries.txt",
     img_anim: [
