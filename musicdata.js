@@ -157,7 +157,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
     audio: "https://files.catbox.moe/6qpnw0.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
     img_anim: [
-        { url: "hhttps://i.ibb.co/rK9XYt13/testgallo.jpg", x: 218, y: 120 }
+        { url: "https://i.ibb.co/rK9XYt13/testgallo.jpg", x: 218, y: 120 }
     ],
     img_2: [
         { 
