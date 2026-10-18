@@ -131,7 +131,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
 {
     title: "Los países",
     img: "https://i.ibb.co/nsztKBWr/gallocarlos.jpg",
-    author: "Gallo Carlos",
+    author: "El gallo Carlos",
     audio: "https://files.catbox.moe/zg020j.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/countries.txt",
     img_anim: [
@@ -148,6 +148,60 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
         { url: "https://i.ibb.co/cBXbWh8/Geminxx-Generated-Image-g5gm84g5gm84g5gm.jpg", time: "01:24.00", anim: [
                 { url: "https://i.ibb.co/G3sR2323/gallo3.jpg", x: 835, y: 282 }
             ] }
+    ]
+},
+	{
+    title: "Los Sentidos",
+    img: "https://i.ibb.co/Fk2b0WgG/sentidos1.jpg",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/6qpnw0.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
+    img_anim: [
+        { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+    ],
+    img_2: [
+        { 
+            url: "https://i.ibb.co/3mSvMxB4/sentidos2.jpg", 
+            time: "00:11.50",
+            anim: [
+                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+            ]
+        },
+        { 
+            url: "https://i.ibb.co/NgKKY7d1/sentidos3.jpg", 
+            time: "00:20.70",
+            anim: [
+                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+            ]
+        },
+		        { 
+            url: "https://i.ibb.co/hF6SQYVH/sentidos4.jpg", 
+            time: "00:39.90",
+            anim: [
+                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+            ]
+        },
+		        { 
+            url: "https://i.ibb.co/0j6bc6kX/sentido54.jpg", 
+            time: "00:48.80",
+            anim: [
+                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+            ]
+        },
+		        { 
+            url: "https://i.ibb.co/twYhtXCy/sentido6.jpg", 
+            time: "00:58.40",
+            anim: [
+                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+            ]
+        },
+		        { 
+            url: "https://i.ibb.co/Y7Zg9QJC/sentido7.jpg", 
+            time: "01:30.60",
+            anim: [
+                { url: "https://i.ibb.co/8g91d1Wx/416x146.jpg", x: 416, y: 146 }
+            ]
+        }
     ]
 },
         {
