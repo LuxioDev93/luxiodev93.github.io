@@ -157,21 +157,21 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
     audio: "https://files.catbox.moe/6qpnw0.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
     img_anim: [
-        { url: "https://i.ibb.co/rK9XYt13/testgallo.jpg", x: 218, y: 120 }
+        { url: "https://i.ibb.co/rK9XYt13/testgallo.jpg", x: 220, y: 124 }
     ],
     img_2: [
         { 
             url: "https://i.ibb.co/3mSvMxB4/sentidos2.jpg", 
             time: "00:11.50",
             anim: [
-                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 450, y: 219 }
+                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
             ]
         },
         { 
             url: "https://i.ibb.co/NgKKY7d1/sentidos3.jpg", 
             time: "00:20.70",
             anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 452, y: 219 }
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
             ]
         },
         { 
@@ -185,21 +185,21 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             url: "https://i.ibb.co/0j6bc6kX/sentido54.jpg", 
             time: "00:48.80",
             anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 456, y: 219 }
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
             ]
         },
         { 
             url: "https://i.ibb.co/twYhtXCy/sentido6.jpg", 
             time: "00:58.40",
             anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 458, y: 219 }
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
             ]
         },
         { 
             url: "https://i.ibb.co/Y7Zg9QJC/sentido7.jpg", 
             time: "01:30.60",
             anim: [
-                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 460, y: 219 }
+                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
             ]
         }
     ]
