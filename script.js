@@ -1151,10 +1151,11 @@ function updateImg2Anims(currentTime) {
             const refW = anim.refWidth || 1365;
             const refH = anim.refHeight || 768;
             const effSize = size.ready ? size : { w: refW, h: refH, ready: true };
-            const scale = computeAnimScale(refW, refH, effSize);
+            const transform = computeCoverTransform(refW, refH, effSize);
+            const scale = transform.scale;
 
-            const x = (anim.x || 0) * scale;
-            const y = (anim.y || 0) * scale;
+            const x = transform.ox + (anim.x || 0) * scale;
+            const y = transform.oy + (anim.y || 0) * scale;
             const w = (anim.width || 136) * scale;
             const h = (anim.height || 170) * scale;
 
@@ -1227,24 +1228,31 @@ function getPlayerSize() {
     return { w: animRefWidth, h: animRefHeight, ready: false };
 }
 
-/* Escala uniforme segura: nunca 0 ni NaN (evita animaciones invisibles en webOS) */
-function computeAnimScale(refW, refH, size) {
+/* Transform exacto del CSS `cover` centrado (background-size: cover / object-fit: cover):
+   escala = max(sx, sy) y offsets para centrar la imagen dentro del reproductor.
+   En un contenedor 16:9 los offsets son ~0 y max≈min, así que no cambia nada de lo actual. */
+function computeCoverTransform(refW, refH, size) {
     const sx = size.w / refW;
     const sy = size.h / refH;
-    let scale = Math.min(sx, sy);
+    let scale = Math.max(sx, sy);
     if (!isFinite(scale) || scale <= 0) {
         scale = (isFinite(sx) && sx > 0) ? sx : 1;
     }
-    return scale;
+    return {
+        scale: scale,
+        ox: (size.w - refW * scale) / 2,
+        oy: (size.h - refH * scale) / 2
+    };
 }
 
 /* Crea una imagen de animación superpuesta con intermitencia */
-function createAnimImg(anim, dataIdx, scale, animLayer, timeouts) {
+function createAnimImg(anim, dataIdx, transform, animLayer, timeouts) {
     const naturalW = anim.width || 81;
     const naturalH = anim.height || 102;
 
-    const x = (anim.x || 0) * scale;
-    const y = (anim.y || 0) * scale;
+    const scale = transform.scale;
+    const x = transform.ox + (anim.x || 0) * scale;
+    const y = transform.oy + (anim.y || 0) * scale;
     const w = naturalW * scale;
     const h = naturalH * scale;
 
@@ -1284,19 +1292,19 @@ function startAnimOverlays(retry) {
 
     // Medir el contenedor (síncrono, sin rAF, que puede no dispararse en webOS)
     const size = getPlayerSize();
-    const scale = computeAnimScale(animRefWidth, animRefHeight, size);
+    const transform = computeCoverTransform(animRefWidth, animRefHeight, size);
 
     // Animaciones sobre la imagen base (img_anim)
     if (Array.isArray(song.img_anim)) {
         song.img_anim.forEach((anim, idx) => {
-            createAnimImg(anim, `base-${idx}`, scale, animLayer, imgAnimTimeouts);
+            createAnimImg(anim, `base-${idx}`, transform, animLayer, imgAnimTimeouts);
         });
     }
 
     // Animaciones sobre imágenes img_2 (img2_anim) — compatibilidad legada
     if (Array.isArray(song.img2_anim)) {
         song.img2_anim.forEach((anim, idx) => {
-            createAnimImg(anim, `legacy2-${idx}`, scale, animLayer, animTimeouts);
+            createAnimImg(anim, `legacy2-${idx}`, transform, animLayer, animTimeouts);
         });
     }
 
@@ -1360,20 +1368,48 @@ function shareCurrentSong() {
     });
 }
 
+/* Fuerza la orientación a horizontal durante el modo pantalla completa.
+   Android/Chrome lo permite dentro de fullscreen; iOS/Safari no (se queda en la orientación actual). */
+function lockLandscape() {
+    const orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
+    if (!orientation || typeof orientation.lock !== 'function') return;
+    try {
+        const p = orientation.lock('landscape');
+        if (p && typeof p.then === 'function') p.catch(() => {});
+    } catch (e) {}
+}
+
+function unlockOrientation() {
+    const orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
+    if (!orientation || typeof orientation.unlock !== 'function') return;
+    try { orientation.unlock(); } catch (e) {}
+}
+
 function toggleFullscreen() {
     const playerContainer = document.getElementById('player-container');
-    if (!document.fullscreenElement) {
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    if (!isFullscreen) {
+        let req = null;
         if (playerContainer.requestFullscreen) {
-            playerContainer.requestFullscreen();
+            req = playerContainer.requestFullscreen();
         } else if (playerContainer.webkitRequestFullscreen) {
-            playerContainer.webkitRequestFullscreen();
+            req = playerContainer.webkitRequestFullscreen();
+        }
+        // Bloquear horizontal cuando el fullscreen ya esté confirmado
+        if (req && typeof req.then === 'function') {
+            req.then(lockLandscape).catch(() => {});
+        } else {
+            lockLandscape();
         }
         document.getElementById('icon-fullscreen-enter').style.display = 'none';
         document.getElementById('icon-fullscreen-exit').style.display = 'block';
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
         }
+        unlockOrientation();
         document.getElementById('icon-fullscreen-enter').style.display = 'block';
         document.getElementById('icon-fullscreen-exit').style.display = 'none';
     }
@@ -1572,8 +1608,19 @@ function scheduleRecalculate() {
 window.addEventListener('resize', scheduleRecalculate);
 
 // Listener específico para cambios de pantalla completa en webOS
-document.addEventListener('fullscreenchange', scheduleRecalculate);
-document.addEventListener('webkitfullscreenchange', scheduleRecalculate);
+function handleFullscreenChange() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        // Android a veces necesita el lock una vez confirmado el fullscreen
+        lockLandscape();
+        // La rotación retrasa el resize final: recalcular otra vez pasado un momento
+        setTimeout(recalculateAnimations, 700);
+    } else {
+        unlockOrientation();
+    }
+    scheduleRecalculate();
+}
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
 currentAudio.addEventListener('ended', () => {
     if (isRepeatEnabled) {
