@@ -63,6 +63,60 @@ window.musicData = [
 			coments: "https://luxiodev93.github.io/coments/cxlb.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/cxlb.txt"
         },
+	{
+    title: "Los Sentidos",
+    img: "https://i.ibb.co/Fk2b0WgG/sentidos1.jpg",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/6qpnw0.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
+    img_anim: [
+        { url: "https://i.ibb.co/rK9XYt13/testgallo.jpg", x: 222, y: 120 }
+    ],
+    img_2: [
+        { 
+            url: "https://i.ibb.co/3mSvMxB4/sentidos2.jpg", 
+            time: "00:11.50",
+            anim: [
+                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
+            ]
+        },
+        { 
+            url: "https://i.ibb.co/NgKKY7d1/sentidos3.jpg", 
+            time: "00:20.70",
+            anim: [
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
+            ]
+        },
+        { 
+            url: "https://i.ibb.co/hF6SQYVH/sentidos4.jpg", 
+            time: "00:39.90",
+            anim: [
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
+            ]
+        },
+        { 
+            url: "https://i.ibb.co/0j6bc6kX/sentido54.jpg", 
+            time: "00:48.80",
+            anim: [
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
+            ]
+        },
+        { 
+            url: "https://i.ibb.co/twYhtXCy/sentido6.jpg", 
+            time: "00:58.40",
+            anim: [
+               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
+            ]
+        },
+        { 
+            url: "https://i.ibb.co/Y7Zg9QJC/sentido7.jpg", 
+            time: "01:30.60",
+            anim: [
+                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
+            ]
+        }
+    ]
+},
 		{
 title: "This is my world",
 author: "Go English",
@@ -150,60 +204,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             ] }
     ]
 },
-	{
-    title: "Los Sentidos",
-    img: "https://i.ibb.co/Fk2b0WgG/sentidos1.jpg",
-    author: "El gallo Carlos",
-    audio: "https://files.catbox.moe/6qpnw0.mp3",
-    lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
-    img_anim: [
-        { url: "https://i.ibb.co/rK9XYt13/testgallo.jpg", x: 220, y: 124 }
-    ],
-    img_2: [
-        { 
-            url: "https://i.ibb.co/3mSvMxB4/sentidos2.jpg", 
-            time: "00:11.50",
-            anim: [
-                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
-            ]
-        },
-        { 
-            url: "https://i.ibb.co/NgKKY7d1/sentidos3.jpg", 
-            time: "00:20.70",
-            anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
-            ]
-        },
-        { 
-            url: "https://i.ibb.co/hF6SQYVH/sentidos4.jpg", 
-            time: "00:39.90",
-            anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
-            ]
-        },
-        { 
-            url: "https://i.ibb.co/0j6bc6kX/sentido54.jpg", 
-            time: "00:48.80",
-            anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
-            ]
-        },
-        { 
-            url: "https://i.ibb.co/twYhtXCy/sentido6.jpg", 
-            time: "00:58.40",
-            anim: [
-               { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
-            ]
-        },
-        { 
-            url: "https://i.ibb.co/Y7Zg9QJC/sentido7.jpg", 
-            time: "01:30.60",
-            anim: [
-                { url: "https://i.ibb.co/jnhvsyS/459x219.jpg", x: 454, y: 219 }
-            ]
-        }
-    ]
-},
+	
         {
             title: "La canción de Nico",
             img: "https://www.shutterstock.com/shutterstock/videos/3634968147/thumb/6.jpg?ip=x480", 
