@@ -1,15 +1,20 @@
 // --- Key Quiz — Lógica del juego ---
 let questions = [
-    { question: '¿Cómo se dice "amarillo" en inglés?', correct: 'Yellow', wrong1: 'Blue', wrong2: 'Red', learned: false },
-    { question: '¿Cómo se dice "rojo" en inglés?', correct: 'Red', wrong1: 'Green', wrong2: 'Blue', learned: false },
-    { question: '¿Cómo se dice "azul" en inglés?', correct: 'Blue', wrong1: 'Yellow', wrong2: 'Orange', learned: false },
-    { question: '¿Cómo se dice "verde" en inglés?', correct: 'Green', wrong1: 'Purple', wrong2: 'Pink', learned: false },
-    { question: '¿Cómo se dice "naranja" en inglés?', correct: 'Orange', wrong1: 'Black', wrong2: 'White', learned: false },
-    { question: '¿Cómo se dice "morado" en inglés?', correct: 'Purple', wrong1: 'Brown', wrong2: 'Gray', learned: false },
-    { question: '¿Cómo se dice "rosa" en inglés?', correct: 'Pink', wrong1: 'Cyan', wrong2: 'Gold', learned: false },
-    { question: '¿Cómo se dice "negro" en inglés?', correct: 'Black', wrong1: 'Silver', wrong2: 'Beige', learned: false },
-    { question: '¿Cómo se dice "blanco" en inglés?', correct: 'White', wrong1: 'Navy', wrong2: 'Turquoise', learned: false },
-    { question: '¿Cómo se dice "marrón" en inglés?', correct: 'Brown', wrong1: 'Olive', wrong2: 'Indigo', learned: false }
+    { question: '¿Cuántos sentidos tiene el ser humano?', correct: 'Cinco', wrong1: 'Tres', wrong2: 'Siete', learned: false },
+    { question: '¿Con qué sentido vemos los colores y las formas?', correct: 'Con la vista', wrong1: 'Con el oído', wrong2: 'Con el olfato', learned: false },
+    { question: '¿Qué órganos usamos para oír los sonidos?', correct: 'Los oídos', wrong1: 'Los ojos', wrong2: 'La nariz', learned: false },
+    { question: '¿Con qué sentido olemos los olores?', correct: 'Con el olfato', wrong1: 'Con el gusto', wrong2: 'Con el tacto', learned: false },
+    { question: '¿Qué sentido usamos para saborear los alimentos?', correct: 'El gusto', wrong1: 'El olfato', wrong2: 'La vista', learned: false },
+    { question: '¿Con qué sentido notamos si algo es suave o áspero?', correct: 'Con el tacto', wrong1: 'Con la vista', wrong2: 'Con el oído', learned: false },
+    { question: '¿Cómo se llama el conjunto de huesos de nuestro cuerpo?', correct: 'El esqueleto', wrong1: 'Los músculos', wrong2: 'La piel', learned: false },
+    { question: '¿Qué nos ayudan a movernos junto con los huesos?', correct: 'Los músculos', wrong1: 'Los dientes', wrong2: 'El pelo', learned: false },
+    { question: '¿Dónde se encuentra el sentido del gusto?', correct: 'En la lengua', wrong1: 'En la nariz', wrong2: 'En las orejas', learned: false },
+    { question: '¿Qué parte del cuerpo usamos principalmente para oler?', correct: 'La nariz', wrong1: 'Los ojos', wrong2: 'La boca', learned: false },
+    { question: '¿Qué emoción sentimos cuando estamos contentos y felices?', correct: 'Alegría', wrong1: 'Tristeza', wrong2: 'Miedo', learned: false },
+    { question: '¿Qué sentido nos permite ver si es de día o de noche?', correct: 'La vista', wrong1: 'El oído', wrong2: 'El tacto', learned: false },
+    { question: '¿Para qué sirve el esqueleto en nuestro cuerpo?', correct: 'Para sostenernos y proteger los órganos', wrong1: 'Solo para crecer el pelo', wrong2: 'Solo para digerir la comida', learned: false },
+    { question: '¿Qué emoción sentimos cuando algo nos da miedo?', correct: 'Miedo', wrong1: 'Alegría', wrong2: 'Sorpresa agradable', learned: false },
+    { question: '¿Con qué sentido escuchamos la música o las voces?', correct: 'Con el oído', wrong1: 'Con el olfato', wrong2: 'Con el gusto', learned: false }
 ];
 let currentQuestionIndex = -1;
 let currentCorrectIndex = -1;
