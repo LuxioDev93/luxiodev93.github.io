@@ -359,6 +359,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             title: "Don't Delete the Save",
             img: "https://i.ibb.co/3Y98r03r/2-Gemini-Generated-Image-r496hwr496hwr496.jpg",
             author: "Respawn Day",
+            audio: "https://files.catbox.moe/gedz5k.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/pn33.txt"
+        },
+		        {
+            title: "Patch Notes 33",
+            img: "https://i.ibb.co/Y7Ysczcr/33333.jpg",
+            author: "Respawn Day",
             audio: "https://files.catbox.moe/pkhw45.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/dds.txt"
         },
