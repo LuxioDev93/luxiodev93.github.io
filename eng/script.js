@@ -671,20 +671,17 @@ function applyRewardUIState(type, redeemed, released, cost) {
 
 // --- PANTALLA DE CORRECCIÓN DE ERRORES ---
 const CORRECTION_GOAL = 10;
-const CORRECTION_STORAGE_KEY = 'keyEnglishCorrectionProgress';
+let correctionProgress = 0;
+let correctionSaveQueue = Promise.resolve();
 
-function getCorrectionProgress() {
+async function loadCorrectionProgress() {
     try {
-        return parseInt(localStorage.getItem(CORRECTION_STORAGE_KEY), 10) || 0;
+        const { data } = await supabaseClient.from('user_stats').select('correction_progress').single();
+        correctionProgress = (data && data.correction_progress) || 0;
     } catch (e) {
-        return 0;
+        console.error("Error al cargar el progreso de corrección:", e);
     }
-}
-
-function setCorrectionProgress(value) {
-    try {
-        localStorage.setItem(CORRECTION_STORAGE_KEY, String(value));
-    } catch (e) {}
+    renderCorrectionProgress(correctionProgress);
 }
 
 function renderCorrectionProgress(value) {
@@ -694,35 +691,44 @@ function renderCorrectionProgress(value) {
     if (fillEl) fillEl.style.width = `${(value / CORRECTION_GOAL) * 100}%`;
 }
 
-async function addCorrectionHit() {
-    try {
-        const { data } = await supabaseClient.from('user_stats').select('hits').single();
-        await supabaseClient.from('user_stats').update({ hits: ((data && data.hits) || 0) + 1 }).eq('id', 1);
-        loadGlobalStats();
-    } catch (e) {
-        console.error("Error al sumar el acierto de corrección:", e);
-    }
+// Guarda en cola para que las escrituras lleguen en orden; al completar suma +1 acierto en la misma actualización
+function saveCorrectionProgress(value, grantHit) {
+    correctionSaveQueue = correctionSaveQueue.then(async () => {
+        try {
+            const update = { correction_progress: value };
+            if (grantHit) {
+                const { data } = await supabaseClient.from('user_stats').select('hits').single();
+                update.hits = ((data && data.hits) || 0) + 1;
+            }
+            const { error } = await supabaseClient.from('user_stats').update(update).eq('id', 1);
+            if (error) throw error;
+            if (grantHit) loadGlobalStats();
+        } catch (e) {
+            console.error("Error al guardar el progreso de corrección:", e);
+        }
+    });
 }
 
 // Cada acierto suma 1/10; al llegar a 10/10 suma un acierto general y la barra vuelve a 0
 function addCorrectionProgress() {
-    const progress = getCorrectionProgress() + 1;
+    const progress = correctionProgress + 1;
 
     if (progress < CORRECTION_GOAL) {
-        setCorrectionProgress(progress);
+        correctionProgress = progress;
         renderCorrectionProgress(progress);
+        saveCorrectionProgress(progress, false);
         return;
     }
 
-    setCorrectionProgress(0);
+    correctionProgress = 0;
     renderCorrectionProgress(CORRECTION_GOAL);
     const plusOne = document.getElementById('correction-plus-one');
     if (plusOne) plusOne.style.opacity = '1';
-    addCorrectionHit();
+    saveCorrectionProgress(0, true);
 
     setTimeout(() => {
         if (plusOne) plusOne.style.opacity = '0';
-        renderCorrectionProgress(0);
+        renderCorrectionProgress(correctionProgress);
     }, 900);
 }
 
@@ -850,7 +856,8 @@ function buildCorrectionCard(item, container) {
 window.openCorrectionScreen = async function() {
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('correction-screen').style.display = 'flex';
-    renderCorrectionProgress(getCorrectionProgress());
+    renderCorrectionProgress(correctionProgress);
+    loadCorrectionProgress();
 
     const container = document.getElementById('correction-content');
     container.innerHTML = `<p style="text-align:center; color:#b0bec5;">Cargando palabras falladas...</p>`;
