@@ -11,123 +11,164 @@ let remoteDictionary = {};
 
 const musicData = [
     {
+        title: "Garacias a Dios hay Chamba",
+        img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
+        author: "Dani Chalán",
+        audio: "https://files.catbox.moe/c8gzwv.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
+    },
+    {
+        title: "Gallina Terrenal",
+        img: "https://i.ibb.co/8LY8GCMM/gallina-terrenal.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/dshlsc.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/galterr.txt"
+    },
+    {
+        title: "Hermano mío",
+        img: "https://i.ibb.co/bgWypLkN/hermanito.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/vugvmm.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/6añosghrm.txt"
+    },
+    {
+        title: "Voy a cocinar una gallina",
+        img: "https://i.ibb.co/93p4Wbcf/minigrok-video-d1835590-70eb-410e-a615-159293a08a20.gif",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/hbgfip.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/cocillina.txt"
+    },
+    {
+        title: "Corro por la banda",
+        img: "https://i.ibb.co/60cgdDLD/corroxlabanda.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/s9buwy.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/cxlb.txt"
+    },
+    {
+        title: "Mi amiga jirafa",
+        img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/12cey1.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt"
+    },
+    {
+        title: "BELIEVE IN THE MAGIC!",
+        img: "https://static.que.es/wp-content/uploads/2021/02/Que-es-la-magia.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/8dz3ix.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/magic.txt"
+    },
+    {
+        title: "Serpiente Serpiente",
+        img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/trc9s0.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/serpt.txt"
+    },
+    {
+        title: "Level 99 Slitherbreak",
+        img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/yumn7z.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/Slitherbrk.txt"
+    },
+    {
+        title: "La gallinita Ciega",
+        img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/cttffl.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/ceiga.txt"
+    },
+    {
+        title: "Gallinita Espacial",
+        img: "https://i.ibb.co/d0Cqj92f/image-jpg-75.jpg",
+        author: "Cuco Club",
+        audio: "https://files.catbox.moe/v0xogs.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/espagal.txt"
+    },
+    {
+        title: "Iguana del Caos",
+        img: "https://i.ibb.co/rgJdfSr/content-75.jpg",
+        author: "Caos in Park",
+        audio: "https://files.catbox.moe/44zvrf.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/iguanacaos.txt"
+    },
+    {
+        title: "Fénix",
+        img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
+        author: "Caos in Park",
+        audio: "https://files.catbox.moe/fany52.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/fenixx.txt"
+    },
+    {
+        title: "Level 99 Heartbreak",
+        img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg",
+        author: "Respawn Day",
+        audio: "https://files.catbox.moe/s9455p.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt"
+    },
+    {
         title: "Go Faster",
         img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
         author: "Cuco Club",
         audio: "https://files.catbox.moe/kyen8z.mp3",
         lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
     },
-	        {
-            title: "BELIEVE IN THE MAGIC!",
-            img: "https://static.que.es/wp-content/uploads/2021/02/Que-es-la-magia.jpg",
-            author: "Cuco Club",
-			audio: "https://files.catbox.moe/8dz3ix.mp3", //newcatbox
-			lyrics: "https://luxiodev93.github.io/lyrics_eng/magic.txt"
-        },
-	{
-  title: "Days We'll Not Forget",
-  img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
-  audio: "https://files.catbox.moe/tvxyos.mp3",
-  lyrics: "https://luxiodev93.github.io/lyrics_eng/dynf.txt",
-},
-	{
-  title: "Large Old Town",
-  img: "https://img.goodfon.com/wallpaper/big/5/68/velikobritaniya-shotlandiya-1728.webp",
-  audio: "https://files.catbox.moe/nnhppj.mp3",
-  lyrics: "https://luxiodev93.github.io/lyrics_eng/lotwn.txt",
-},
-	{
-  title: "Life is Wonderful",
-  img: "https://img.magnific.com/free-photo/world-smile-day-emojis-arrangement_23-2149024492.jpg?semt=ais_hybrid&w=740&q=80",
-  audio: "https://files.catbox.moe/pw0gq6.mp3",
-  lyrics: "https://luxiodev93.github.io/lyrics_eng/lifewnr.txt",
-},
-	{
-  title: "Music and Nature",
-  img: "https://static.vecteezy.com/system/resources/thumbnails/069/717/060/small/guitar-resting-porch-step-surrounded-by-vibrant-sunflowers-and-scenic-countryside-view-evokes-free-photo.jpeg",
-  audio: "https://files.catbox.moe/eb9igt.mp3",
-  lyrics: "https://luxiodev93.github.io/lyrics_eng/MandN.txt",
-},
-	{
-  title: "a great day",
-  img: "https://media.istockphoto.com/id/2165330008/photo/white-fluffy-clouds.jpg?s=612x612&w=0&k=20&c=IRYIsGm1waLJi_HZfI2aQy4blBvgSzmtteQ_00hzXNA=",
-  audio: "https://files.catbox.moe/ojn23v.mp3",
-  lyrics: "https://luxiodev93.github.io/lyrics_eng/agreatday.txt",
-},
-
-	{
-  title: "Choose my way",
-  img: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500",
-  audio: "https://files.catbox.moe/amurs0.mp3",
-  lyrics: "https://luxiodev93.github.io/lyrics_eng/chosmw.txt",
-},
-	{
-title: "This is my world",
-img: "https://i.pinimg.com/736x/68/b7/29/68b72937564071dbf236fddbf50f6eca.jpg", 
-audio: "https://files.catbox.moe/i4u5iu.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
-},
-
-	{
-title: "Hello class",
-img: "https://img.magnific.com/free-photo/students-knowing-right-answer_329181-14271.jpg?semt=ais_hybrid&w=740&q=80", 
-audio: "https://files.catbox.moe/iecdhf.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
-},
-
-{
-title: "The 93 Kid",
-img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10", 
-audio: "https://files.catbox.moe/yrnorm.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
-},
-	        {
-            title: "Mi amiga jirafa",
-            img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
-            author: "Cuco Club",
-			audio: "https://files.catbox.moe/8cm9dd.mp3",
-			lyrics: "https://luxiodev93.github.io/lyrics_eng/amjirf.txt",
-			coments: "https://luxiodev93.github.io/coments/amjirf.txt"
-        },
-{
-title: "Garacias a Dios hay Chamba",
-img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
-author: "Dani Chalán",
-audio: "https://files.catbox.moe/i4mtqh.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/haychamba_eng.txt"
-},
-{
-title: "Gallina Terrenal",
-img: "https://i.ibb.co/8LY8GCMM/gallina-terrenal.jpg",
-author: "Cuco Club",
-audio: "https://files.catbox.moe/l7o8cu.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/galterr.txt",
-coments: "https://badluchothree-glitch.github.io/coments/galterr.txt"
-},
-{
-title: "Serpiente Serpiente",
-img: "https://i.ibb.co/99bMDDdC/Aco25sp.jpg", 
-author: "Cuco Club",
-audio: "https://files.catbox.moe/4ot9dj.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/serpt.txt",
-coments: "https://luxiodev93.github.io/coments/serpt.txt"
-},
-{
-title: "Level 99 Slitherbreak",
-img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
-author: "Cuco Club",
-audio: "https://files.catbox.moe/wfhk28.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/Slitherbrk.txt",
-coments: "https://luxiodev93.github.io/coments/Slitherbrk.txt"
-},
-{
-title: "Level 99 Heartbreak",
-img: "https://cdn2.suno.ai/image_large_461b78ad-9841-440a-b5f3-b5ba6876e9d8.jpeg", 
-author: "No Respawn",
-audio: "https://files.catbox.moe/kcr9qz.mp3",
-lyrics: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
-coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
-}
+    {
+        title: "Days We'll Not Forget",
+        img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500",
+        audio: "https://files.catbox.moe/tvxyos.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/dynf.txt"
+    },
+    {
+        title: "Large Old Town",
+        img: "https://img.goodfon.com/wallpaper/big/5/68/velikobritaniya-shotlandiya-1728.webp",
+        audio: "https://files.catbox.moe/nnhppj.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/lotwn.txt"
+    },
+    {
+        title: "Life is Wonderful",
+        img: "https://img.magnific.com/free-photo/world-smile-day-emojis-arrangement_23-2149024492.jpg?semt=ais_hybrid&w=740&q=80",
+        audio: "https://files.catbox.moe/pw0gq6.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/lifewnr.txt"
+    },
+    {
+        title: "Music and Nature",
+        img: "https://static.vecteezy.com/system/resources/thumbnails/069/717/060/small/guitar-resting-porch-step-surrounded-by-vibrant-sunflowers-and-scenic-countryside-view-evokes-free-photo.jpeg",
+        audio: "https://files.catbox.moe/eb9igt.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/MandN.txt"
+    },
+    {
+        title: "a great day",
+        img: "https://media.istockphoto.com/id/2165330008/photo/white-fluffy-clouds.jpg?s=612x612&w=0&k=20&c=IRYIsGm1waLJi_HZfI2aQy4blBvgSzmtteQ_00hzXNA=",
+        audio: "https://files.catbox.moe/ojn23v.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/agreatday.txt"
+    },
+    {
+        title: "Choose my way",
+        img: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500",
+        audio: "https://files.catbox.moe/amurs0.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/chosmw.txt"
+    },
+    {
+        title: "This is my world",
+        img: "https://i.pinimg.com/736x/68/b7/29/68b72937564071dbf236fddbf50f6eca.jpg",
+        audio: "https://files.catbox.moe/i4u5iu.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
+    },
+    {
+        title: "Hello class",
+        img: "https://img.magnific.com/free-photo/students-knowing-right-answer_329181-14271.jpg?semt=ais_hybrid&w=740&q=80",
+        audio: "https://files.catbox.moe/iecdhf.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
+    },
+    {
+        title: "The 93 Kid",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfzIVWK9NsW8H0eQphVVROPF5a24JZIbXzKwcK0c2k1UpxZmb-HWe_J4&s=10",
+        audio: "https://files.catbox.moe/yrnorm.mp3",
+        lyrics: "https://luxiodev93.github.io/lyrics/b93.txt"
+    }
 ];
 
 const fakeMeanings = ["camino", "piedra", "puerta", "fuerza", "viento", "sombra", "canción", "fuego", "estrella", "tiempo", "eterno", "salto"];
@@ -176,9 +217,49 @@ function getRandomFakeMeanings(correctMeaning, count = 2) {
     return Array.from(fakes);
 }
 
-function isEnglishWord(word) {
-    const cleanW = word.toLowerCase().trim();
-    return remoteDictionary.hasOwnProperty(cleanW);
+function normalizeToken(raw) {
+    return raw.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z']/g, '').replace(/^'+|'+$/g, '');
+}
+
+const NO_POSSESSIVE_STRIP = new Set(["it's", "he's", "she's", "that's", "what's", "there's", "here's", "who's", "let's", "where's", "how's"]);
+
+// Devuelve la clave del diccionario para un token (o null). Admite posesivos: "grandpa's" -> "grandpa"
+function lookupWord(token) {
+    if (!token) return null;
+    if (remoteDictionary.hasOwnProperty(token)) return token;
+    if (token.endsWith("'s") && !NO_POSSESSIVE_STRIP.has(token)) {
+        const base = token.slice(0, -2);
+        if (remoteDictionary.hasOwnProperty(base)) return base;
+    }
+    return null;
+}
+
+// Busca palabras y frases compuestas (hasta 3 palabras, ej. "turn on") de una línea de letra
+function findLineCandidates(text) {
+    const raws = text.split(/\s+/).filter(Boolean);
+    const tokens = raws.map(normalizeToken);
+    const found = [];
+    let i = 0;
+    while (i < raws.length) {
+        let matched = false;
+        for (let n = Math.min(3, raws.length - i); n >= 2 && !matched; n--) {
+            const parts = tokens.slice(i, i + n);
+            if (parts.some(p => !p)) continue;
+            // una frase no puede cruzar una pausa de puntuación
+            if (raws.slice(i, i + n - 1).some(r => /[,.;:!?…—]$/.test(r))) continue;
+            const phrase = parts.join(' ');
+            if (remoteDictionary.hasOwnProperty(phrase)) {
+                found.push({ wordIdx: i, word: phrase });
+                i += n;
+                matched = true;
+            }
+        }
+        if (matched) continue;
+        const key = lookupWord(tokens[i]);
+        if (key) found.push({ wordIdx: i, word: key });
+        i++;
+    }
+    return found;
 }
 
 async function fetchTranslation(word) {
@@ -589,10 +670,188 @@ function applyRewardUIState(type, redeemed, released, cost) {
 }
 
 // --- PANTALLA DE CORRECCIÓN DE ERRORES ---
+const CORRECTION_GOAL = 10;
+const CORRECTION_STORAGE_KEY = 'keyEnglishCorrectionProgress';
+
+function getCorrectionProgress() {
+    try {
+        return parseInt(localStorage.getItem(CORRECTION_STORAGE_KEY), 10) || 0;
+    } catch (e) {
+        return 0;
+    }
+}
+
+function setCorrectionProgress(value) {
+    try {
+        localStorage.setItem(CORRECTION_STORAGE_KEY, String(value));
+    } catch (e) {}
+}
+
+function renderCorrectionProgress(value) {
+    const countEl = document.getElementById('correction-progress-count');
+    const fillEl = document.getElementById('correction-progress-fill');
+    if (countEl) countEl.textContent = value;
+    if (fillEl) fillEl.style.width = `${(value / CORRECTION_GOAL) * 100}%`;
+}
+
+async function addCorrectionHit() {
+    try {
+        const { data } = await supabaseClient.from('user_stats').select('hits').single();
+        await supabaseClient.from('user_stats').update({ hits: ((data && data.hits) || 0) + 1 }).eq('id', 1);
+        loadGlobalStats();
+    } catch (e) {
+        console.error("Error al sumar el acierto de corrección:", e);
+    }
+}
+
+// Cada acierto suma 1/10; al llegar a 10/10 suma un acierto general y la barra vuelve a 0
+function addCorrectionProgress() {
+    const progress = getCorrectionProgress() + 1;
+
+    if (progress < CORRECTION_GOAL) {
+        setCorrectionProgress(progress);
+        renderCorrectionProgress(progress);
+        return;
+    }
+
+    setCorrectionProgress(0);
+    renderCorrectionProgress(CORRECTION_GOAL);
+    const plusOne = document.getElementById('correction-plus-one');
+    if (plusOne) plusOne.style.opacity = '1';
+    addCorrectionHit();
+
+    setTimeout(() => {
+        if (plusOne) plusOne.style.opacity = '0';
+        renderCorrectionProgress(0);
+    }, 900);
+}
+
+function normalizeAnswer(text) {
+    return text.toLowerCase().replace(/[’‘]/g, "'").replace(/[.,;:!?¡¿]+$/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Traducción vigente y todas las palabras en inglés válidas para ella (ej. mom/mum)
+function getCorrectionAnswers(item) {
+    const word = normalizeAnswer(item.word);
+    const translation = remoteDictionary[word] || item.translation;
+    const accepted = new Set([word]);
+    Object.entries(remoteDictionary).forEach(([en, es]) => {
+        if (es.toLowerCase() === translation.toLowerCase()) accepted.add(en);
+    });
+    return { translation, accepted };
+}
+
+function showCorrectionEmptyState(container) {
+    container.innerHTML = `<p style="text-align:center; color:#4CAF50; font-size:1.2rem;">¡No tienes palabras pendientes de corrección! Buen trabajo.</p>`;
+}
+
+async function resolveFailedWord(item) {
+    try {
+        const { data: stats } = await supabaseClient.from('user_stats').select('errors').single();
+        if (stats) {
+            await supabaseClient.from('user_stats').update({
+                errors: Math.max(0, (stats.errors || 0) - 1)
+            }).eq('id', 1);
+        }
+        await supabaseClient.from('failed_words').delete().eq('id', item.id);
+        loadGlobalStats();
+    } catch (e) {
+        console.error("Error al resolver la palabra corregida:", e);
+    }
+}
+
+function buildCorrectionCard(item, container) {
+    const { translation, accepted } = getCorrectionAnswers(item);
+
+    const card = document.createElement('div');
+    card.className = 'correction-card';
+    card.style.cssText = "background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); overflow: hidden; transition: opacity 0.6s ease, max-height 0.6s ease, padding 0.6s ease, margin 0.6s ease; max-height: 300px;";
+
+    const wordTitle = document.createElement('div');
+    wordTitle.style.cssText = "font-size: 1.6rem; color: #ffeb3b; font-weight: bold; text-transform: uppercase;";
+    wordTitle.textContent = translation;
+    card.appendChild(wordTitle);
+
+    const promptText = document.createElement('div');
+    promptText.textContent = "Escribe esta palabra en inglés";
+    promptText.style.color = "#b0bec5";
+    card.appendChild(promptText);
+
+    const row = document.createElement('div');
+    row.style.cssText = "display: flex; gap: 10px;";
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Palabra en inglés';
+    input.autocomplete = 'off';
+    input.autocapitalize = 'none';
+    input.spellcheck = false;
+    input.style.cssText = "flex: 1; min-width: 0; padding: 10px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #fff; font-size: 1rem; transition: border-color 0.2s, background 0.2s;";
+
+    const checkBtn = document.createElement('button');
+    checkBtn.textContent = 'Check';
+    checkBtn.style.cssText = "background-color: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;";
+
+    row.appendChild(input);
+    row.appendChild(checkBtn);
+    card.appendChild(row);
+
+    let resolved = false;
+
+    const resetStyles = () => {
+        input.style.borderColor = "rgba(255,255,255,0.2)";
+        input.style.background = "rgba(0,0,0,0.3)";
+        checkBtn.style.background = "#2196F3";
+    };
+    input.addEventListener('input', resetStyles);
+
+    const check = () => {
+        if (resolved) return;
+        const answer = normalizeAnswer(input.value);
+        if (!answer) return;
+
+        if (accepted.has(answer)) {
+            resolved = true;
+            input.disabled = true;
+            checkBtn.disabled = true;
+            input.style.borderColor = "#4CAF50";
+            input.style.background = "rgba(76, 175, 80, 0.25)";
+            checkBtn.style.background = "#4CAF50";
+
+            addCorrectionProgress();
+            resolveFailedWord(item);
+
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.maxHeight = '0';
+                card.style.paddingTop = '0';
+                card.style.paddingBottom = '0';
+                card.style.marginTop = '-15px';
+            }, 500);
+            setTimeout(() => {
+                card.remove();
+                if (!container.querySelector('.correction-card')) showCorrectionEmptyState(container);
+            }, 1200);
+        } else {
+            input.style.borderColor = "#e53935";
+            input.style.background = "rgba(229, 57, 53, 0.25)";
+            checkBtn.style.background = "#e53935";
+        }
+    };
+
+    checkBtn.onclick = check;
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') check();
+    });
+
+    return card;
+}
+
 window.openCorrectionScreen = async function() {
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('correction-screen').style.display = 'flex';
-    
+    renderCorrectionProgress(getCorrectionProgress());
+
     const container = document.getElementById('correction-content');
     container.innerHTML = `<p style="text-align:center; color:#b0bec5;">Cargando palabras falladas...</p>`;
 
@@ -600,65 +859,12 @@ window.openCorrectionScreen = async function() {
         const { data: failedWords } = await supabaseClient.from('failed_words').select('*');
 
         if (!failedWords || failedWords.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#4CAF50; font-size:1.2rem;">¡No tienes palabras pendientes de corrección! Buen trabajo.</p>`;
+            showCorrectionEmptyState(container);
             return;
         }
 
         container.innerHTML = "";
-        failedWords.forEach((item) => {
-            const card = document.createElement('div');
-            card.className = 'correction-card';
-            card.style.cssText = "background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);";
-            
-            const wordTitle = document.createElement('div');
-            wordTitle.style.cssText = "font-size: 1.6rem; color: #ffeb3b; font-weight: bold; text-transform: uppercase;";
-            wordTitle.textContent = item.word;
-            card.appendChild(wordTitle);
-
-            const promptText = document.createElement('div');
-            promptText.textContent = "¿Cuál es su traducción?";
-            promptText.style.color = "#b0bec5";
-            card.appendChild(promptText);
-
-            const optionsContainer = document.createElement('div');
-            optionsContainer.style.cssText = "display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;";
-
-            // Generar 2 traducciones falsas dinámicas desde el diccionario remoto
-            const fakeOptions = getRandomFakeMeanings(item.translation, 2);
-            let options = [item.translation, ...fakeOptions];
-            options.sort(() => Math.random() - 0.5);
-
-            options.forEach(opt => {
-                const optBtn = document.createElement('button');
-                optBtn.style.cssText = "background-color: #2196F3; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;";
-                optBtn.textContent = opt;
-                optBtn.onclick = async () => {
-                    if (opt === item.translation) {
-                        optBtn.style.background = "#4CAF50";
-                        
-                        const { data: stats } = await supabaseClient.from('user_stats').select('errors').single();
-                        if (stats) {
-                            await supabaseClient.from('user_stats').update({
-                                errors: Math.max(0, (stats.errors || 0) - 1)
-                            }).eq('id', 1);
-                        }
-
-                        await supabaseClient.from('failed_words').delete().eq('id', item.id);
-
-                        setTimeout(() => {
-                            window.openCorrectionScreen();
-                            loadGlobalStats();
-                        }, 800);
-                    } else {
-                        optBtn.style.background = "#e53935";
-                    }
-                };
-                optionsContainer.appendChild(optBtn);
-            });
-
-            card.appendChild(optionsContainer);
-            container.appendChild(card);
-        });
+        failedWords.forEach((item) => container.appendChild(buildCorrectionCard(item, container)));
 
     } catch (e) {
         container.innerHTML = `<p style="text-align:center; color:#e53935;">Error al conectar con la base de datos.</p>`;
@@ -880,16 +1086,7 @@ function processGameWords(startIndex = 0) {
     let lineValidity = [];
 
     lrcLines.forEach((item, idx) => {
-        let hasValidWord = false;
-        const words = item.text.split(/\s+/);
-        for (let w of words) {
-            let cleanW = w.replace(/[^a-zA-Z']/g, '');
-            if (isEnglishWord(cleanW)) {
-                hasValidWord = true;
-                break;
-            }
-        }
-        lineValidity[idx] = hasValidWord;
+        lineValidity[idx] = findLineCandidates(item.text).length > 0;
     });
 
     let selected = [];
@@ -909,15 +1106,9 @@ function processGameWords(startIndex = 0) {
 
         if (targetLineIdx !== -1) {
             let item = lrcLines[targetLineIdx];
-            let words = item.text.split(/\s+/);
-            let validCandidatesInLine = [];
-            
-            words.forEach((w, wIdx) => {
-                let cleanW = w.replace(/[^a-zA-Z']/g, '');
-                if (isEnglishWord(cleanW)) {
-                    validCandidatesInLine.push({ lrcIdx: targetLineIdx, wordIdx: wIdx, word: cleanW, time: item.time });
-                }
-            });
+            let validCandidatesInLine = findLineCandidates(item.text).map(c => ({
+                lrcIdx: targetLineIdx, wordIdx: c.wordIdx, word: c.word, time: item.time
+            }));
 
             if (validCandidatesInLine.length > 0) {
                 let chosenWord = validCandidatesInLine[Math.floor(Math.random() * validCandidatesInLine.length)];
