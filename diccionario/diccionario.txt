@@ -1050,7 +1050,7 @@
   "past": "pasado",
   "path": "camino",
   "paths": "caminos",
-  "pathway": "senderito",
+  "pathway": "camino",
   "pay off": "dar frutos",
   "pays": "paga",
   "pays off": "da frutos",
