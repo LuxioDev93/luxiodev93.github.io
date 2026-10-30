@@ -1179,6 +1179,8 @@ async function pauseForQuiz(targetObj) {
     const quizContainer = document.getElementById('quiz-container');
     const optionsContainer = document.getElementById('quiz-options');
     optionsContainer.innerHTML = "";
+    const oldNext = document.getElementById('btn-next');
+    if (oldNext) oldNext.remove();
 
     // Obtener 2 opciones incorrectas aleatorias directamente del diccionario
     const fakeOptions = getRandomFakeMeanings(correctMeaning, 2);
@@ -1230,25 +1232,41 @@ async function checkAnswer(isCorrect, selectedBtn, container, correctMeaning, ta
             console.error("Error al restar vida:", e);
         }
 
+        // Quitar las opciones restantes, dejando la correcta primero y la elegida debajo
+        const correctBtn = Array.from(buttons).find(b => b.textContent === correctMeaning);
+        correctBtn.classList.add('correct');
+        container.prepend(correctBtn);
         buttons.forEach(b => {
-            if (b.textContent === correctMeaning) {
-                b.classList.add('correct');
-            }
+            if (b !== correctBtn && b !== selectedBtn) b.remove();
         });
+
+        // La canción continúa solo al pulsar "Next"
+        const nextBtn = document.createElement('button');
+        nextBtn.id = 'btn-next';
+        nextBtn.className = 'btn-play';
+        nextBtn.textContent = 'Next';
+        nextBtn.onclick = () => {
+            nextBtn.remove();
+            advanceAfterQuiz(livesReachedZero);
+        };
+        container.after(nextBtn);
+        return;
     }
 
-    setTimeout(() => {
-        document.getElementById('quiz-container').style.display = 'none';
-        isPausedForQuiz = false;
-        currentWordTargetIndex++;
+    setTimeout(() => advanceAfterQuiz(livesReachedZero), 1500);
+}
 
-        if (livesReachedZero || currentWordTargetIndex >= targetWords.length) {
-            endGame();
-        } else {
-            document.getElementById('game-status').textContent = "Escuchando canción...";
-            document.getElementById('game-audio').play();
-        }
-    }, 1500);
+function advanceAfterQuiz(livesReachedZero) {
+    document.getElementById('quiz-container').style.display = 'none';
+    isPausedForQuiz = false;
+    currentWordTargetIndex++;
+
+    if (livesReachedZero || currentWordTargetIndex >= targetWords.length) {
+        endGame();
+    } else {
+        document.getElementById('game-status').textContent = "Escuchando canción...";
+        document.getElementById('game-audio').play();
+    }
 }
 
 async function endGame() {
