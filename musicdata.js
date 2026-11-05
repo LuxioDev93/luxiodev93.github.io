@@ -160,28 +160,14 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
 			coments: "https://luxiodev93.github.io/coments/sosa.txt",
             lyrics: "https://luxiodev93.github.io/lyrics/sosa.txt"
         },
-        {
-            title: "Hey hermanito!",
-            img: "https://cdn2.suno.ai/image_large_cd7f792d-8b1e-4cab-86aa-bc3e4bb50f33.jpeg", 
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/teecuq.mp3",//new catbox
-            lyrics: "https://luxiodev93.github.io/lyrics/hermanito.txt"
-        },
-        {
-            title: "La cucaracha",
-            img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/vunfuh.mp3",
-			coments: "https://luxiodev93.github.io/coments/cucaracha.txt",
-            lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
-        },
-        {
-            title: "La cucaracha(versionada)",
-            img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/yrkv8h.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
-        },
+	{
+    title: "Planetas y Lunas",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/0zncwh.mp3",
+    lyrics: ""
+	},
+    
 {
     title: "Los países",
     img: "https://i.ibb.co/nsztKBWr/gallocarlos.jpg",
