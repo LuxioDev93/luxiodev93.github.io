@@ -137,6 +137,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             audio: "https://files.catbox.moe/e451ms.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/drkld.txt"
         },
+	{
+    title: "Ave Confirmada",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/89ih2j.mp3",
+    lyrics: ""
+	},
         {
             title: "Go Faster",
             img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
