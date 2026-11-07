@@ -66,7 +66,7 @@ window.musicData = [
 	{
     title: "Los Sentidos",
     img: "https://i.ibb.co/Fk2b0WgG/sentidos1.jpg",
-    author: "El gallo Carlos",
+    author: "El  Carlos",
     audio: "https://files.catbox.moe/6qpnw0.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
     img_anim: [
@@ -139,10 +139,10 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
         },
 	{
     title: "Ave Confirmada",
-    img: "",
+    img: "https://ibb.co/tpV01Jhs",
     author: "El gallo Carlos",
     audio: "https://files.catbox.moe/89ih2j.mp3",
-    lyrics: ""
+    lyrics: "https://luxiodev93.github.io/lyrics/avec.txt"
 	},
         {
             title: "Go Faster",
@@ -169,10 +169,10 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
         },
 	{
     title: "Planetas y Lunas",
-    img: "",
+    img: "https://ibb.co/wZLGZnRP",
     author: "El gallo Carlos",
     audio: "https://files.catbox.moe/0zncwh.mp3",
-    lyrics: ""
+    lyrics: "https://luxiodev93.github.io/lyrics/pyl.txt"
 	},
     
 {
