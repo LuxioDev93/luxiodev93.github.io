@@ -151,6 +151,14 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
     audio: "https://files.catbox.moe/cihzos.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/podreal.txt"
 	},
+
+			{
+    title: "Plan de Rescate",
+    img: "https://i.ibb.co/gbRCc056/imagen.png",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/clbngo.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/rescate.txt"
+	},
         {
             title: "Go Faster",
             img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
