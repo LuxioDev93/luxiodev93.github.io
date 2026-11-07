@@ -442,7 +442,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
 	        {
             title: "¿Hasta cuándo viejo?",
             img: "", 
-            audio: "https://files.catbox.moe/5am1a6.mp3",
+            audio: "https://files.catbox.moe/z4rlqk.mp3",
             author: "El Luchi",
             rated: "on",
             lyrics: ""
