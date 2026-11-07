@@ -439,6 +439,14 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             rated: "on",
             lyrics: ""
         },
+	        {
+            title: "¿Hasta cuándo viejo?",
+            img: "", 
+            audio: "https://files.catbox.moe/5am1a6.mp3",
+            author: "El Luchi",
+            rated: "on",
+            lyrics: ""
+        },
 	
         {
             title: "Machala Low Life",
