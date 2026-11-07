@@ -487,6 +487,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             lyrics: "https://luxiodev93.github.io/lyrics/MachalaLOWLIFE.txt"
         },
 	        {
+            title: "Españolito allá",
+            img: "https://i.ibb.co/5hTMGybY/imagen.png", 
+            author: "Macha-K",
+            audio: "https://files.catbox.moe/gryz36.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/espec.txt"
+        },
+	        {
             title: "Lima Low Life",
             img: "https://i.ibb.co/QF9VsS00/limalowlaif.jpg", 
             author: "Macha-K",
