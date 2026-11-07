@@ -66,7 +66,7 @@ window.musicData = [
 	{
     title: "Los Sentidos",
     img: "https://i.ibb.co/Fk2b0WgG/sentidos1.jpg",
-    author: "El  ",
+    author: "El gallo Carlos",
     audio: "https://files.catbox.moe/6qpnw0.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/sentidos.txt",
     img_anim: [
