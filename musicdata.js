@@ -445,7 +445,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             audio: "https://files.catbox.moe/z4rlqk.mp3",
             author: "El Luchi",
             rated: "on",
-            lyrics: ""
+            lyrics: "https://luxiodev93.github.io/lyrics/hcv.txt"
         },
 	
         {
