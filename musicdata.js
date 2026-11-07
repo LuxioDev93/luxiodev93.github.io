@@ -460,7 +460,7 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             audio: "https://files.catbox.moe/11jiqi.mp3",
             author: "El Luchi",
             rated: "on",
-            lyrics: ""
+            lyrics: "https://luxiodev93.github.io/lyrics/electr.txt"
         },
 	        {
             title: "¿Hasta cuándo viejo?",
