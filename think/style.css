@@ -1,0 +1,49 @@
+/* Estilos generales y reseteo base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #1a1a2e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+/* Capa de destello / feedback visual al acertar o fallar */
+#feedback-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+}
+
+/* Efecto visual parpadeante del cursor en la caja de texto */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.cursor {
+    display: inline-block;
+    animation: blink 1s infinite;
+    color: #ffeb3b;
+    font-weight: bold;
+    margin-left: 2px;
+}
+
+/* Transiciones de botones */
+button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
+}
