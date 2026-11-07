@@ -354,6 +354,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             audio: "https://files.catbox.moe/z2lkvz.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/blqblq.txt"
         },
+	        {
+            title: "Equipaje",
+            img: "https://seguros.elcorteingles.es/content/dam/eci-seguros/es/blog/blog-marzo-2022/restricciones-generales-del-equipaje-de-mano.jpg",
+            author: "Caos in Park",
+            audio: "https://files.catbox.moe/xgznhq.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/equipaje.txt"
+        },
         {
             title: "Thirty Something Grind!",
             img: "https://i.ibb.co/wZpSQ7F0/30sg.jpg", 
