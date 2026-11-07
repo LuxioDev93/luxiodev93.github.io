@@ -154,6 +154,14 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
 
 			{
     title: "Plan de Rescate",
+    img: "https://i.ibb.co/WptVwfFp/imagen.png",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/yvcpst.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/sba.txt"
+	},
+
+				{
+    title: "Ser buen amigo",
     img: "https://i.ibb.co/gbRCc056/imagen.png",
     author: "El gallo Carlos",
     audio: "https://files.catbox.moe/clbngo.mp3",
