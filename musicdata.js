@@ -413,6 +413,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
 			lyrics_eng: "https://luxiodev93.github.io/lyrics_eng/lvl99hrbk.txt",
 			coments: "https://luxiodev93.github.io/coments/lvl99hrbk.txt"
         },
+		        {
+            title: "Game hero!",
+            img: "",
+            author: "Respawn Day",
+            audio: "https://files.catbox.moe/6sd7yn.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/gamehero.txt"
+        },
 	        {
             title: "Don't Delete the Save",
             img: "https://i.ibb.co/3Y98r03r/2-Gemini-Generated-Image-r496hwr496hwr496.jpg",
