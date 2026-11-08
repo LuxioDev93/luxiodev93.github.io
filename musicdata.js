@@ -220,6 +220,41 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
             ] }
     ]
 },
+					{
+    title: "Las Nubes",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/i8iisp.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/lasnubes.txt"
+	},
+				{
+    title: "El Microscopio",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/o63jp7.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/mcrscop.txt"
+	},
+				{
+    title: "El gran naturalista",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/8k0m6w.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/egnat.txt"
+	},
+				{
+    title: "la batería",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/v84wav.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/btria.txt"
+	},
+{
+    title: "El mar",
+    img: "",
+    author: "El gallo Carlos",
+    audio: "https://files.catbox.moe/0aov60.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/elmar.txt"
+	},
 	
         {
             title: "La canción de Nico",
