@@ -535,6 +535,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             audio: "https://files.catbox.moe/gryz36.mp3",
             lyrics: "https://luxiodev93.github.io/lyrics/espec.txt"
         },
+	{
+            title: "Mi madre y el táper",
+            img: "https://i.ibb.co/yFNBvbmr/Macha-K-portada-16x9-dientes-naturales.png", 
+            author: "Macha-K",
+            audio: "https://badluchothree-glitch.github.io/Mi_madre_y_el_taper.mp3",
+            lyrics: "https://luxiodev93.github.io/lyrics/mmyet.txt"
+        },
 	        {
             title: "Lima Low Life",
             img: "https://i.ibb.co/QF9VsS00/limalowlaif.jpg", 
