@@ -167,6 +167,13 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/myworld.txt"
     audio: "https://files.catbox.moe/clbngo.mp3",
     lyrics: "https://luxiodev93.github.io/lyrics/rescate.txt"
 	},
+					{
+    title: "Navidad y Conocimiento",
+    img: "https://i.ibb.co/7d7DtqbH/1075864d-f5bb-4de3-bcbd-3a33d04a8d75.jpg",
+    author: "Navidad",
+    audio: "https://badluchothree-glitch.github.io/navidad_conocimiento.mp3",
+    lyrics: "https://luxiodev93.github.io/lyrics/navyco.txt"
+	},
         {
             title: "Go Faster",
             img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
