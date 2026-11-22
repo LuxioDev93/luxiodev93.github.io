@@ -550,6 +550,41 @@ lyrics: "https://luxiodev93.github.io/lyrics_eng/helloclass.txt"
             lyrics: "https://luxiodev93.github.io/lyrics/mmyet.txt"
         },
 	        {
+            title: "Tu primera Navidad",
+            img: "", 
+            author: "Navidad",
+            audio: "https://badluchothree-glitch.github.io/tu_primera_navidad.mp3",
+            lyrics: ""
+        },       
+	 {
+            title: "Gallinas de Navidad",
+            img: "", 
+            author: "Navidad",
+            audio: "https://badluchothree-glitch.github.io/gallinas_navidad.mp3",
+            lyrics: ""
+        },       
+	 {
+            title: "Navidad Low Life",
+            img: "", 
+            author: "Navidad",
+            audio: "https://badluchothree-glitch.github.io/navidad_lowlife.mp3",
+            lyrics: ""
+        },       
+	 {
+            title: "Nieve Negra",
+            img: "", 
+            author: "Navidad",
+            audio: "https://badluchothree-glitch.github.io/nieve_negra.mp3",
+            lyrics: ""
+        },       
+	 {
+            title: "Que no falte nadie",
+            img: "", 
+            author: "Navidad",
+            audio: "https://badluchothree-glitch.github.io/Quenofaltenadie.mp3",
+            lyrics: ""
+        },
+	        {
             title: "Lima Low Life",
             img: "https://i.ibb.co/QF9VsS00/limalowlaif.jpg", 
             author: "Macha-K",
