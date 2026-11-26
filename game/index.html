@@ -107,22 +107,33 @@
             flex-direction: column;
             width: 100%;
             height: 100vh;
-            padding: 8px;
+            height: 100dvh;
             justify-content: space-between;
             overflow: hidden;
         }
 
-        .game-header {
-            display: flex;
-            justify-content: space-between;
+        .player-controls {
+            position: absolute;
+            inset: 0 0 auto;
+            z-index: 3;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            background: #fff;
-            padding: 8px 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            width: 100%;
+            padding: clamp(8px, 2vw, 24px);
+            gap: 4px;
+            font-variant-numeric: tabular-nums;
         }
-
+        .player-box .player-controls > * {
+            background: rgba(12,16,24,.86);
+            color: white;
+            border: 1px solid rgba(255,255,255,.26);
+            border-radius: 999px;
+            padding: .45em .75em;
+            white-space: nowrap;
+        }
+        .player-controls .btn-exit { justify-self: start; }
+        .player-controls .timer-display { justify-self: end; font-size: clamp(.8rem, 2vw, 1rem); }
+        .player-controls .key-counter-box { font-size: clamp(.95rem, 2vw, 1.4rem); }
         .btn-exit {
             background-color: #ea4335;
             color: white;
@@ -135,8 +146,8 @@
             transition: background-color 0.2s;
         }
 
-        .btn-exit:hover {
-            background-color: #c5221f;
+        .player-box .player-controls .btn-exit:hover {
+            background-color: #353d4c;
         }
 
         .key-counter-box {
@@ -163,14 +174,14 @@
             width: 100%;
             flex: 1; /* Ocupa todo el espacio vertical sobrante entre la cabecera y el teclado */
             background: #000;
-            border-radius: 12px;
+            min-height: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            margin: 6px 0;
+            padding: 64px 8px 12px;
         }
 
         .player-bg {
@@ -179,12 +190,20 @@
             background-size: cover; /* Se expande al ancho máximo recortando por arriba/abajo de forma fluida */
             background-repeat: no-repeat;
             background-position: center;
-            filter: blur(8px);
-            opacity: 0.35;
+            filter: saturate(.9);
+            opacity: 0.55;
             z-index: 1;
         }
 
+        .player-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(7,10,18,.55), transparent 40%, rgba(7,10,18,.68));
+        }
         .lyrics-container {
+            max-height: 100%;
+            overflow: auto;
             position: relative;
             z-index: 2;
             padding: 20px;
@@ -229,7 +248,7 @@
             gap: 5px;
             width: 100%;
             max-width: none;
-            height: 260px; /* Alto fijo y constante */
+            height: min(260px, 42dvh); /* Alto fijo y constante */
             user-select: none;
             pointer-events: none;
         }
@@ -327,14 +346,13 @@
     </div>
 
     <div id="game-screen">
-        <div class="game-header">
-            <button class="btn-exit" onclick="exitGame()">Salir</button>
-            <div class="key-counter-box" id="key-counter">0</div>
-            <div class="timer-display" id="timer-display">00:00:00</div>
-        </div>
-
         <div class="player-box">
             <div class="player-bg" id="player-bg"></div>
+            <div class="player-controls">
+            <button class="btn-exit" onclick="exitGame()">Salir</button>
+            <div class="key-counter-box" id="key-counter">0 PPM</div>
+            <div class="timer-display" id="timer-display">00:00:00</div>
+            </div>
             <div class="lyrics-container">
                 <p id="lyric-text">Cargando canción...</p>
             </div>
@@ -424,112 +442,12 @@
 
     <audio id="game-audio"></audio>
 
+    <script src="https://luxiodev93.github.io/musicdata.js"></script>
     <script>
         const SUPABASE_URL = 'https://phakxkbqbgfuhijkcnxy.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_sYFREO9jtKjJ7SD-sFVvYQ_rPzPhmZR';
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const musicData = [
-        {
-            title: "Gallina Terrenal",
-            img: "https://i.ibb.co/8LY8GCMM/gallina-terrenal.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/dpezf6.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/galterr.txt"
-        },
-        {
-            title: "Dark Cloud",
-            img: "https://wallpapercave.com/wp/wp2974051.jpg",
-            author: "No Respawn",
-            audio: "https://files.catbox.moe/e451ms.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/drkld.txt"
-        },
-        {
-            title: "Go Faster",
-            img: "https://i.pinimg.com/736x/24/45/77/244577ccb37755b78041b12efeffbcbb.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/c1zzpz.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/gofaster.txt"
-        },
-        {
-            title: "La cucaracha",
-            img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/vunfuh.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
-        },
-        {
-            title: "La cucaracha(versionada)",
-            img: "https://m.media-amazon.com/images/I/71LD5ddJJYL._AC_SX522_.jpg", 
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/yrkv8h.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/cucaracha.txt"
-        },
-        {
-            title: "Garacias a Dios hay Chamba",
-            img: "https://i.pinimg.com/736x/47/dd/0b/47dd0bc9355f6a01608eee68e5cc021c.jpg",
-            author: "Dani Chalán",
-            audio: "https://files.catbox.moe/530yy1.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/haychamba.txt"
-        },
-        {
-            title: "Mi amiga jirafa",
-            img: "https://i.ibb.co/4gSHTwqk/ac10f775-2e77-4c77-80b6-5edf4d7bd647-92.jpg", 
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/z25a46.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/amjirf.txt"
-        },
-        {
-            title: "BELIEVE IN THE MAGIC!",
-            img: "https://static.que.es/wp-content/uploads/2021/02/Que-es-la-magia.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/7tub00.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/magic.txt"
-        },
-        {
-            title: "Level 99 Slitherbreak",
-            img: "https://i.ytimg.com/vi/jBcDBwkV0b8/maxresdefault.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/2nhp1u.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/Slitherbrk.txt"
-        },
-        {
-            title: "La gallinita Ciega",
-            img: "https://i.ibb.co/cKp52Tgy/CIEGA.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/5qynrf.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/ceiga.txt"
-        },
-        {
-            title: "Gallinita Espacial",
-            img: "https://i.ibb.co/d0Cqj92f/image-jpg-75.jpg",
-            author: "Cuco Club",
-            audio: "https://files.catbox.moe/2o58j3.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/espagal.txt"
-        },
-        {
-            title: "Iguana del Caos",
-            img: "https://i.ibb.co/rgJdfSr/content-75.jpg",
-            author: "Metal Insano",
-            audio: "https://files.catbox.moe/e27db5.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/iguanacaos.txt"
-        },
-        {
-            title: "Fénix",
-            img: "https://i.ibb.co/VW72Mt5V/ec4dc522-0fb7-40fb-a112-e2492e6615df-75.jpg",
-            author: "Metal Insano",
-            audio: "https://files.catbox.moe/b1a57n.mp3",
-            lyrics: "https://luxiodev93.github.io/lyrics/fenixx.txt"
-        },
-        {
-            title: "Exploit Explosion",
-            img: "https://i.ibb.co/JW6Yfhxx/6868c0ae-3e1c-4b6a-95c7-893900519c38-75.jpg", 
-            audio: "https://files.catbox.moe/wd8w2a.mp3",
-            author: "No Respawn",
-            lyrics: "https://luxiodev93.github.io/lyrics/expexp.txt"
-        }
-        ];
 
         let currentSong = null;
         let lrcLines = []; 
@@ -537,7 +455,10 @@
         let currentWordTargetIndex = 0;
         
         let correctKeysCount = 0;
-        let timerSeconds = 0;
+        let elapsedMs = 0;
+        let countingFrom = null;
+        let scores = null;
+        let session = 0;
         let timerInterval = null;
         let isPausedForTyping = false;
         let errorCharsTyped = "";
@@ -556,6 +477,8 @@
                     .order('tpm', { ascending: false })
                     .limit(5);
 
+                scores = !error && data ? data.map(row => Number(row.tpm)) : null;
+                updateCounterUI();
                 if (error || !data || data.length === 0) {
                     tbody.innerHTML = `<tr><td>1</td><td>Nadie</td><td>0</td></tr>
                                        <tr><td>2</td><td>Nadie</td><td>0</td></tr>
@@ -624,14 +547,22 @@
         }
 
         window.startGame = async function() {
-            currentSong = musicData[Math.floor(Math.random() * musicData.length)];
+            const game = ++session;
             
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'flex';
             document.getElementById('lyric-text').textContent = "Cargando letra y sincronizando...";
 
             try {
-                lrcLines = await parseLRC(currentSong.lyrics);
+                const songs = musicData.filter(song => typeof song.lyrics === 'string' && song.lyrics.trim()
+                    && String(song.rated).trim().toLowerCase() !== 'on'
+                    && !/\brated\s*:\s*on\b/i.test([song.tag, song.tags].flat().join(' ')));
+                if (!songs.length) throw new Error('No hay canciones aptas.');
+                currentSong = songs[Math.floor(Math.random() * songs.length)];
+                const english = currentSong.lyrics_eng?.trim();
+                const lines = await parseLRC(english && Math.random() < 0.5 ? english : currentSong.lyrics);
+                if (game !== session) return;
+                lrcLines = lines;
                 if (lrcLines.length === 0) throw new Error("La letra está vacía o no tiene formato LRC válido.");
                 
                 processGameWords();
@@ -651,13 +582,16 @@
 
             } catch (error) {
                 alert("Error al cargar los recursos de la canción.");
-                location.reload();
+                exitGame();
             }
         }
 
         window.exitGame = function() {
             const audio = document.getElementById('game-audio');
             audio.pause();
+            session++;
+            audio.onloadedmetadata = null;
+            audio.ontimeupdate = null;
             audio.currentTime = 0;
             stopTimer();
             isPausedForTyping = false;
@@ -673,69 +607,30 @@
             targetWords = [];
             const cleanRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/;
 
-            let lineValidity = [];
-            lrcLines.forEach((item, idx) => {
-                let hasValidWord = false;
-                if (idx >= 2) { 
-                    const words = item.text.split(/\s+/);
-                    for (let w of words) {
-                        if (w.length >= 4 && cleanRegex.test(w)) {
-                            hasValidWord = true;
-                            break;
-                        }
-                    }
+            const candidates = lrcLines.map((line, lrcIdx) =>
+                line.text.split(/\s+/).map((word, wordIdx) => ({ word, wordIdx, lrcIdx, time: line.time }))
+                    .filter(({ word }) => word.length >= 4 && cleanRegex.test(word))
+            );
+            const pick = items => items[Math.floor(Math.random() * items.length)];
+            let next = 2;
+            while (targetWords.length < 5 && next < candidates.length) {
+                const lines = candidates.slice(next, next + 3).filter(line => line.length);
+                if (!lines.length) {
+                    next += 3;
+                    continue;
                 }
-                lineValidity[idx] = hasValidWord;
-            });
-
-            let selected = [];
-            let lastLineIdx = -10;
-            let currentIndex = 2; 
-
-            while (selected.length < 5 && currentIndex < lrcLines.length) {
-                let foundValidInWindow = false;
-                let targetLineIdx = -1;
-
-                for (let offset = 0; offset <= 5; offset++) {
-                    let checkIdx = currentIndex + offset;
-                    if (checkIdx < lrcLines.length && lineValidity[checkIdx]) {
-                        if (checkIdx !== lastLineIdx && checkIdx !== lastLineIdx + 1 && checkIdx !== lastLineIdx - 1) {
-                            targetLineIdx = checkIdx;
-                            foundValidInWindow = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (foundValidInWindow && targetLineIdx !== -1) {
-                    let item = lrcLines[targetLineIdx];
-                    let words = item.text.split(/\s+/);
-                    let validCandidatesInLine = [];
-                    words.forEach((w, wIdx) => {
-                        if (w.length >= 4 && cleanRegex.test(w)) {
-                            validCandidatesInLine.push({ lrcIdx: targetLineIdx, wordIdx: wIdx, word: w, time: item.time });
-                        }
-                    });
-
-                    if (validCandidatesInLine.length > 0) {
-                        let chosenWord = validCandidatesInLine[Math.floor(Math.random() * validCandidatesInLine.length)];
-                        selected.push(chosenWord);
-                        lastLineIdx = targetLineIdx;
-                        currentIndex = targetLineIdx + 2; 
-                    } else {
-                        currentIndex++;
-                    }
-                } else {
-                    currentIndex += 6;
-                }
+                const wantAccent = Math.random() < 0.1;
+                const preferred = lines.map(line => line.filter(({ word }) => /[áéíóú]/i.test(word) === wantAccent))
+                    .filter(line => line.length);
+                const chosen = pick(pick(preferred.length ? preferred : lines));
+                targetWords.push(chosen);
+                next = chosen.lrcIdx + 2;
             }
-
-            targetWords = selected;
-            targetWords.sort((a, b) => a.time - b.time);
+            if (!targetWords.length) throw new Error('No hay palabras para practicar.');
 
             currentWordTargetIndex = 0;
             correctKeysCount = 0;
-            timerSeconds = 0;
+            elapsedMs = 0;
             updateCounterUI();
             updateTimerUI();
 
@@ -827,19 +722,32 @@
         }
 
         function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
+            countingFrom = performance.now() + 2000;
             timerInterval = setInterval(() => {
-                timerSeconds++;
+                updateCounterUI();
                 updateTimerUI();
-            }, 1000);
+            }, 100);
+        }
+
+        function activeMs() {
+            return elapsedMs + (countingFrom === null ? 0 : Math.max(0, performance.now() - countingFrom));
+        }
+
+        function rate() {
+            return Math.round(correctKeysCount * 60000 / Math.max(1000, activeMs()));
         }
 
         function stopTimer() {
+            elapsedMs = activeMs();
+            countingFrom = null;
             clearInterval(timerInterval);
             timerInterval = null;
+            updateTimerUI();
+            updateCounterUI();
         }
 
         function updateTimerUI() {
+            const timerSeconds = Math.floor(activeMs() / 1000);
             const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
             const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
             const secs = String(timerSeconds % 60).padStart(2, '0');
@@ -847,11 +755,31 @@
         }
 
         function updateCounterUI() {
-            document.getElementById('key-counter').textContent = correctKeysCount;
+            const ppm = rate();
+            const place = ppm && scores ? 1 + scores.filter(value => value >= ppm).length : 0;
+            const colors = ['white', '#ffd700', '#c0c0c0', '#e5a26c', '#79ef95', '#79ef95'];
+            const left = ['', '🔥 ', '😱 ', '👍 '];
+            const right = ['', ' 🥇', ' 🥈', ' 🥉'];
+            const display = document.getElementById('key-counter');
+            const level = place <= 5 ? place : 0;
+            const previous = Number(display.dataset.level || 0);
+            display.dataset.level = level;
+            display.style.color = colors[level];
+            if (level && level !== previous && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                display.getAnimations().forEach(animation => animation.cancel());
+                display.animate([
+                    { transform: 'scale(1)' },
+                    { transform: 'scale(1.08)', borderColor: 'currentColor' },
+                    { transform: 'scale(1)' }
+                ], { duration: 300, easing: 'ease-out' });
+            }
+            display.textContent = (left[place] || '') + ppm + ' PPM' + (right[place] || '');
         }
 
         window.addEventListener('keydown', (e) => {
             if (!isPausedForTyping) return;
+            countingFrom = Math.min(countingFrom, performance.now());
+            if (e.key.length !== 1 && !['Dead', 'Backspace'].includes(e.key)) return;
 
             const targetObj = targetWords[currentWordTargetIndex];
 
@@ -945,11 +873,10 @@
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'flex';
 
-            const totalMinutes = timerSeconds > 0 ? timerSeconds / 60 : 1/60;
-            const tpm = Math.round(correctKeysCount / totalMinutes);
+            const tpm = rate();
             window.finalTPM = tpm;
 
-            document.getElementById('final-stats').innerHTML = `¡Has completado las 5 palabras!<br>Tiempo de typing: ${timerSeconds}s<br><b>${tpm} Teclas por Minuto (TPM)</b>`;
+            document.getElementById('final-stats').innerHTML = `¡Has completado las ${targetWords.length} palabras!<br>Tiempo de typing: ${(elapsedMs / 1000).toFixed(1)}s<br><b>${tpm} Teclas por Minuto (TPM)</b>`;
 
             try {
                 const { data, error } = await supabaseClient
